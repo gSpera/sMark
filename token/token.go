@@ -72,12 +72,14 @@ func (t TextToken) String() string { return t.Text }
 //DebugString is used for ast outputting
 func (t TextToken) DebugString() string { return fmt.Sprintf("<TextToken: %s>\n", t.Text) }
 
+//LineState is the line metadata
+type LineState struct {
+	Indentation uint
+}
+
 //LineToken is a token which rappresent a list of Tokens with some attributes
 type LineToken struct {
-	LineState struct {
-		Indentation uint
-	}
-
+	LineState
 	Tokens []Token
 }
 
@@ -86,6 +88,9 @@ func (t LineToken) Type() Type { return TypeTokenLine }
 
 func (t LineToken) String() string {
 	str := ""
+	for i := uint(0); i < t.LineState.Indentation; i++ {
+		str += "\t"
+	}
 	for _, t := range t.Tokens {
 		str += fmt.Sprintf("%v", t)
 	}
@@ -93,7 +98,9 @@ func (t LineToken) String() string {
 }
 
 //DebugString is used for ast outputting
-func (t LineToken) DebugString() string { return fmt.Sprintf("<LineToken: %s>\n", t.Tokens) }
+func (t LineToken) DebugString() string {
+	return fmt.Sprintf("<LineToken: {%v}%s>\n", t.LineState, t.Tokens)
+}
 
 //FromRune return an appropiate token for the rune
 func FromRune(r rune) Token {

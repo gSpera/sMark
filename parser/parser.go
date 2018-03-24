@@ -13,9 +13,7 @@ func ParseFile(fl *os.File) ([]token.Token, error) {
 	buffer := ""
 	tokenBuffer := []token.Token{}
 
-	currentLine := struct {
-		Indentation uint
-	}{}
+	currentLine := token.LineState{}
 	for {
 		n, err := fl.Read(char)
 		if n == 0 {
@@ -37,6 +35,8 @@ func ParseFile(fl *os.File) ([]token.Token, error) {
 			addBufferToTokenBuffer(&tokenBuffer, &buffer)
 			tokenList = append(tokenList, token.LineToken{LineState: currentLine, Tokens: tokenBuffer})
 			tokenBuffer = []token.Token{}
+			currentLine = token.LineState{}
+
 		case token.TypeBold:
 			addBufferToTokenBuffer(&tokenBuffer, &buffer)
 			fmt.Println("Bold")
