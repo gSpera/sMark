@@ -139,7 +139,8 @@ func (t LineToken) DebugString() string {
 
 //ParagraphToken rapresent a single paragraph
 type ParagraphToken struct {
-	Lines []LineToken
+	Indentation int
+	Lines       []LineToken
 }
 
 //Type return the type of the Token

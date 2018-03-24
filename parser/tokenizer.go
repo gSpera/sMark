@@ -18,6 +18,7 @@ func Tokenizer(reader io.Reader) ([]token.Token, error) {
 		n, err := reader.Read(char)
 		if n == 0 {
 			addBufferToTokenBuffer(&tokenList, &buffer)
+			tokenList = append(tokenList, token.NewLineToken{})
 			fmt.Println("EOF")
 			return tokenList, nil
 		}
@@ -67,6 +68,7 @@ func TokenToLine(tokens []token.Token) []token.LineToken {
 		switch t.(type) {
 		case token.TabToken:
 			if indent {
+				fmt.Println("Adding Indentation")
 				currentLine.Indentation++
 			} else {
 				indent = false
@@ -76,8 +78,10 @@ func TokenToLine(tokens []token.Token) []token.LineToken {
 			spew.Dump(currentLine.Tokens)
 			lines = append(lines, currentLine)
 			currentLine = token.LineToken{}
+			indent = true
 		default:
 			currentLine.Tokens = append(currentLine.Tokens, t)
+			indent = false
 		}
 	}
 
@@ -90,19 +94,14 @@ func TokenToParagraph(lines []token.LineToken) []token.ParagraphToken {
 	paragraphs := []token.ParagraphToken{}
 	currentParagraph := token.ParagraphToken{}
 
-	for i, t := range lines {
-		if i == 0 {
-			continue
-		}
-		previousToken := lines[i-1]
-
+	for _, t := range lines {
 		currentEmpty := len(t.Tokens) == 0
-		previuosEmpty := len(previousToken.Tokens) == 0
-		fmt.Println(len(t.Tokens), len(previousToken.Tokens))
 		spew.Dump(t.Tokens)
 
-		if currentEmpty && previuosEmpty {
+		if currentEmpty {
 			fmt.Println("New Paragraph")
+			checkIndentation(&currentParagraph)
+			fmt.Printf("Indentation after: %d\n", currentParagraph.Indentation)
 			paragraphs = append(paragraphs, currentParagraph)
 			currentParagraph = token.ParagraphToken{}
 		} else {
@@ -110,6 +109,26 @@ func TokenToParagraph(lines []token.LineToken) []token.ParagraphToken {
 		}
 	}
 
+	checkIndentation(&currentParagraph)
 	paragraphs = append(paragraphs, currentParagraph)
 	return paragraphs
+}
+
+func checkIndentation(paragraph *token.ParagraphToken) {
+	var indent = -1
+	fmt.Println("Check indentation")
+	for i, line := range paragraph.Lines {
+		fmt.Printf("Line %d Indentation: %d\n", i, line.Indentation)
+		if indent == -1 || i == 1 {
+			indent = int(line.Indentation)
+		}
+
+		if indent != int(line.Indentation) {
+			fmt.Printf("Check indetation %d != %d\n", indent, line.Indentation)
+			return
+		}
+
+		paragraph.Indentation = indent
+		fmt.Printf("New Indetation: %d\n", indent)
+	}
 }
