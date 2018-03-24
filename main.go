@@ -3,13 +3,18 @@ package main
 import (
 	"flag"
 	"fmt"
+	"io/ioutil"
 	"os"
+
+	"eNote/parser"
 )
 
 func main() {
-	filename := flag.String("i", "-", "input file, - for stdin, default is stdin")
+	inputfile := flag.String("i", "-", "input file, - for stdin")
+	outfile := flag.String("o", "out.rtf", "output file")
+
 	flag.Parse()
-	input, err := streamFromFilename(*filename)
+	input, err := streamFromFilename(*inputfile)
 	if os.IsNotExist(err) {
 		fmt.Println("Error: File doesn't exist")
 		printUsage()
@@ -19,8 +24,17 @@ func main() {
 		panic(err)
 	}
 
-	fmt.Println("Filename: ", *filename)
+	fmt.Println("Filename: ", *inputfile)
 	fmt.Println("Input: ", input)
+	tokenList, err := parser.ParseFile(input)
+	if err != nil {
+		panic(err)
+	}
+	fmt.Printf("TokenList %d tokens: %+v\n", len(tokenList), tokenList)
+	for _, t := range tokenList {
+		fmt.Printf("%T%v\n", t, t)
+	}
+	ioutil.WriteFile(*outfile, []byte(fmt.Sprintf("%v", tokenList)), 777)
 }
 
 func streamFromFilename(filename string) (*os.File, error) {
