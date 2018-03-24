@@ -11,6 +11,8 @@ type Type int8
 type Token interface {
 	fmt.Stringer
 
+	//DebugString is used for ast outputting
+	DebugString() string
 	//Type is the type of the token
 	Type() Type
 }
@@ -41,7 +43,10 @@ type BoldToken struct{}
 //Type returns the type of the Token
 func (t BoldToken) Type() Type { return TypeBold }
 
-func (t BoldToken) String() string { return "<BoldToken>" }
+func (t BoldToken) String() string { return "*" }
+
+//DebugString is used for ast outputting
+func (t BoldToken) DebugString() string { return "<BoldToken>" }
 
 //ItalicToken is a generic undefined token
 type ItalicToken struct{}
@@ -49,7 +54,10 @@ type ItalicToken struct{}
 //Type returns the type of the Token
 func (t ItalicToken) Type() Type { return TypeItalic }
 
-func (t ItalicToken) String() string { return "<ItalicToken>" }
+func (t ItalicToken) String() string { return "/" }
+
+//DebugString is used for ast outputting
+func (t ItalicToken) DebugString() string { return "<ItalicToken>" }
 
 //TextToken a token conteining text
 type TextToken struct {
@@ -59,7 +67,10 @@ type TextToken struct {
 //Type returns the type of the Token
 func (t TextToken) Type() Type { return TypeText }
 
-func (t TextToken) String() string { return fmt.Sprintf("<TextToken: %s>\n", t.Text) }
+func (t TextToken) String() string { return t.Text }
+
+//DebugString is used for ast outputting
+func (t TextToken) DebugString() string { return fmt.Sprintf("<TextToken: %s>\n", t.Text) }
 
 //LineToken is a token which rappresent a list of Tokens with some attributes
 type LineToken struct {
@@ -73,7 +84,16 @@ type LineToken struct {
 //Type return the type of the Token
 func (t LineToken) Type() Type { return TypeTokenLine }
 
-func (t LineToken) String() string { return fmt.Sprintf("<LineToken: %s>\n", t.Tokens) }
+func (t LineToken) String() string {
+	str := ""
+	for _, t := range t.Tokens {
+		str += fmt.Sprintf("%v", t)
+	}
+	return str + "\n"
+}
+
+//DebugString is used for ast outputting
+func (t LineToken) DebugString() string { return fmt.Sprintf("<LineToken: %s>\n", t.Tokens) }
 
 //FromRune return an appropiate token for the rune
 func FromRune(r rune) Token {
