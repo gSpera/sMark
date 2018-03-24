@@ -11,7 +11,7 @@ type Type int8
 type Token interface {
 	fmt.Stringer
 
-	//The type of the token
+	//Type is the type of the token
 	Type() Type
 }
 
@@ -24,6 +24,9 @@ const (
 	TypeItalic = '/'
 	//TypeText is a text token
 	TypeText
+
+	//TypeTokenLine rappresent a line
+	TypeTokenLine
 )
 
 //UndefinedToken is a generic undefined token
@@ -38,7 +41,7 @@ type BoldToken struct{}
 //Type returns the type of the Token
 func (t BoldToken) Type() Type { return TypeBold }
 
-func (t BoldToken) String() string { return "<BoldToken>\n" }
+func (t BoldToken) String() string { return "<BoldToken>" }
 
 //ItalicToken is a generic undefined token
 type ItalicToken struct{}
@@ -46,7 +49,7 @@ type ItalicToken struct{}
 //Type returns the type of the Token
 func (t ItalicToken) Type() Type { return TypeItalic }
 
-func (t ItalicToken) String() string { return "<ItalicToken>\n" }
+func (t ItalicToken) String() string { return "<ItalicToken>" }
 
 //TextToken a token conteining text
 type TextToken struct {
@@ -57,6 +60,20 @@ type TextToken struct {
 func (t TextToken) Type() Type { return TypeText }
 
 func (t TextToken) String() string { return fmt.Sprintf("<TextToken: %s>\n", t.Text) }
+
+//LineToken is a token which rappresent a list of Tokens with some attributes
+type LineToken struct {
+	LineState struct {
+		Indentation uint
+	}
+
+	Tokens []Token
+}
+
+//Type return the type of the Token
+func (t LineToken) Type() Type { return TypeTokenLine }
+
+func (t LineToken) String() string { return fmt.Sprintf("<LineToken: %s>\n", t.Tokens) }
 
 //FromRune return an appropiate token for the rune
 func FromRune(r rune) Token {
