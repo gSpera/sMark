@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"os"
 
+	"eNote/output"
 	"eNote/parser"
 )
 
@@ -34,13 +35,7 @@ func main() {
 	for _, t := range tokenList {
 		fmt.Printf("%T%v\n", t, t)
 	}
-	ioutil.WriteFile(*outfile, func() []byte {
-		str := ""
-		for _, t := range tokenList {
-			str += t.String()
-		}
-		return []byte(str)
-	}(), os.ModePerm)
+	ioutil.WriteFile(*outfile, []byte(output.ToString(tokenList)), os.ModePerm)
 }
 
 func streamFromFilename(filename string) (*os.File, error) {
