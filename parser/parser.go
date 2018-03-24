@@ -19,6 +19,8 @@ func ParseFile(fl *os.File) ([]token.Token, error) {
 	for {
 		n, err := fl.Read(char)
 		if n == 0 {
+			addBufferToTokenBuffer(&tokenBuffer, &buffer)
+			tokenList = append(tokenList, token.LineToken{LineState: currentLine, Tokens: tokenBuffer})
 			fmt.Println("EOF")
 			return tokenList, nil
 		}
@@ -32,14 +34,15 @@ func ParseFile(fl *os.File) ([]token.Token, error) {
 				currentLine.Indentation++
 			}
 		case '\n':
-			addBufferToTokenBuffer(&tokenBuffer, buffer)
+			addBufferToTokenBuffer(&tokenBuffer, &buffer)
 			tokenList = append(tokenList, token.LineToken{LineState: currentLine, Tokens: tokenBuffer})
+			tokenBuffer = []token.Token{}
 		case token.TypeBold:
-			addBufferToTokenBuffer(&tokenBuffer, buffer)
+			addBufferToTokenBuffer(&tokenBuffer, &buffer)
 			fmt.Println("Bold")
 			tokenBuffer = append(tokenBuffer, token.BoldToken{})
 		case token.TypeItalic:
-			addBufferToTokenBuffer(&tokenBuffer, buffer)
+			addBufferToTokenBuffer(&tokenBuffer, &buffer)
 			fmt.Println("Italic")
 			tokenBuffer = append(tokenBuffer, token.ItalicToken{})
 
@@ -50,8 +53,9 @@ func ParseFile(fl *os.File) ([]token.Token, error) {
 	}
 }
 
-func addBufferToTokenBuffer(tokenBuffer *[]token.Token, buffer string) {
-	*tokenBuffer = append(*tokenBuffer, token.TextToken{Text: buffer})
+func addBufferToTokenBuffer(tokenBuffer *[]token.Token, buffer *string) {
+	*tokenBuffer = append(*tokenBuffer, token.TextToken{Text: *buffer})
+	*buffer = ""
 }
 
 //ParseString parse a string

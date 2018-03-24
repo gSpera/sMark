@@ -34,7 +34,13 @@ func main() {
 	for _, t := range tokenList {
 		fmt.Printf("%T%v\n", t, t)
 	}
-	ioutil.WriteFile(*outfile, []byte(fmt.Sprintf("%v", tokenList)), 777)
+	ioutil.WriteFile(*outfile, func() []byte {
+		str := ""
+		for _, t := range tokenList {
+			str += t.String()
+		}
+		return []byte(str)
+	}(), os.ModePerm)
 }
 
 func streamFromFilename(filename string) (*os.File, error) {
