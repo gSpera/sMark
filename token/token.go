@@ -45,6 +45,11 @@ type UndefinedToken struct{}
 //Type returns the type of the Token
 func (t UndefinedToken) Type() Type { return TypeUndefined }
 
+func (t UndefinedToken) String() string { return "UNDEFINED" }
+
+//DebugString is used for ast outputting
+func (t UndefinedToken) DebugString() string { return "<UndefinedToken>" }
+
 //BoldToken is a generic undefined token
 type BoldToken struct{}
 
