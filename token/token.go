@@ -24,6 +24,12 @@ const (
 	TypeBold = '*'
 	//TypeItalic is an italic starting/ending token
 	TypeItalic = '/'
+
+	//TypeNewLine is a newline
+	TypeNewLine = '\n'
+	//TypeTab is a tab
+	TypeTab = '\t'
+
 	//TypeText is a text token
 	TypeText
 
@@ -60,6 +66,28 @@ func (t ItalicToken) String() string { return "/" }
 
 //DebugString is used for ast outputting
 func (t ItalicToken) DebugString() string { return "<ItalicToken>" }
+
+//NewLineToken is a generic undefined token
+type NewLineToken struct{}
+
+//Type returns the type of the Token
+func (t NewLineToken) Type() Type { return TypeNewLine }
+
+func (t NewLineToken) String() string { return "*" }
+
+//DebugString is used for ast outputting
+func (t NewLineToken) DebugString() string { return "<NewLineToken>" }
+
+//ItalicToken is a generic undefined token
+type TabToken struct{}
+
+//Type returns the type of the Token
+func (t TabToken) Type() Type { return TypeTab }
+
+func (t TabToken) String() string { return "/" }
+
+//DebugString is used for ast outputting
+func (t TabToken) DebugString() string { return "<TabToken>" }
 
 //TextToken a token conteining text
 type TextToken struct {

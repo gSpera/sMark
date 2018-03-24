@@ -7,6 +7,7 @@ import (
 
 //ToString oputput the list of tokens to string
 func ToString(tokenList []token.Token) string {
+	return ""
 	str := ""
 	bold := false
 	italic := false
