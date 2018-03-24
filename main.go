@@ -6,6 +6,8 @@ import (
 	"io/ioutil"
 	"os"
 
+	"github.com/davecgh/go-spew/spew"
+
 	"eNote/output"
 	"eNote/parser"
 )
@@ -33,8 +35,9 @@ func main() {
 	}
 	fmt.Printf("TokenList %d tokens: %+v\n", len(tokenList), tokenList)
 	for _, t := range tokenList {
-		fmt.Printf("%T%v\n", t, t)
+		fmt.Printf("%s\n", t.DebugString())
 	}
+	spew.Dump(tokenList)
 	ioutil.WriteFile(*outfile, []byte(output.ToString(tokenList)), os.ModePerm)
 }
 

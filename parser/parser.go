@@ -4,6 +4,8 @@ import (
 	"eNote/token"
 	"fmt"
 	"os"
+
+	"github.com/davecgh/go-spew/spew"
 )
 
 //ParseFile parse a *os.File
@@ -11,14 +13,18 @@ func ParseFile(fl *os.File) ([]token.Token, error) {
 	tokenList := []token.Token{}
 	char := make([]byte, 1)
 	buffer := ""
-	tokenBuffer := []token.Token{}
+	lineTokenBuffer := []token.Token{}
+	currentLine := token.LineToken{}
+	currentParagraph := token.ParagraphToken{}
+	lastNewLine := false
 
-	currentLine := token.LineState{}
 	for {
 		n, err := fl.Read(char)
 		if n == 0 {
-			addBufferToTokenBuffer(&tokenBuffer, &buffer)
-			tokenList = append(tokenList, token.LineToken{LineState: currentLine, Tokens: tokenBuffer})
+			addBufferToTokenBuffer(&lineTokenBuffer, &buffer)
+			currentLine.Tokens = lineTokenBuffer
+			currentParagraph.Lines = append(currentParagraph.Lines, currentLine)
+			tokenList = append(tokenList, currentParagraph)
 			fmt.Println("EOF")
 			return tokenList, nil
 		}
@@ -32,24 +38,34 @@ func ParseFile(fl *os.File) ([]token.Token, error) {
 				currentLine.Indentation++
 			}
 		case '\n':
-			addBufferToTokenBuffer(&tokenBuffer, &buffer)
-			tokenList = append(tokenList, token.LineToken{LineState: currentLine, Tokens: tokenBuffer})
-			tokenBuffer = []token.Token{}
-			currentLine = token.LineState{}
+			if lastNewLine { //EOP: End Of Paragraph
+				fmt.Println("EOP")
+				tokenList = append(tokenList, currentParagraph)
+				currentParagraph = token.ParagraphToken{}
+			} else { //Generic newline
+				fmt.Println("NewLine")
+				// addBufferToTokenBuffer(&currentParagraph, &buffer)
+				currentLine.Tokens = lineTokenBuffer
+				spew.Dump(currentLine)
+				currentParagraph.Lines = append(currentParagraph.Lines, currentLine)
+				lineTokenBuffer = []token.Token{}
+				currentLine = token.LineToken{}
+			}
 
 		case token.TypeBold:
-			addBufferToTokenBuffer(&tokenBuffer, &buffer)
+			addBufferToTokenBuffer(&lineTokenBuffer, &buffer)
 			fmt.Println("Bold")
-			tokenBuffer = append(tokenBuffer, token.BoldToken{})
+			lineTokenBuffer = append(lineTokenBuffer, token.BoldToken{})
 		case token.TypeItalic:
-			addBufferToTokenBuffer(&tokenBuffer, &buffer)
+			addBufferToTokenBuffer(&lineTokenBuffer, &buffer)
 			fmt.Println("Italic")
-			tokenBuffer = append(tokenBuffer, token.ItalicToken{})
+			lineTokenBuffer = append(lineTokenBuffer, token.ItalicToken{})
 
 		default:
 			// fmt.Printf("Char: %c\n", char[0])
 			buffer += string(char[0])
 		}
+		lastNewLine = char[0] == '\n'
 	}
 }
 

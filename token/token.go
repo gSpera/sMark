@@ -29,6 +29,8 @@ const (
 
 	//TypeTokenLine rappresent a line
 	TypeTokenLine
+	//TypeParagraph rapresent a paragraph
+	TypeParagraph
 )
 
 //UndefinedToken is a generic undefined token
@@ -99,7 +101,31 @@ func (t LineToken) String() string {
 
 //DebugString is used for ast outputting
 func (t LineToken) DebugString() string {
-	return fmt.Sprintf("<LineToken: {%v}%s>\n", t.LineState, t.Tokens)
+	return fmt.Sprintf("<LineToken: {%+v}%s>\n", t.LineState, t.Tokens)
+}
+
+//ParagraphToken rapresent a single paragraph
+type ParagraphToken struct {
+	Lines []LineToken
+}
+
+//Type return the type of the Token
+func (t ParagraphToken) Type() Type {
+	return TypeParagraph
+}
+func (t ParagraphToken) String() string {
+	return fmt.Sprintf("%s", t.Lines)
+}
+
+//DebugString is used for ast outputting
+func (t ParagraphToken) DebugString() string {
+	return fmt.Sprintf("<TokenParagraph: %v>\n", func() string {
+		str := ""
+		for _, l := range t.Lines {
+			str += l.DebugString()
+		}
+		return str
+	}())
 }
 
 //FromRune return an appropiate token for the rune
