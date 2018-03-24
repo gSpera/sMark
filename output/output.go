@@ -5,24 +5,16 @@ import (
 	"fmt"
 )
 
-//ToString oputput the list of tokens to string
-func ToString(tokenList []token.Token) string {
-	return ""
+//DebugToString oputput the list of tokens to string
+func DebugToString(tokenList []token.ParagraphToken) string {
 	str := ""
 	bold := false
 	italic := false
 
-	for _, _token := range tokenList {
-		switch _token.(type) {
-		case token.ParagraphToken:
-		default:
-			fmt.Printf("Type: %T\n", _token)
-			panic("Top Level Token not supported")
-		}
-
-		paragraph := _token.(token.ParagraphToken)
+	for _, paragraph := range tokenList {
 		// str += fmt.Sprintf("<PARAGRAPH %d>\n", len(paragraph.Lines))
 		fmt.Println("Output: Paragraph")
+		str += fmt.Sprintf("<PARAGRAPH %d>\n", paragraph.Indentation)
 		for _, line := range paragraph.Lines {
 			fmt.Println("Output: Line")
 			// fmt.Printf("%T{%v}\n", line, line)
@@ -34,14 +26,14 @@ func ToString(tokenList []token.Token) string {
 				switch t.(type) {
 				case token.BoldToken:
 					if !bold {
-						str += "<BOLD"
+						str += "<BOLD "
 					} else {
 						str += ">"
 					}
 					bold = !bold
 				case token.ItalicToken:
 					if !italic {
-						str += "<ITALIC"
+						str += "<ITALIC "
 					} else {
 						str += ">"
 					}
@@ -50,8 +42,8 @@ func ToString(tokenList []token.Token) string {
 					str += t.String()
 				}
 			}
+			str += "<NEWLINE>\n"
 		}
-		str += "<NEWLINE>\n"
 	}
 
 	return str
