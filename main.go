@@ -29,16 +29,14 @@ func main() {
 
 	fmt.Println("Filename: ", *inputfile)
 	fmt.Println("Input: ", input)
-	tokenList, err := parser.ParseFile(input)
+	tokenList, err := parser.ParseReader(input)
 	if err != nil {
 		panic(err)
 	}
-	fmt.Printf("TokenList %d tokens: %+v\n", len(tokenList), tokenList)
-	for _, t := range tokenList {
-		fmt.Printf("%s\n", t.DebugString())
-	}
+
 	spew.Dump(tokenList)
-	ioutil.WriteFile(*outfile, []byte(output.ToString(tokenList)), os.ModePerm)
+	fmt.Printf("%v\n", len(tokenList))
+	ioutil.WriteFile(*outfile, output.ToString(tokenList), os.ModePerm)
 }
 
 func streamFromFilename(filename string) (*os.File, error) {
