@@ -1,8 +1,11 @@
 package output
 
 import (
+	"bytes"
 	"eNote/token"
+	eNote "eNote/utils"
 	"fmt"
+	"html/template"
 )
 
 //DebugToString oputput the list of tokens to string
@@ -50,16 +53,15 @@ func DebugToString(tokenList []token.ParagraphToken) string {
 }
 
 //ToString is a simple output enging with a simple HTML writer
-func ToString(paragraphs []token.ParagraphToken) []byte {
-	str := `<html>
-	<head>
-	<style>
-		p.align-left {text-align:left;}
-		p.align-center {text-align: center;}
-		p.align-right {text-align: right;}
-	</style>
-	</head>
-	<body>`
+func ToString(paragraphs []token.ParagraphToken, options eNote.Options) []byte {
+	title := "Title"
+	outTemplate, err := template.ParseFiles("output/template.html")
+	if err != nil {
+		fmt.Println(err)
+		panic("Output Engine: template is not valid")
+	}
+
+	body := ""
 	bold := false
 	italic := false
 	alignMap := map[int]string{
@@ -69,7 +71,7 @@ func ToString(paragraphs []token.ParagraphToken) []byte {
 	}
 
 	for _, p := range paragraphs {
-		str += fmt.Sprintf("<p class=\"%s\">", alignMap[p.Indentation])
+		body += fmt.Sprintf("<p class=\"%s\">", alignMap[p.Indentation])
 		for _, line := range p.Lines {
 			for _, tok := range line.Tokens {
 
@@ -78,24 +80,24 @@ func ToString(paragraphs []token.ParagraphToken) []byte {
 					fmt.Println("Bold")
 					bold = !bold
 					if bold {
-						str += "<b>"
+						body += "<b>"
 					} else {
-						str += "</b> "
+						body += "</b> "
 					}
 					continue
 				case token.ItalicToken:
 					fmt.Println("Italic")
 					italic = !italic
 					if italic {
-						str += "<i>"
+						body += "<i>"
 					} else {
-						str += "</i> "
+						body += "</i> "
 					}
 					continue
 				}
 
 				fmt.Printf("Adding Text: %s, Bold: %v, Italic: %v\n", tok.String(), bold, italic)
-				str += tok.String()
+				body += tok.String()
 				if bold {
 					fmt.Println("Apply bold")
 					fmt.Println(tok.String())
@@ -106,11 +108,19 @@ func ToString(paragraphs []token.ParagraphToken) []byte {
 				}
 
 			}
-			str += "<br>\n"
+
+			if *options.NewLine {
+				body += "<br>\n"
+			}
 		}
-		str += "</p>\n"
+		body += "</p>\n"
 	}
 
-	str += "</body>\n</html>"
-	return []byte(str)
+	var out bytes.Buffer
+	outTemplate.Execute(&out, struct {
+		Title   string
+		Body    template.HTML
+		Options eNote.OptionsTemplate
+	}{title, template.HTML(body), options.ToTemplate()})
+	return out.Bytes()
 }

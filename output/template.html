@@ -1,0 +1,36 @@
+<html>
+
+<head>
+    <title>{{.Title}}</title>
+
+    {{ if .Options.EnableFont }}<link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">{{ end }}
+    <style>
+        p.align-left {
+            text-align: left;
+        }
+
+        p.align-center {
+            text-align: center;
+        }
+
+        p.align-right {
+            text-align: right;
+        }
+        * {
+            font-family: 'Roboto', sans-serif;
+            font-size: 1.05rem;
+        }
+        {{ .Options.InlineCSS }}
+        
+    </style>
+    {{if .Options.CustomCSS }}
+        <link rel="stylesheet" href="{{.Options.CustomCSS}}">
+    {{ end }}
+</head>
+
+<body>
+    {{.Options}}
+    {{.Body}}
+</body>
+
+</html>
