@@ -21,6 +21,7 @@ func main() {
 		CustomCSS:  flag.String("css", "", "A custom css file"),
 		InlineCSS:  flag.String("inline-css", "", "Inline CSS"),
 		EnableFont: flag.Bool("font", true, "Enable a default font"),
+		OnlyBody:   flag.Bool("only-body", false, "Output only the html boy and not the whole page"),
 	}
 
 	flag.Parse()

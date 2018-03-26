@@ -55,7 +55,13 @@ func DebugToString(tokenList []token.ParagraphToken) string {
 //ToString is a simple output enging with a simple HTML writer
 func ToString(paragraphs []token.ParagraphToken, options eNote.Options) []byte {
 	title := "Title"
-	outTemplate, err := template.ParseFiles("output/template.html")
+	var outTemplate *template.Template
+	var err error
+	if *options.OnlyBody {
+		outTemplate, err = template.New("Only Body").Parse(`{{.Body}}`)
+	} else {
+		outTemplate, err = template.ParseFiles("output/template.html")
+	}
 	if err != nil {
 		fmt.Println(err)
 		panic("Output Engine: template is not valid")

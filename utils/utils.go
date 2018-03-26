@@ -10,6 +10,7 @@ type Options struct {
 	CustomCSS  *string
 	InlineCSS  *string
 	EnableFont *bool
+	OnlyBody   *bool
 }
 
 //OptionsTemplate is a copy of Options but members arte not pointer
@@ -20,6 +21,7 @@ type OptionsTemplate struct {
 	CustomCSS  template.URL
 	InlineCSS  template.CSS
 	EnableFont bool
+	OnlyBody   bool
 }
 
 //ToTemplate returtns a copy of Options with out pointers
@@ -31,5 +33,6 @@ func (o Options) ToTemplate() OptionsTemplate {
 		CustomCSS:  template.URL(*o.CustomCSS),
 		InlineCSS:  template.CSS(*o.InlineCSS),
 		EnableFont: *o.EnableFont,
+		OnlyBody:   *o.OnlyBody,
 	}
 }
