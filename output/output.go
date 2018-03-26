@@ -60,7 +60,7 @@ func ToString(paragraphs []token.ParagraphToken, options eNote.Options) []byte {
 	if *options.OnlyBody {
 		outTemplate, err = template.New("Only Body").Parse(`{{.Body}}`)
 	} else {
-		outTemplate, err = template.ParseFiles("output/template.html")
+		outTemplate, err = template.ParseFiles("output/template.tmpl")
 	}
 	if err != nil {
 		fmt.Println(err)
