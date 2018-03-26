@@ -10,24 +10,31 @@ import (
 
 	"eNote/output"
 	"eNote/parser"
+	eNote "eNote/utils"
 )
 
 func main() {
-	inputfile := flag.String("i", "-", "input file, - for stdin")
-	outfile := flag.String("o", "out.html", "output file")
+	options := eNote.Options{
+		InputFile:  flag.String("i", "-", "IUnput file, - for stdin"),
+		OutputFile: flag.String("o", "out.html", "Output file"),
+		NewLine:    flag.Bool("newline", true, "Include newlines as in source"),
+		CustomCSS:  flag.String("css", "", "A custom css file"),
+		InlineCSS:  flag.String("inline-css", "", "Inline CSS"),
+		EnableFont: flag.Bool("font", true, "Enable a default font"),
+	}
 
 	flag.Parse()
-	input, err := streamFromFilename(*inputfile)
+	input, err := streamFromFilename(*options.InputFile)
 	if os.IsNotExist(err) {
 		fmt.Println("Error: File doesn't exist")
-		printUsage()
+		flag.PrintDefaults()
 		os.Exit(1)
 	}
 	if err != nil {
 		panic(err)
 	}
 
-	fmt.Println("Filename: ", *inputfile)
+	fmt.Println("Filename: ", *options.InputFile)
 	fmt.Println("Input: ", input)
 	tokenList, err := parser.ParseReader(input)
 	if err != nil {
@@ -36,21 +43,18 @@ func main() {
 
 	spew.Dump(tokenList)
 	fmt.Printf("%v\n", len(tokenList))
-	ioutil.WriteFile(*outfile, output.ToString(tokenList), os.ModePerm)
+	ioutil.WriteFile(*options.OutputFile, output.ToString(tokenList, options), os.ModePerm)
 }
 
 func streamFromFilename(filename string) (*os.File, error) {
 	if filename == "-" {
 		return os.Stdin, nil
 	}
+
 	fl, err := os.Open(filename)
 	if err != nil {
 		return nil, err
 	}
 
 	return fl, nil
-}
-
-func printUsage() {
-	fmt.Printf("%s -i <input file>\n", os.Args[0])
 }
