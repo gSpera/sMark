@@ -14,7 +14,7 @@ import (
 
 func main() {
 	inputfile := flag.String("i", "-", "input file, - for stdin")
-	outfile := flag.String("o", "out.rtf", "output file")
+	outfile := flag.String("o", "out.html", "output file")
 
 	flag.Parse()
 	input, err := streamFromFilename(*inputfile)

@@ -78,18 +78,18 @@ type NewLineToken struct{}
 //Type returns the type of the Token
 func (t NewLineToken) Type() Type { return TypeNewLine }
 
-func (t NewLineToken) String() string { return "*" }
+func (t NewLineToken) String() string { return "\n" }
 
 //DebugString is used for ast outputting
 func (t NewLineToken) DebugString() string { return "<NewLineToken>" }
 
-//ItalicToken is a generic undefined token
+//TabToken is a generic undefined token
 type TabToken struct{}
 
 //Type returns the type of the Token
 func (t TabToken) Type() Type { return TypeTab }
 
-func (t TabToken) String() string { return "/" }
+func (t TabToken) String() string { return "\t" }
 
 //DebugString is used for ast outputting
 func (t TabToken) DebugString() string { return "<TabToken>" }
