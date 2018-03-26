@@ -21,7 +21,7 @@
             font-size: 1.05rem;
         }
         {{ .Options.InlineCSS }}
-        
+
     </style>
     {{if .Options.CustomCSS }}
         <link rel="stylesheet" href="{{.Options.CustomCSS}}">
@@ -29,7 +29,6 @@
 </head>
 
 <body>
-    {{.Options}}
     {{.Body}}
 </body>
 
