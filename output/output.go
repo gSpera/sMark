@@ -54,7 +54,6 @@ func DebugToString(tokenList []token.ParagraphToken) string {
 
 //ToString is a simple output enging with a simple HTML writer
 func ToString(paragraphs []token.ParagraphToken, options eNote.Options) []byte {
-	title := "Title"
 	var outTemplate *template.Template
 	var err error
 	if *options.OnlyBody {
@@ -124,9 +123,8 @@ func ToString(paragraphs []token.ParagraphToken, options eNote.Options) []byte {
 
 	var out bytes.Buffer
 	outTemplate.Execute(&out, struct {
-		Title   string
 		Body    template.HTML
 		Options eNote.OptionsTemplate
-	}{title, template.HTML(body), options.ToTemplate()})
+	}{template.HTML(body), options.ToTemplate()})
 	return out.Bytes()
 }

@@ -11,6 +11,7 @@ type Options struct {
 	InlineCSS  *string
 	EnableFont *bool
 	OnlyBody   *bool
+	Title      *string
 }
 
 //OptionsTemplate is a copy of Options but members arte not pointer
@@ -22,6 +23,7 @@ type OptionsTemplate struct {
 	InlineCSS  template.CSS
 	EnableFont bool
 	OnlyBody   bool
+	Title      string
 }
 
 //ToTemplate returtns a copy of Options with out pointers
@@ -34,5 +36,6 @@ func (o Options) ToTemplate() OptionsTemplate {
 		InlineCSS:  template.CSS(*o.InlineCSS),
 		EnableFont: *o.EnableFont,
 		OnlyBody:   *o.OnlyBody,
+		Title:      *o.Title,
 	}
 }

@@ -22,6 +22,7 @@ func main() {
 		InlineCSS:  flag.String("inline-css", "", "Inline CSS"),
 		EnableFont: flag.Bool("font", true, "Enable a default font"),
 		OnlyBody:   flag.Bool("only-body", false, "Output only the html boy and not the whole page"),
+		Title:      flag.String("title", "Title", "The title of the output document"),
 	}
 
 	flag.Parse()
