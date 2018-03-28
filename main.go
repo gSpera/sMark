@@ -9,7 +9,7 @@ import (
 
 	"github.com/davecgh/go-spew/spew"
 
-	"eNote/output"
+	"eNote/output/html"
 	"eNote/parser"
 	eNote "eNote/utils"
 )

@@ -6,6 +6,7 @@ import (
 	eNote "eNote/utils"
 	"fmt"
 	"html/template"
+	"path"
 )
 
 //DebugToString oputput the list of tokens to string
@@ -59,7 +60,7 @@ func ToString(paragraphs []token.ParagraphToken, options eNote.Options) []byte {
 	if *options.OnlyBody {
 		outTemplate, err = template.New("Only Body").Parse(`{{.Body}}`)
 	} else {
-		outTemplate, err = template.ParseFiles("output/template.tmpl")
+		outTemplate, err = template.ParseFiles(path.Join("output", "html", "template.tmpl"))
 	}
 	if err != nil {
 		fmt.Println(err)
