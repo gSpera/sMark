@@ -24,6 +24,7 @@ func main() {
 		EnableFont: flag.Bool("font", true, "Enable a default font"),
 		OnlyBody:   flag.Bool("only-body", false, "Output only the html boy and not the whole page"),
 		Title:      flag.String("title", "", "The title of the output document"),
+		TabWidth:   flag.Uint("tabs-width", 4, "The width (in spaces) of one tab"),
 	}
 
 	flag.Parse()

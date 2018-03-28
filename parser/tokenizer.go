@@ -63,7 +63,6 @@ func TokenToLine(tokens []token.Token) []token.LineToken {
 	lines := []token.LineToken{}
 	currentLine := token.LineToken{}
 	indent := true
-
 	for _, t := range tokens {
 		switch t.(type) {
 		case token.TabToken:
@@ -79,10 +78,11 @@ func TokenToLine(tokens []token.Token) []token.LineToken {
 			lines = append(lines, currentLine)
 			currentLine = token.LineToken{}
 			indent = true
-		default:
-			currentLine.Tokens = append(currentLine.Tokens, t)
-			indent = false
+			continue
 		}
+
+		currentLine.Tokens = append(currentLine.Tokens, t)
+		indent = false
 	}
 
 	return lines

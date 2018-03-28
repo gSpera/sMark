@@ -7,7 +7,10 @@ import (
 	"fmt"
 	"html/template"
 	"path"
+	"strings"
 )
+
+const maxMarkup = 255
 
 //DebugToString oputput the list of tokens to string
 func DebugToString(tokenList []token.ParagraphToken) string {
@@ -79,10 +82,13 @@ func ToString(paragraphs []token.ParagraphToken, options eNote.Options) []byte {
 	for _, p := range paragraphs {
 		body += fmt.Sprintf("<p class=\"%s\">", alignMap[p.Indentation])
 		for _, line := range p.Lines {
-			for _, tok := range line.Tokens {
-
+			for i, tok := range line.Tokens {
 				switch tok.(type) {
 				case token.BoldToken:
+					if distance := findToken(line, i, token.TypeBold); !bold && distance > maxMarkup || distance == -1 {
+						break
+					}
+
 					fmt.Println("Bold")
 					bold = !bold
 					if bold {
@@ -99,6 +105,10 @@ func ToString(paragraphs []token.ParagraphToken, options eNote.Options) []byte {
 					} else {
 						body += "</i> "
 					}
+					continue
+				case token.TabToken:
+					fmt.Println("TAB")
+					body += strings.Repeat("&nbsp;", int(*options.TabWidth))
 					continue
 				}
 
@@ -128,4 +138,14 @@ func ToString(paragraphs []token.ParagraphToken, options eNote.Options) []byte {
 		Options eNote.OptionsTemplate
 	}{template.HTML(body), options.ToTemplate()})
 	return out.Bytes()
+}
+
+func findToken(line token.LineToken, start int, t token.Type) int {
+	for i := start; i < len(line.Tokens); i++ {
+		switch line.Tokens[i].Type() {
+		case t:
+			return i
+		}
+	}
+	return -1
 }

@@ -18,6 +18,7 @@ type Options struct {
 	EnableFont *bool
 	OnlyBody   *bool
 	Title      *string
+	TabWidth   *uint
 }
 
 //OptionsTemplate is a copy of Options but members arte not pointer
@@ -30,6 +31,7 @@ type OptionsTemplate struct {
 	EnableFont bool
 	OnlyBody   bool
 	Title      string
+	TabWidth   uint
 }
 
 //ToTemplate returtns a copy of Options with out pointers
@@ -43,6 +45,7 @@ func (o Options) ToTemplate() OptionsTemplate {
 		EnableFont: *o.EnableFont,
 		OnlyBody:   *o.OnlyBody,
 		Title:      *o.Title,
+		TabWidth:   *o.TabWidth,
 	}
 }
 
