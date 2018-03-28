@@ -48,6 +48,10 @@ func main() {
 		fmt.Println("Updating")
 		options.Update(header)
 		spew.Dump(options)
+	} else {
+		fmt.Println("Resetting Reader")
+		input.Seek(0, os.SEEK_SET)
+		reader = bufio.NewReader(input)
 	}
 	tokenList, err := parser.ParseReader(reader)
 	if err != nil {
