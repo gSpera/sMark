@@ -13,7 +13,7 @@ import (
 const maxMarkup = 255
 
 //DebugToString oputput the list of tokens to string
-func DebugToString(tokenList []token.ParagraphToken) string {
+func DebugToString(tokenList []token.ParagraphToken, options eNote.Options) []byte {
 	str := ""
 	bold := false
 	italic := false
@@ -53,7 +53,7 @@ func DebugToString(tokenList []token.ParagraphToken) string {
 		}
 	}
 
-	return str
+	return []byte(str)
 }
 
 //ToString is a simple output enging with a simple HTML writer
