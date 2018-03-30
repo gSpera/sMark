@@ -119,7 +119,7 @@ func TokenToLine(tokens []token.Token) []token.LineToken {
 func TokenToParagraph(lines []token.LineToken) []token.ParagraphToken {
 	fmt.Printf("Paragraphs: %d Lines\n", len(lines))
 	paragraphs := []token.ParagraphToken{}
-	currentParagraph := token.ParagraphToken{}
+	currentParagraph := token.TextParagraph{}
 	header := false
 
 	for _, t := range lines {
@@ -133,7 +133,7 @@ func TokenToParagraph(lines []token.LineToken) []token.ParagraphToken {
 
 			if header {
 				paragraphs = append(paragraphs, currentParagraph)
-				currentParagraph = token.ParagraphToken{}
+				currentParagraph = token.TextParagraph{}
 			}
 
 			header = !header
@@ -148,7 +148,7 @@ func TokenToParagraph(lines []token.LineToken) []token.ParagraphToken {
 				checkIndentation(&currentParagraph)
 				fmt.Printf("Indentation after: %d\n", currentParagraph.Indentation)
 				paragraphs = append(paragraphs, currentParagraph)
-				currentParagraph = token.ParagraphToken{}
+				currentParagraph = token.TextParagraph{}
 			} else {
 				fmt.Println("Old Paragraph")
 				spew.Dump(t.Tokens)
@@ -163,7 +163,7 @@ func TokenToParagraph(lines []token.LineToken) []token.ParagraphToken {
 	return paragraphs
 }
 
-func checkIndentation(paragraph *token.ParagraphToken) {
+func checkIndentation(paragraph *token.TextParagraph) {
 	var indent = -1
 	fmt.Println("Check indentation")
 	for i, line := range paragraph.Lines {
