@@ -59,9 +59,9 @@ func addBufferToTokenBuffer(tokenBuffer *[]token.Token, buffer *string) {
 }
 
 //TokenToLine divide a slice of tokens in lines
-func TokenToLine(tokens []token.Token) []token.LineToken {
-	lines := []token.LineToken{}
-	currentLine := token.LineToken{}
+func TokenToLine(tokens []token.Token) []token.LineContainer {
+	lines := []token.LineContainer{}
+	currentLine := token.LineContainer{}
 	indent := true
 	for _, t := range tokens {
 		switch t.(type) {
@@ -76,7 +76,7 @@ func TokenToLine(tokens []token.Token) []token.LineToken {
 			fmt.Println("NewLine")
 			spew.Dump(currentLine.Tokens)
 			lines = append(lines, currentLine)
-			currentLine = token.LineToken{}
+			currentLine = token.LineContainer{}
 			indent = true
 			continue
 		}
@@ -89,7 +89,7 @@ func TokenToLine(tokens []token.Token) []token.LineToken {
 }
 
 //TokenToParagraph divide a slice of lines in paragraphs
-func TokenToParagraph(lines []token.LineToken) []token.ParagraphToken {
+func TokenToParagraph(lines []token.LineContainer) []token.ParagraphToken {
 	fmt.Printf("Paragraphs: %d Lines\n", len(lines))
 	paragraphs := []token.ParagraphToken{}
 	currentParagraph := token.ParagraphToken{}

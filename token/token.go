@@ -50,6 +50,9 @@ func (t UndefinedToken) String() string { return "UNDEFINED" }
 //DebugString is used for ast outputting
 func (t UndefinedToken) DebugString() string { return "<UndefinedToken>" }
 
+//LineToken is a special interface that indicates a token
+type LineToken interface{ IsToken() }
+
 //BoldToken is a generic undefined token
 type BoldToken struct{}
 
@@ -112,16 +115,16 @@ type LineState struct {
 	Indentation uint
 }
 
-//LineToken is a token which rappresent a list of Tokens with some attributes
-type LineToken struct {
+//LineContainer is a token which rappresent a list of Tokens with some attributes
+type LineContainer struct {
 	LineState
 	Tokens []Token
 }
 
 //Type return the type of the Token
-func (t LineToken) Type() Type { return TypeTokenLine }
+func (t LineContainer) Type() Type { return TypeTokenLine }
 
-func (t LineToken) String() string {
+func (t LineContainer) String() string {
 	str := ""
 	for i := uint(0); i < t.LineState.Indentation; i++ {
 		str += "\t"
@@ -133,14 +136,14 @@ func (t LineToken) String() string {
 }
 
 //DebugString is used for ast outputting
-func (t LineToken) DebugString() string {
+func (t LineContainer) DebugString() string {
 	return fmt.Sprintf("<LineToken: {%+v}%s>\n", t.LineState, t.Tokens)
 }
 
 //ParagraphToken rapresent a single paragraph
 type ParagraphToken struct {
 	Indentation int
-	Lines       []LineToken
+	Lines       []LineContainer
 }
 
 //Type return the type of the Token

@@ -140,7 +140,7 @@ func ToString(paragraphs []token.ParagraphToken, options eNote.Options) []byte {
 	return out.Bytes()
 }
 
-func findToken(line token.LineToken, start int, t token.Type) int {
+func findToken(line token.LineContainer, start int, t token.Type) int {
 	for i := start; i < len(line.Tokens); i++ {
 		switch line.Tokens[i].Type() {
 		case t:
