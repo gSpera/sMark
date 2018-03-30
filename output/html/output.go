@@ -83,6 +83,9 @@ func ToString(paragraphs []token.ParagraphToken, options eNote.Options) []byte {
 
 	for _, p := range paragraphs {
 		switch p.(type) {
+		case token.HeaderParagraph:
+			headerOptions := p.(token.HeaderParagraph).OptionsTemplate
+			options.Update(headerOptions)
 		case token.TextParagraph:
 			p := p.(token.TextParagraph)
 			body += fmt.Sprintf("<p class=\"%s\">", alignMap[p.Indentation])
@@ -134,8 +137,8 @@ func ToString(paragraphs []token.ParagraphToken, options eNote.Options) []byte {
 					body += "<br>\n"
 				}
 			}
+			body += "</p>\n"
 		}
-		body += "</p>\n"
 	}
 
 	var out bytes.Buffer
