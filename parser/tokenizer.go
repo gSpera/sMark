@@ -2,6 +2,7 @@ package parser
 
 import (
 	"eNote/token"
+	"eNote/utils"
 	"fmt"
 	"io"
 
@@ -126,13 +127,14 @@ func TokenToParagraph(lines []token.LineToken) []token.ParagraphToken {
 		switch t.(type) {
 		case token.HeaderLine:
 			fmt.Println("HeaderLine")
-			if len(currentParagraph.Lines) != 0 {
+			if !header && len(currentParagraph.Lines) != 0 {
 				fmt.Println("Not at first")
 				continue
 			}
 
 			if header {
-				paragraphs = append(paragraphs, currentParagraph)
+				fmt.Println("Appending Header Paragraph")
+				paragraphs = append(paragraphs, token.HeaderParagraph{OptionsTemplate: parseHeaderLines(currentParagraph)})
 				currentParagraph = token.TextParagraph{}
 			}
 
@@ -180,4 +182,16 @@ func checkIndentation(paragraph *token.TextParagraph) {
 		paragraph.Indentation = indent
 		fmt.Printf("New Indetation: %d\n", indent)
 	}
+}
+
+func parseHeaderLines(paragraph token.TextParagraph) eNote.OptionsTemplate {
+	res := eNote.OptionsTemplate{}
+
+	for _, line := range paragraph.Lines {
+		key, value := parseHeader(line.String())
+		fmt.Printf("Key: %s, Value: %s\n", key, value)
+		res.AddString(key, value)
+	}
+
+	return res
 }

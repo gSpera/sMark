@@ -8,6 +8,7 @@ type LineToken interface{ IsToken() }
 //HeaderLine rapresent a header line
 type HeaderLine struct {
 	LineToken
+	Tokens []Token
 }
 
 //LineContainer is a token which rappresent a list of Tokens with some attributes

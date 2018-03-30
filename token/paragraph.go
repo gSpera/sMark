@@ -1,12 +1,17 @@
 package token
 
-import "fmt"
+import (
+	"eNote/utils"
+	"fmt"
+)
 
 //ParagraphToken is a special interface that indicates a token
 type ParagraphToken interface{ IsParagraph() }
 
 //HeaderParagraph is a pragraph containing header info
 type HeaderParagraph struct {
+	ParagraphToken
+	eNote.OptionsTemplate
 }
 
 //TextParagraph rapresent a single paragraph
