@@ -10,8 +10,6 @@ import (
 	"github.com/davecgh/go-spew/spew"
 )
 
-const headerChar = '+'
-
 //ParseReader parse a source file and returns the paragraphs
 func ParseReader(fl io.Reader) ([]token.ParagraphToken, error) {
 	tokens, err := Tokenizer(fl)
@@ -38,7 +36,7 @@ func ParseHeader(r *bufio.Reader) (eNote.OptionsTemplate, bool) {
 
 	//Check if line is a header starting
 	for _, ch := range line[:1] {
-		if ch != headerChar {
+		if ch != '+' {
 			fmt.Println("First Line is not heading start")
 			fmt.Println(line)
 			return res, false
@@ -54,7 +52,7 @@ func ParseHeader(r *bufio.Reader) (eNote.OptionsTemplate, bool) {
 		//Check if line is a header ending
 		ending := true
 		for _, ch := range line[:1] {
-			if ch != headerChar {
+			if ch != '+' {
 				ending = false
 			}
 		}

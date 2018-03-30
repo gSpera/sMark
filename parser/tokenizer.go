@@ -27,10 +27,10 @@ func Tokenizer(reader io.Reader) ([]token.Token, error) {
 		}
 
 		switch char[0] {
-		case '\t':
+		case token.TypeTab:
 			fmt.Println("TAB")
 			tokenList = append(tokenList, token.TabToken{})
-		case '\n':
+		case token.TypeNewLine:
 			fmt.Println("NewLine")
 			if len(buffer) != 0 {
 				addBufferToTokenBuffer(&tokenList, &buffer)
@@ -45,7 +45,10 @@ func Tokenizer(reader io.Reader) ([]token.Token, error) {
 			fmt.Println("Italic")
 			addBufferToTokenBuffer(&tokenList, &buffer)
 			tokenList = append(tokenList, token.ItalicToken{})
-
+		case token.TypeHeader:
+			fmt.Println("Header")
+			addBufferToTokenBuffer(&tokenList, &buffer)
+			tokenList = append(tokenList, token.HeaderToken{})
 		default:
 			// fmt.Printf("Char: %c\n", char[0])
 			buffer += string(char[0])

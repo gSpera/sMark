@@ -30,6 +30,8 @@ const (
 	//TypeTab is a tab
 	TypeTab = '\t'
 
+	//TypeHeader is the token used in an header
+	TypeHeader = '+'
 	//TypeText is a text token
 	TypeText
 
@@ -74,6 +76,17 @@ func (t ItalicToken) String() string { return "/" }
 
 //DebugString is used for ast outputting
 func (t ItalicToken) DebugString() string { return "<ItalicToken>" }
+
+//HeaderToken rapresent a char which compose the header line
+type HeaderToken struct{}
+
+//Type returns the type of the Token
+func (t HeaderToken) Type() Type { return TypeHeader }
+
+func (t HeaderToken) String() string { return "+" }
+
+//DebugString is used for ast outputting
+func (t HeaderToken) DebugString() string { return "<HeaderToken | +>" }
 
 //NewLineToken is a generic undefined token
 type NewLineToken struct{}
