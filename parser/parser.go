@@ -13,14 +13,18 @@ import (
 //ParseReader parse a source file and returns the paragraphs
 func ParseReader(fl io.Reader) ([]token.ParagraphToken, error) {
 	tokens, err := Tokenizer(fl)
+	fmt.Println("Tokens")
 	spew.Dump(tokens)
 	if err != nil {
 		return nil, err
 	}
 
 	lines := TokenToLine(tokens)
+	fmt.Println("Lines")
+	spew.Dump(lines)
 	paragraphs := TokenToParagraph(lines)
-
+	fmt.Println("Paragraphs")
+	spew.Dump(paragraphs)
 	return paragraphs, nil
 }
 

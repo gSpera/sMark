@@ -42,7 +42,7 @@ func main() {
 	fmt.Println("Input: ", input)
 
 	reader := bufio.NewReader(input)
-	header, ok := parser.ParseHeader(reader)
+	header, ok := eNote.OptionsTemplate{}, false // parser.ParseHeader(reader)
 	spew.Dump(header)
 
 	if ok {
