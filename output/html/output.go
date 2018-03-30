@@ -80,53 +80,57 @@ func ToString(paragraphs []token.ParagraphToken, options eNote.Options) []byte {
 	}
 
 	for _, p := range paragraphs {
-		body += fmt.Sprintf("<p class=\"%s\">", alignMap[p.Indentation])
-		for _, line := range p.Lines {
-			for i, tok := range line.Tokens {
-				switch tok.(type) {
-				case token.BoldToken:
-					if distance := findToken(line, i, token.TypeBold); !bold && distance > maxMarkup || distance == -1 {
-						break
+		switch p.(type) {
+		case token.TextParagraph:
+			p := p.(token.TextParagraph)
+			body += fmt.Sprintf("<p class=\"%s\">", alignMap[p.Indentation])
+			for _, line := range p.Lines {
+				for i, tok := range line.Tokens {
+					switch tok.(type) {
+					case token.BoldToken:
+						if distance := findToken(line, i, token.TypeBold); !bold && distance > maxMarkup || distance == -1 {
+							break
+						}
+
+						fmt.Println("Bold")
+						bold = !bold
+						if bold {
+							body += "<b>"
+						} else {
+							body += "</b> "
+						}
+						continue
+					case token.ItalicToken:
+						fmt.Println("Italic")
+						italic = !italic
+						if italic {
+							body += "<i>"
+						} else {
+							body += "</i> "
+						}
+						continue
+					case token.TabToken:
+						fmt.Println("TAB")
+						body += strings.Repeat("&nbsp;", int(*options.TabWidth))
+						continue
 					}
 
-					fmt.Println("Bold")
-					bold = !bold
+					fmt.Printf("Adding Text: %s, Bold: %v, Italic: %v\n", tok.String(), bold, italic)
+					body += tok.String()
 					if bold {
-						body += "<b>"
-					} else {
-						body += "</b> "
+						fmt.Println("Apply bold")
+						fmt.Println(tok.String())
 					}
-					continue
-				case token.ItalicToken:
-					fmt.Println("Italic")
-					italic = !italic
 					if italic {
-						body += "<i>"
-					} else {
-						body += "</i> "
+						fmt.Println("Apply Italic")
+						fmt.Println(tok.String())
 					}
-					continue
-				case token.TabToken:
-					fmt.Println("TAB")
-					body += strings.Repeat("&nbsp;", int(*options.TabWidth))
-					continue
+
 				}
 
-				fmt.Printf("Adding Text: %s, Bold: %v, Italic: %v\n", tok.String(), bold, italic)
-				body += tok.String()
-				if bold {
-					fmt.Println("Apply bold")
-					fmt.Println(tok.String())
+				if *options.NewLine {
+					body += "<br>\n"
 				}
-				if italic {
-					fmt.Println("Apply Italic")
-					fmt.Println(tok.String())
-				}
-
-			}
-
-			if *options.NewLine {
-				body += "<br>\n"
 			}
 		}
 		body += "</p>\n"
