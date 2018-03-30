@@ -13,12 +13,14 @@ import (
 const maxMarkup = 255
 
 //DebugToString oputput the list of tokens to string
+//You should not use this function.
 func DebugToString(tokenList []token.ParagraphToken, options eNote.Options) []byte {
 	str := ""
 	bold := false
 	italic := false
 
 	for _, paragraph := range tokenList {
+		paragraph := paragraph.(token.TextParagraph)
 		// str += fmt.Sprintf("<PARAGRAPH %d>\n", len(paragraph.Lines))
 		fmt.Println("Output: Paragraph")
 		str += fmt.Sprintf("<PARAGRAPH %d>\n", paragraph.Indentation)
