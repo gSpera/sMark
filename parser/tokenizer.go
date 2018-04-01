@@ -118,6 +118,7 @@ func TokenToLine(tokens []token.Token) []token.LineToken {
 				continue //TODO: StrickeThrought
 			}
 			lines = append(lines, token.LessLine{})
+			currentLine = token.LineContainer{}
 			continue
 		}
 
@@ -178,8 +179,10 @@ func TokenToParagraph(lines []token.LineToken) []token.ParagraphToken {
 			currentEmpty := len(t.Tokens) == 0
 			spew.Dump(t.Tokens)
 
-			if currentEmpty {
+			if l, ok := lastLine.(token.LineContainer); currentEmpty && ok && len(l.Tokens) != 0 {
 				fmt.Println("New Paragraph")
+				fmt.Printf("LastLine: Len: %d %T: %+v\n", len(l.Tokens), l, l)
+				spew.Dump(l.Tokens)
 				checkIndentation(&currentParagraph)
 				fmt.Printf("Indentation after: %d\n", currentParagraph.Indentation)
 				paragraphs = append(paragraphs, currentParagraph)
