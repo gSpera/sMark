@@ -86,6 +86,9 @@ func ToString(paragraphs []token.ParagraphToken, options eNote.Options) []byte {
 		case token.HeaderParagraph:
 			headerOptions := p.(token.HeaderParagraph).OptionsTemplate
 			options.Update(headerOptions)
+		case token.DivisorParagraph:
+			body += "<hr>"
+			continue
 		case token.TextParagraph:
 			p := p.(token.TextParagraph)
 			body += fmt.Sprintf("<p class=\"%s\">", alignMap[p.Indentation])
@@ -138,6 +141,9 @@ func ToString(paragraphs []token.ParagraphToken, options eNote.Options) []byte {
 				}
 			}
 			body += "</p>\n"
+		default:
+			fmt.Printf("Paragraph: %T{%+v}", p, p)
+			panic("Paragraph Type not supported")
 		}
 	}
 

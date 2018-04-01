@@ -39,3 +39,8 @@ func (t TextParagraph) DebugString() string {
 		return str
 	}())
 }
+
+//DivisorParagraph is a pragraph containing a divisor line
+type DivisorParagraph struct {
+	ParagraphToken
+}

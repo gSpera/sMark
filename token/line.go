@@ -36,3 +36,13 @@ func (t LineContainer) String() string {
 func (t LineContainer) DebugString() string {
 	return fmt.Sprintf("<LineToken: {%+v}%s>\n", t.LineState, t.Tokens)
 }
+
+//DivisorLine rapresent a header line
+type DivisorLine struct {
+	LineToken
+}
+
+//LessLine rapresent a line containing only LessToken
+type LessLine struct {
+	LineToken
+}

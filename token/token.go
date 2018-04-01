@@ -32,6 +32,10 @@ const (
 
 	//TypeHeader is the token used in an header
 	TypeHeader = '+'
+
+	//TypeLess is the token used for subtitle and for divisor
+	TypeLess = '-'
+
 	//TypeText is a text token
 	TypeText
 
@@ -119,6 +123,18 @@ func (t TextToken) String() string { return t.Text }
 
 //DebugString is used for ast outputting
 func (t TextToken) DebugString() string { return fmt.Sprintf("<TextToken: %s>\n", t.Text) }
+
+//LessToken a token conteining text
+type LessToken struct {
+}
+
+//Type returns the type of the Token
+func (t LessToken) Type() Type { return TypeLess }
+
+func (t LessToken) String() string { return string(TypeLess) }
+
+//DebugString is used for ast outputting
+func (t LessToken) DebugString() string { return fmt.Sprintf("<LessToken>") }
 
 //LineState is the line metadata
 type LineState struct {

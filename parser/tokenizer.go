@@ -46,6 +46,10 @@ func Tokenizer(reader io.Reader) ([]token.Token, error) {
 			fmt.Println("Italic")
 			addBufferToTokenBuffer(&tokenList, &buffer)
 			tokenList = append(tokenList, token.ItalicToken{})
+		case token.TypeLess:
+			fmt.Println("Less")
+			addBufferToTokenBuffer(&tokenList, &buffer)
+			tokenList = append(tokenList, token.LessToken{})
 		case token.TypeHeader:
 			fmt.Println("Header")
 			if len(buffer) == 0 {
@@ -107,6 +111,14 @@ func TokenToLine(tokens []token.Token) []token.LineToken {
 			lines = append(lines, currentLine)
 			currentLine = token.LineContainer{}
 			continue
+
+		case token.LessToken:
+			fmt.Println("Less Token")
+			if len(currentLine.Tokens) != 1 {
+				continue //TODO: StrickeThrought
+			}
+			lines = append(lines, token.LessLine{})
+			continue
 		}
 
 		currentLine.Tokens = append(currentLine.Tokens, t)
@@ -123,7 +135,13 @@ func TokenToParagraph(lines []token.LineToken) []token.ParagraphToken {
 	currentParagraph := token.TextParagraph{}
 	header := false
 
-	for _, t := range lines {
+	for i, t := range lines {
+		var lastLine token.LineToken
+		if i == 0 {
+			lastLine = nil
+		} else {
+			lastLine = lines[i-1]
+		}
 		switch t.(type) {
 		case token.HeaderLine:
 			fmt.Println("HeaderLine")
@@ -139,6 +157,21 @@ func TokenToParagraph(lines []token.LineToken) []token.ParagraphToken {
 			}
 
 			header = !header
+		case token.LessLine:
+			fmt.Println("LessLine")
+			//Subtitle or divisor
+			if _, ok := lastLine.(token.LineContainer); !ok {
+				continue
+			}
+			switch len(lastLine.(token.LineContainer).Tokens) {
+			case 0:
+				fmt.Println("Divisor")
+				paragraphs = append(paragraphs, token.DivisorParagraph{})
+				currentParagraph = token.TextParagraph{}
+			default: //TODO: Subtitle
+				fmt.Println("Subtitle (NOT IMPLEMENTED)")
+			}
+
 		case token.LineContainer:
 			fmt.Println("LineContainer")
 			t := t.(token.LineContainer)
