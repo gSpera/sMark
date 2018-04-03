@@ -78,8 +78,24 @@ func TokenToLine(tokens []token.Token) []token.LineToken {
 	currentLine := token.LineContainer{}
 
 	indent := true
+
+	isType := func(typ token.Type, line token.LineContainer) bool {
+		if len(line.Tokens) == 0 {
+			return false
+		}
+
+		for _, t := range line.Tokens {
+			if typ != t.Type() {
+				return false
+			}
+		}
+
+		return true
+	}
+
 	for _, t := range tokens {
 		switch t.(type) {
+		case token.HeaderToken:
 		case token.TabToken:
 			if indent {
 				fmt.Println("Adding Indentation")
@@ -90,27 +106,37 @@ func TokenToLine(tokens []token.Token) []token.LineToken {
 		case token.NewLineToken:
 			fmt.Println("NewLine")
 			spew.Dump(currentLine.Tokens)
-			header := false
-			indent = true
 
-			if len(currentLine.Tokens) != 0 {
-				header = true
-				for _, tok := range currentLine.Tokens {
-					if _, ok := tok.(token.HeaderToken); !ok {
-						header = false
-					}
-				}
-			}
-
-			if header {
+			switch {
+			case isType(token.TypeHeader, currentLine):
 				lines = append(lines, token.HeaderLine{})
 				currentLine = token.LineContainer{}
 				continue
 			}
 
+			fmt.Println("NewLine")
 			lines = append(lines, currentLine)
 			currentLine = token.LineContainer{}
 			continue
+			// header := false
+			// indent = true
+
+			// if len(currentLine.Tokens) != 0 {
+			// 	header = true
+			// 	for _, tok := range currentLine.Tokens {
+			// 		if _, ok := tok.(token.HeaderToken); !ok {
+			// 			header = false
+			// 		}
+			// 	}
+			// }
+
+			// if header {
+			// 	lines = append(lines, token.HeaderLine{})
+			// 	currentLine = token.LineContainer{}
+			// 	continue
+			// }
+
+			// continue
 
 		case token.LessToken:
 			fmt.Println("Less Token")
