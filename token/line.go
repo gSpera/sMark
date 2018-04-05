@@ -46,3 +46,8 @@ type DivisorLine struct {
 type LessLine struct {
 	LineToken
 }
+
+//EqualLine rapresent a line containing only LessToken
+type EqualLine struct {
+	LineToken
+}

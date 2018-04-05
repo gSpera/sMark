@@ -36,8 +36,11 @@ const (
 	//TypeLess is the token used for subtitle and for divisor
 	TypeLess = '-'
 
+	//TypeEqual is the token used for title
+	TypeEqual = '='
+
 	//TypeText is a text token
-	TypeText
+	TypeText = -1
 
 	//TypeTokenLine rappresent a line
 	TypeTokenLine
@@ -124,7 +127,7 @@ func (t TextToken) String() string { return t.Text }
 //DebugString is used for ast outputting
 func (t TextToken) DebugString() string { return fmt.Sprintf("<TextToken: %s>\n", t.Text) }
 
-//LessToken a token conteining text
+//LessToken a token conteining a less(-) sign
 type LessToken struct {
 }
 
@@ -135,6 +138,18 @@ func (t LessToken) String() string { return string(TypeLess) }
 
 //DebugString is used for ast outputting
 func (t LessToken) DebugString() string { return fmt.Sprintf("<LessToken>") }
+
+//EqualToken a token conteining a equal(=) sign
+type EqualToken struct {
+}
+
+//Type returns the type of the Token
+func (t EqualToken) Type() Type { return TypeEqual }
+
+func (t EqualToken) String() string { return string(TypeEqual) }
+
+//DebugString is used for ast outputting
+func (t EqualToken) DebugString() string { return fmt.Sprintf("<EqualToken>") }
 
 //LineState is the line metadata
 type LineState struct {

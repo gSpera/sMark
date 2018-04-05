@@ -44,3 +44,9 @@ func (t TextParagraph) DebugString() string {
 type DivisorParagraph struct {
 	ParagraphToken
 }
+
+//TitleParagraph is a paragraph rapresenting a Title
+type TitleParagraph struct {
+	ParagraphToken
+	Text LineContainer
+}
