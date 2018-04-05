@@ -86,6 +86,9 @@ func ToString(paragraphs []token.ParagraphToken, options eNote.Options) []byte {
 		case token.HeaderParagraph:
 			headerOptions := p.(token.HeaderParagraph).OptionsTemplate
 			options.Update(headerOptions)
+		case token.TitleParagraph:
+			body += fmt.Sprintf("<h1>%s</h1>", p.(token.TitleParagraph).Text)
+			continue
 		case token.DivisorParagraph:
 			body += "<hr>"
 			continue
