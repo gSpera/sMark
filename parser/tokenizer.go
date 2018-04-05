@@ -21,6 +21,7 @@ func Tokenizer(reader io.Reader) ([]token.Token, error) {
 			addBufferToTokenBuffer(&tokenList, &buffer)
 			tokenList = append(tokenList, token.NewLineToken{})
 			fmt.Println("EOF")
+			tokenList = checkTokenList(tokenList)
 			return tokenList, nil
 		}
 		if err != nil {
@@ -58,8 +59,10 @@ func Tokenizer(reader io.Reader) ([]token.Token, error) {
 				tokenList = append(tokenList, token.HeaderToken{})
 				break
 			}
-
-			fallthrough
+		case token.TypeEqual:
+			fmt.Println("Equal")
+			addBufferToTokenBuffer(&tokenList, &buffer)
+			tokenList = append(tokenList, token.EqualToken{})
 		default:
 			// fmt.Printf("Char: %c\n", char[0])
 			buffer += string(char[0])
@@ -68,8 +71,24 @@ func Tokenizer(reader io.Reader) ([]token.Token, error) {
 }
 
 func addBufferToTokenBuffer(tokenBuffer *[]token.Token, buffer *string) {
+	if len(*buffer) == 0 {
+		return
+	}
+
 	*tokenBuffer = append(*tokenBuffer, token.TextToken{Text: *buffer})
 	*buffer = ""
+}
+
+func checkTokenList(tokenList []token.Token) []token.Token {
+	if len(tokenList) == 0 {
+		return tokenList
+	}
+
+	if t, ok := tokenList[0].(token.TextToken); ok && len(t.Text) == 0 {
+		return tokenList[1:]
+	}
+
+	return tokenList
 }
 
 //TokenToLine divide a slice of tokens in lines
@@ -80,12 +99,14 @@ func TokenToLine(tokens []token.Token) []token.LineToken {
 	indent := true
 
 	isType := func(typ token.Type, line token.LineContainer) bool {
-		if len(line.Tokens) == 0 {
+		fmt.Printf("isType: %c len: %v\n", typ, len(line.Tokens))
+		if len(line.Tokens) < 2 {
 			return false
 		}
 
 		for _, t := range line.Tokens {
 			if typ != t.Type() {
+				fmt.Printf("%c != %c\n", typ, t.Type())
 				return false
 			}
 		}
@@ -95,7 +116,6 @@ func TokenToLine(tokens []token.Token) []token.LineToken {
 
 	for _, t := range tokens {
 		switch t.(type) {
-		case token.HeaderToken:
 		case token.TabToken:
 			if indent {
 				fmt.Println("Adding Indentation")
@@ -112,32 +132,19 @@ func TokenToLine(tokens []token.Token) []token.LineToken {
 				lines = append(lines, token.HeaderLine{})
 				currentLine = token.LineContainer{}
 				continue
+			case isType(token.TypeEqual, currentLine):
+				fmt.Println("EqualLine")
+				lines = append(lines, token.EqualLine{})
+				currentLine = token.LineContainer{}
+				continue
+			default:
+				spew.Dump(currentLine.Tokens)
+				fmt.Printf("TextLine: =: %v %T{%+v}\n", isType(token.TypeEqual, currentLine), currentLine, currentLine)
 			}
 
-			fmt.Println("NewLine")
 			lines = append(lines, currentLine)
 			currentLine = token.LineContainer{}
 			continue
-			// header := false
-			// indent = true
-
-			// if len(currentLine.Tokens) != 0 {
-			// 	header = true
-			// 	for _, tok := range currentLine.Tokens {
-			// 		if _, ok := tok.(token.HeaderToken); !ok {
-			// 			header = false
-			// 		}
-			// 	}
-			// }
-
-			// if header {
-			// 	lines = append(lines, token.HeaderLine{})
-			// 	currentLine = token.LineContainer{}
-			// 	continue
-			// }
-
-			// continue
-
 		case token.LessToken:
 			fmt.Println("Less Token")
 			if len(currentLine.Tokens) != 1 {
@@ -170,6 +177,24 @@ func TokenToParagraph(lines []token.LineToken) []token.ParagraphToken {
 			lastLine = lines[i-1]
 		}
 		switch t.(type) {
+		case token.EqualLine:
+			fmt.Println("EqualLine Paragraph")
+			fmt.Println(len(currentParagraph.Lines))
+			if len(currentParagraph.Lines) != 2 {
+				continue
+			}
+
+			if _, ok := lastLine.(token.LineContainer); !ok {
+				continue
+			}
+			lastLine := lastLine.(token.LineContainer)
+
+			if len(lastLine.Tokens) == 0 {
+				continue
+			}
+			fmt.Println("Title Paragraph")
+			paragraphs = append(paragraphs, token.TitleParagraph{Text: lastLine})
+			currentParagraph = token.TextParagraph{}
 		case token.HeaderLine:
 			fmt.Println("HeaderLine")
 			if !header && len(currentParagraph.Lines) != 0 {
