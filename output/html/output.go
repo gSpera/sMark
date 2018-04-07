@@ -6,7 +6,7 @@ import (
 	eNote "eNote/utils"
 	"fmt"
 	"html/template"
-	"path"
+	"os"
 	"strings"
 )
 
@@ -65,8 +65,15 @@ func ToString(paragraphs []token.ParagraphToken, options eNote.Options) []byte {
 	if *options.OnlyBody {
 		outTemplate, err = template.New("Only Body").Parse(`{{.Body}}`)
 	} else {
-		outTemplate, err = template.ParseFiles(path.Join("output", "html", "template.tmpl"))
+		outTemplate = template.New("HTML Output")
+		tmpl, err := Asset("template.tmpl")
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Output Engine: Could not get template: %v\n", err)
+			os.Exit(1)
+		}
+		outTemplate.Parse(string(tmpl))
 	}
+
 	if err != nil {
 		fmt.Println(err)
 		panic("Output Engine: template is not valid")
