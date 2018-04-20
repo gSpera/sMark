@@ -98,22 +98,6 @@ func TokenToLine(tokens []token.Token) []token.LineToken {
 
 	indent := true
 
-	isType := func(typ token.Type, line token.LineContainer) bool {
-		fmt.Printf("isType: %c len: %v\n", typ, len(line.Tokens))
-		if len(line.Tokens) < 2 {
-			return false
-		}
-
-		for _, t := range line.Tokens {
-			if typ != t.Type() {
-				fmt.Printf("%c != %c\n", typ, t.Type())
-				return false
-			}
-		}
-
-		return true
-	}
-
 	for _, t := range tokens {
 		switch t.(type) {
 		case token.TabToken:
@@ -137,6 +121,11 @@ func TokenToLine(tokens []token.Token) []token.LineToken {
 				lines = append(lines, token.EqualLine{})
 				currentLine = token.LineContainer{}
 				continue
+			case isType(token.TypeLess, currentLine):
+				fmt.Println("LessLine")
+				lines = append(lines, token.LessLine{})
+				currentLine = token.LineContainer{}
+				continue
 			default:
 				spew.Dump(currentLine.Tokens)
 				fmt.Printf("TextLine: =: %v %T{%+v}\n", isType(token.TypeEqual, currentLine), currentLine, currentLine)
@@ -147,12 +136,10 @@ func TokenToLine(tokens []token.Token) []token.LineToken {
 			continue
 		case token.LessToken:
 			fmt.Println("Less Token")
-			if len(currentLine.Tokens) != 1 {
-				continue //TODO: StrickeThrought
+			if !isType(token.TypeLess, currentLine, 0) {
+				//Strick-throught
+				continue
 			}
-			lines = append(lines, token.LessLine{})
-			currentLine = token.LineContainer{}
-			continue
 		}
 
 		currentLine.Tokens = append(currentLine.Tokens, t)
@@ -160,6 +147,37 @@ func TokenToLine(tokens []token.Token) []token.LineToken {
 	}
 
 	return lines
+}
+
+const isTypeThreshold = 2
+
+//isType reutnrs wheter or not the passed line contains only the specified type of tokens
+//if the line contains less than the threshold tokens it will return always false
+//the default value for threshold is isTypeThreshold contant
+func isType(typ token.Type, line token.LineContainer, _threshold ...int) bool {
+	fmt.Printf("isType: %c len: %v\n", typ, len(line.Tokens))
+
+	//Calculate the threshold
+	threshold := isTypeThreshold
+
+	if len(_threshold) != 0 {
+		threshold = _threshold[0]
+	}
+
+	//Check if there are too few tokens
+	if len(line.Tokens) < threshold {
+		return false
+	}
+
+	//Checks the line
+	for _, t := range line.Tokens {
+		if typ != t.Type() {
+			fmt.Printf("%c != %c\n", typ, t.Type())
+			return false
+		}
+	}
+
+	return true
 }
 
 //TokenToParagraph divide a slice of lines in paragraphs

@@ -3,7 +3,7 @@
 - [ ] Parse
 - [X] Header
 - [ ] trailing-line
-- [ ] HR tag not working
+- [x] HR tag not working
 - [ ] Add more flexibility and modularity
 - [ ] Update logging system
 - [ ] Update telegraph engine
