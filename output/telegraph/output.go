@@ -51,19 +51,30 @@ func ToString(paragraphs []token.ParagraphToken, options eNote.Options) tgraph.P
 			})
 
 		case token.TextParagraph:
+			fmt.Println("New Paragraph")
 			p := p.(token.TextParagraph)
+			par := tgraph.NodeElement{Tag: "p"}
+			var fullLine []token.Token
 			for _, line := range p.Lines {
-				nodes = append(nodes, createLine(line, &bold, &italic)...)
+				fmt.Println("Appending Line")
+				fullLine = append(fullLine, line.Tokens...)
+
 				//Appending NewLine if the options allows it
 				if *options.NewLine {
-					nodes = append(nodes, tgraph.NodeElement{Tag: "br"})
+					fmt.Println("Adding NewLine")
+					fullLine = append(fullLine, token.TextToken{Text: "\n"})
 				}
 			}
+
+			par.Children = append(par.Children, createLine(fullLine, &bold, &italic)...)
+			fmt.Println("Finished Paragraph")
+			spew.Dump(par)
+			nodes = append(nodes, par)
 			lastParagraph = p
 		}
 
 		if _, ok := lastParagraph.(token.TextParagraph); ok {
-			nodes = append(nodes, tgraph.NodeElement{Tag: "br"})
+			// nodes = append(nodes, tgraph.NodeElement{Tag: "br"})
 		}
 
 	}
@@ -76,9 +87,11 @@ func ToString(paragraphs []token.ParagraphToken, options eNote.Options) tgraph.P
 	return p
 }
 
-func createLine(line token.LineContainer, bold *bool, italic *bool) []tgraph.Node {
+func createLine(line []token.Token, bold *bool, italic *bool) []tgraph.Node {
 	nodes := []tgraph.Node{}
-	for _, t := range line.Tokens {
+	fmt.Println("createLine")
+	spew.Dump(line)
+	for _, t := range line {
 		switch t.Type() {
 		case token.TypeBold:
 			*bold = !*bold
