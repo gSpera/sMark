@@ -7,11 +7,13 @@ import (
 	"io/ioutil"
 	"os"
 
-	"github.com/davecgh/go-spew/spew"
-
-	"eNote/output/html"
+	output "eNote/output/html"
+	"eNote/output/telegraph"
 	"eNote/parser"
 	eNote "eNote/utils"
+
+	"github.com/davecgh/go-spew/spew"
+	tgraph "github.com/toby3d/telegraph"
 )
 
 func main() {
@@ -61,7 +63,26 @@ func main() {
 
 	spew.Dump(tokenList)
 	fmt.Printf("%v\n", len(tokenList))
+	//TODO: Add more flexibility to the chose of output engine
+	//HTML Output Engine
 	ioutil.WriteFile(*options.OutputFile, output.ToString(tokenList, options), os.ModePerm)
+
+	//Telegraph Output Engine
+	page := outTelegraph.ToString(tokenList, options)
+	fmt.Println("Title:", page.Title)
+	spew.Dump(page)
+	var accessToken string
+	fmt.Println("Insert Access Token: ")
+	fmt.Scan(&accessToken)
+	acc := tgraph.Account{
+		AccessToken: accessToken,
+	}
+	pagePubblished, err := acc.CreatePage(&page, false)
+	if err != nil {
+		fmt.Println("Error: Could not create page:")
+		fmt.Println(err.Error())
+	}
+	spew.Dump(pagePubblished)
 }
 
 func streamFromFilename(filename string) (*os.File, error) {
