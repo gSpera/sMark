@@ -39,21 +39,16 @@ func ToString(paragraphs []token.ParagraphToken, options eNote.Options) tgraph.P
 			}
 
 			fmt.Println("Title Paragraph")
-			nodes = append(nodes, tgraph.NodeElement{
-				Tag:      "h3",
-				Children: []tgraph.Node{p.Text.String()},
-			})
+			nodes = append(nodes, createTitle(p.Text.String()))
 
 		case token.DivisorParagraph:
 			fmt.Println("Divisor Paragraph")
-			nodes = append(nodes, tgraph.NodeElement{
-				Tag: "hr",
-			})
+			nodes = append(nodes, createTag("hr"))
 
 		case token.TextParagraph:
 			fmt.Println("New Paragraph")
 			p := p.(token.TextParagraph)
-			par := tgraph.NodeElement{Tag: "p"}
+			par := createTag("p")
 			var fullLine []token.Token
 			for _, line := range p.Lines {
 				fmt.Println("Appending Line")
@@ -100,9 +95,9 @@ func createLine(line []token.Token, bold *bool, italic *bool) []tgraph.Node {
 		case token.TypeText:
 			switch {
 			case *bold:
-				nodes = append(nodes, tgraph.NodeElement{Tag: "b", Children: []tgraph.Node{t.String()}})
+				nodes = append(nodes, createBold(t.String()))
 			case *italic:
-				nodes = append(nodes, tgraph.NodeElement{Tag: "i", Children: []tgraph.Node{t.String()}})
+				nodes = append(nodes, createItalic(t.String()))
 			default:
 				nodes = append(nodes, t.String())
 			}
