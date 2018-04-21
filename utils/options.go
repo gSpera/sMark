@@ -3,8 +3,10 @@ package eNote
 import (
 	"fmt"
 	"html/template"
+	"reflect"
 	"strconv"
 
+	"github.com/davecgh/go-spew/spew"
 	"github.com/pkg/errors"
 )
 
@@ -22,6 +24,7 @@ type Options struct {
 }
 
 //OptionsTemplate is a copy of Options but members arte not pointer
+//You may use it only within a template
 type OptionsTemplate struct {
 	InputFile  string
 	OutputFile string
@@ -49,8 +52,8 @@ func (o Options) ToTemplate() OptionsTemplate {
 	}
 }
 
-//AddString updates the OptionsTemplate with the passed key and his value, returns and error if the key is not valid
-func (o *OptionsTemplate) AddString(key, sValue string) error {
+//AddString updates the Options with the passed key and his value, returns and error if the key is not valid
+func (o *Options) AddString(key, sValue string) error {
 	switch key {
 	case "NewLine":
 		fmt.Println("NewLine")
@@ -58,27 +61,27 @@ func (o *OptionsTemplate) AddString(key, sValue string) error {
 		if err != nil {
 			return errors.Wrap(err, "Could not parse value to bool")
 		}
-		o.NewLine = value
+		o.NewLine = &value
 	case "Title":
 		fmt.Println("Title")
-		o.Title = sValue
+		o.Title = &sValue
 	case "InlineCSS":
 		fmt.Println("InlineCSS")
-		o.InlineCSS = template.CSS(sValue)
+		o.InlineCSS = &sValue
 	case "EnableFont":
 		fmt.Println("EnableFont")
 		value, err := strconv.ParseBool(key)
 		if err != nil {
 			return errors.Wrap(err, "Could not parse value to bool")
 		}
-		o.EnableFont = value
+		o.EnableFont = &value
 	case "OnlyBody":
 		fmt.Println("OnlyBody")
 		value, err := strconv.ParseBool(key)
 		if err != nil {
 			return errors.Wrap(err, "Could not parse value to bool")
 		}
-		o.OnlyBody = value
+		o.OnlyBody = &value
 	default:
 		return errors.New("Key is not valid")
 	}
@@ -86,13 +89,38 @@ func (o *OptionsTemplate) AddString(key, sValue string) error {
 	return nil
 }
 
-//Update adds non specified value from the passed OptionsTemplate
-func (o *Options) Update(oo OptionsTemplate) {
-	if *o.Title == "" {
-		o.Title = &oo.Title
+//Update adds non specified value from the passed Options
+func (o *Options) Update(oo Options) {
+	fmt.Println("Update")
+	spew.Dump(oo)
+	oR := reflect.ValueOf(o).Elem()
+	ooR := reflect.ValueOf(&oo).Elem()
+	structType := reflect.TypeOf(*o)
+
+	fmt.Println(reflect.TypeOf(oR).NumField())
+	fmt.Println(oR.Type(), ooR.Type())
+	for i := 0; i < structType.NumField(); i++ {
+		oF := oR.Field(i)
+		ooF := ooR.Field(i)
+		fmt.Println("Field", i, structType.Field(i).Name, oF.Elem(), ooF.Elem())
+
+		if ooF.IsNil() {
+			fmt.Println("ooF is nil")
+			continue
+		}
+
+		if !oF.CanAddr() {
+			panic("Cannot take address of Options")
+		}
+
+		if !ooF.CanAddr() {
+			panic("Cannot take address of OOptions")
+		}
+
+		fmt.Println("Set:", oF, ooF)
+		oF.Set(ooF)
 	}
-	if *o.InlineCSS == "" {
-		str := string(oo.InlineCSS)
-		o.InlineCSS = &str
-	}
+
+	fmt.Println("Update Done")
+	spew.Dump(o)
 }

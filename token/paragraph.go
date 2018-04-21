@@ -11,7 +11,7 @@ type ParagraphToken interface{ IsParagraph() }
 //HeaderParagraph is a pragraph containing header info
 type HeaderParagraph struct {
 	ParagraphToken
-	eNote.OptionsTemplate
+	eNote.Options
 }
 
 //TextParagraph rapresent a single paragraph

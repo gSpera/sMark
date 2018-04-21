@@ -18,7 +18,7 @@ import (
 
 func main() {
 	options := eNote.Options{
-		InputFile:  flag.String("i", "-", "IUnput file, - for stdin"),
+		InputFile:  flag.String("i", "-", "Input file, - for stdin"),
 		OutputFile: flag.String("o", "out.html", "Output file"),
 		NewLine:    flag.Bool("newline", true, "Include newlines as in source"),
 		CustomCSS:  flag.String("css", "", "A custom css file"),
@@ -44,25 +44,24 @@ func main() {
 	fmt.Println("Input: ", input)
 
 	reader := bufio.NewReader(input)
-	header, ok := eNote.OptionsTemplate{}, false // parser.ParseHeader(reader)
-	spew.Dump(header)
 
-	if ok {
-		fmt.Println("Updating")
-		options.Update(header)
-		spew.Dump(options)
-	} else {
-		fmt.Println("Resetting Reader")
-		input.Seek(0, os.SEEK_SET)
-		reader = bufio.NewReader(input)
-	}
+	fmt.Println("Resetting Reader")
+	input.Seek(0, os.SEEK_SET)
+	reader = bufio.NewReader(input)
+
 	tokenList, err := parser.ParseReader(reader)
+	options.Update(parser.OptionsFromParagraphs(&tokenList))
+	// options = parser.OptionsFromParagraphs(&tokenList)
 	if err != nil {
 		panic(err)
 	}
 
 	spew.Dump(tokenList)
 	fmt.Printf("%v\n", len(tokenList))
+
+	fmt.Println("Final Options")
+	spew.Dump(options)
+
 	//TODO: Add more flexibility to the chose of output engine
 	//HTML Output Engine
 	ioutil.WriteFile(*options.OutputFile, output.ToString(tokenList, options), os.ModePerm)

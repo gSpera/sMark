@@ -26,11 +26,7 @@ func ToString(paragraphs []token.ParagraphToken, options eNote.Options) tgraph.P
 
 		switch p.(type) {
 		case token.HeaderParagraph:
-			headerOptions := p.(token.HeaderParagraph).OptionsTemplate
-			options.Update(headerOptions)
-			if title == "" {
-				title = *options.Title
-			}
+			panic("HeaderParagraph in output engine")
 		case token.TitleParagraph:
 			p := p.(token.TitleParagraph)
 

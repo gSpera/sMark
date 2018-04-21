@@ -29,8 +29,8 @@ func ParseReader(fl io.Reader) ([]token.ParagraphToken, error) {
 }
 
 //ParseHeader parses the header from the header, returns the eNote.Options and a bool rappresenting the status
-func ParseHeader(r *bufio.Reader) (eNote.OptionsTemplate, bool) {
-	res := eNote.OptionsTemplate{}
+func ParseHeader(r *bufio.Reader) (eNote.Options, bool) {
+	res := eNote.Options{}
 
 	line, err := r.ReadBytes('\n')
 	if err != nil {
@@ -87,4 +87,31 @@ func parseHeader(line string) (string, string) {
 	}
 
 	return key, string(buffer)
+}
+
+//OptionsFromParagraphs analyze the passed slice of paragraphs returning the final options contined in token.HeaderParagraphs.
+//It update the slice removing any HeaderParagraph token
+func OptionsFromParagraphs(paragraphs *[]token.ParagraphToken) eNote.Options {
+	fmt.Println("OptionsFromParagraphs")
+	options := eNote.Options{}
+
+	for i, p := range *paragraphs {
+		fmt.Println("Paragraph")
+		if _, ok := p.(token.HeaderParagraph); !ok {
+			continue
+		}
+		fmt.Println(" - Header")
+		p := p.(token.HeaderParagraph)
+		spew.Dump(p)
+		options.Update(p.Options)
+
+		fmt.Println("After Update")
+		spew.Dump(options)
+		//Removing the paragraph
+		par := *paragraphs
+		par = append(par[:i], par[i+1:]...)
+		paragraphs = &par
+	}
+
+	return options
 }

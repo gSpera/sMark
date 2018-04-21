@@ -222,7 +222,7 @@ func TokenToParagraph(lines []token.LineToken) []token.ParagraphToken {
 
 			if header {
 				fmt.Println("Appending Header Paragraph")
-				paragraphs = append(paragraphs, token.HeaderParagraph{OptionsTemplate: parseHeaderLines(currentParagraph)})
+				paragraphs = append(paragraphs, token.HeaderParagraph{Options: parseHeaderLines(currentParagraph)})
 				currentParagraph = token.TextParagraph{}
 			}
 
@@ -289,8 +289,8 @@ func checkIndentation(paragraph *token.TextParagraph) {
 	}
 }
 
-func parseHeaderLines(paragraph token.TextParagraph) eNote.OptionsTemplate {
-	res := eNote.OptionsTemplate{}
+func parseHeaderLines(paragraph token.TextParagraph) eNote.Options {
+	res := eNote.Options{}
 
 	for _, line := range paragraph.Lines {
 		key, value := parseHeader(line.String())

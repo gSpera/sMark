@@ -90,9 +90,6 @@ func ToString(paragraphs []token.ParagraphToken, options eNote.Options) []byte {
 
 	for _, p := range paragraphs {
 		switch p.(type) {
-		case token.HeaderParagraph:
-			headerOptions := p.(token.HeaderParagraph).OptionsTemplate
-			options.Update(headerOptions)
 		case token.TitleParagraph:
 			body += fmt.Sprintf("<h1>%s</h1>", p.(token.TitleParagraph).Text)
 			continue
@@ -152,7 +149,7 @@ func ToString(paragraphs []token.ParagraphToken, options eNote.Options) []byte {
 			}
 			body += "</p>\n"
 		default:
-			fmt.Printf("Paragraph: %T{%+v}", p, p)
+			fmt.Printf("Paragraph: %T{%+v}\n", p, p)
 			panic("Paragraph Type not supported")
 		}
 	}
