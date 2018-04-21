@@ -2,7 +2,7 @@
 - [ ] Test
 - [ ] Parse
 - [X] Header
-- [ ] trailing-line
+- [x] trailing-line
 - [x] HR tag not working
 - [ ] Add more flexibility and modularity
 - [ ] Update logging system

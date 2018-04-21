@@ -29,7 +29,7 @@ func (t LineContainer) String() string {
 	for _, t := range t.Tokens {
 		str += fmt.Sprintf("%v", t)
 	}
-	return str + "\n"
+	return str
 }
 
 //DebugString is used for ast outputting
