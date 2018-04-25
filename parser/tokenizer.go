@@ -5,6 +5,7 @@ import (
 	"eNote/utils"
 	"fmt"
 	"io"
+	"log"
 
 	"github.com/davecgh/go-spew/spew"
 )
@@ -30,29 +31,29 @@ func Tokenizer(reader io.Reader) ([]token.Token, error) {
 
 		switch char[0] {
 		case token.TypeTab:
-			fmt.Println("TAB")
+			log.Println("\t- Found TabToken")
 			tokenList = append(tokenList, token.TabToken{})
 		case token.TypeNewLine:
-			fmt.Println("NewLine")
+			log.Println("\t- Found NewLineToken")
 			if len(buffer) != 0 {
 				addBufferToTokenBuffer(&tokenList, &buffer)
 			}
 			tokenList = append(tokenList, token.NewLineToken{})
 		case token.TypeBold:
-			fmt.Println("Bold")
+			log.Println("\t- Found BoldToken")
 			addBufferToTokenBuffer(&tokenList, &buffer)
 			tokenList = append(tokenList, token.BoldToken{})
 
 		case token.TypeItalic:
-			fmt.Println("Italic")
+			log.Println("\t- Found ItalicToken")
 			addBufferToTokenBuffer(&tokenList, &buffer)
 			tokenList = append(tokenList, token.ItalicToken{})
 		case token.TypeLess:
-			fmt.Println("Less")
+			log.Println("\t- Found LessToken")
 			addBufferToTokenBuffer(&tokenList, &buffer)
 			tokenList = append(tokenList, token.LessToken{})
 		case token.TypeHeader:
-			fmt.Println("Header")
+			log.Println("\t- Found HeaderToken")
 			if len(buffer) == 0 {
 				// 	addBufferToTokenBuffer(&tokenList, &buffer)
 				// } else {
@@ -60,7 +61,7 @@ func Tokenizer(reader io.Reader) ([]token.Token, error) {
 				break
 			}
 		case token.TypeEqual:
-			fmt.Println("Equal")
+			log.Println("\t- Found EqualToken")
 			addBufferToTokenBuffer(&tokenList, &buffer)
 			tokenList = append(tokenList, token.EqualToken{})
 		default:
@@ -117,16 +118,17 @@ func TokenToLine(tokens []token.Token) []token.LineToken {
 				currentLine = token.LineContainer{}
 				continue
 			case isType(token.TypeEqual, currentLine):
-				fmt.Println("EqualLine")
+				log.Println("\t- Found EqualLine")
 				lines = append(lines, token.EqualLine{})
 				currentLine = token.LineContainer{}
 				continue
 			case isType(token.TypeLess, currentLine):
-				fmt.Println("LessLine")
+				log.Println("\t- Found LessLine")
 				lines = append(lines, token.LessLine{})
 				currentLine = token.LineContainer{}
 				continue
 			default:
+				log.Println("\t- Found TextLine")
 				spew.Dump(currentLine.Tokens)
 				fmt.Printf("TextLine: =: %v %T{%+v}\n", isType(token.TypeEqual, currentLine), currentLine, currentLine)
 			}
@@ -196,7 +198,7 @@ func TokenToParagraph(lines []token.LineToken) []token.ParagraphToken {
 		}
 		switch t.(type) {
 		case token.EqualLine:
-			fmt.Println("EqualLine Paragraph")
+			log.Println("\t- Found EqualLine Paragraph")
 			fmt.Println(len(currentParagraph.Lines))
 			if len(currentParagraph.Lines) != 2 {
 				continue
@@ -210,7 +212,7 @@ func TokenToParagraph(lines []token.LineToken) []token.ParagraphToken {
 			if len(lastLine.Tokens) == 0 {
 				continue
 			}
-			fmt.Println("Title Paragraph")
+			log.Println("\t- Found Title Paragraph")
 			paragraphs = append(paragraphs, token.TitleParagraph{Text: lastLine})
 			currentParagraph = token.TextParagraph{}
 		case token.HeaderLine:
@@ -221,7 +223,7 @@ func TokenToParagraph(lines []token.LineToken) []token.ParagraphToken {
 			}
 
 			if header {
-				fmt.Println("Appending Header Paragraph")
+				log.Println("\t- Found Header Paragraph")
 				paragraphs = append(paragraphs, token.HeaderParagraph{Options: parseHeaderLines(currentParagraph)})
 				currentParagraph = token.TextParagraph{}
 			}
@@ -235,7 +237,7 @@ func TokenToParagraph(lines []token.LineToken) []token.ParagraphToken {
 			}
 			switch len(lastLine.(token.LineContainer).Tokens) {
 			case 0:
-				fmt.Println("Divisor")
+				log.Println("\t- Found Divisor")
 				paragraphs = append(paragraphs, token.DivisorParagraph{})
 				currentParagraph = token.TextParagraph{}
 			default: //TODO: Subtitle
@@ -249,7 +251,7 @@ func TokenToParagraph(lines []token.LineToken) []token.ParagraphToken {
 			spew.Dump(t.Tokens)
 
 			if l, ok := lastLine.(token.LineContainer); currentEmpty && ok && len(l.Tokens) != 0 {
-				fmt.Println("New Paragraph")
+				log.Println("\t- Found Text Paragraph")
 				fmt.Printf("LastLine: Len: %d %T: %+v\n", len(l.Tokens), l, l)
 				spew.Dump(l.Tokens)
 				checkIndentation(&currentParagraph)

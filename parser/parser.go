@@ -6,24 +6,30 @@ import (
 	"eNote/utils"
 	"fmt"
 	"io"
+	"log"
 
 	"github.com/davecgh/go-spew/spew"
 )
 
 //ParseReader parse a source file and returns the paragraphs
 func ParseReader(fl io.Reader) ([]token.ParagraphToken, error) {
+	log.Println("Tokenizer")
 	tokens, err := Tokenizer(fl)
-	fmt.Println("Tokens")
+	log.Println("Tokenizer DONE")
 	spew.Dump(tokens)
 	if err != nil {
 		return nil, err
 	}
 
+	log.Println("Token To Line")
 	lines := TokenToLine(tokens)
-	fmt.Println("Lines")
+	log.Println("Token To Line DONE")
 	spew.Dump(lines)
+
+	log.Println("Line To Paragraph")
 	paragraphs := TokenToParagraph(lines)
-	fmt.Println("Paragraphs")
+	log.Println("Line To Paragraph DONE")
+
 	spew.Dump(paragraphs)
 	return paragraphs, nil
 }

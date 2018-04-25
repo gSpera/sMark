@@ -3,6 +3,7 @@ package eNote
 import (
 	"fmt"
 	"html/template"
+	"log"
 	"reflect"
 	"strconv"
 
@@ -110,14 +111,14 @@ func (o *Options) Update(oo Options) {
 		}
 
 		if !oF.CanAddr() {
-			panic("Cannot take address of Options")
+			log.Fatal("Cannot take address of Options")
 		}
 
 		if !ooF.CanAddr() {
-			panic("Cannot take address of OOptions")
+			log.Fatal("Cannot take address of OOptions")
 		}
 
-		fmt.Println("Set:", oF, ooF)
+		log.Printf("%v = %v", structType.Field(i).Name, ooF.Elem())
 		oF.Set(ooF)
 	}
 

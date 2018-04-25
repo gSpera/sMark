@@ -5,6 +5,7 @@ import (
 	"flag"
 	"fmt"
 	"io/ioutil"
+	"log"
 	"os"
 
 	output "eNote/output/html"
@@ -16,7 +17,15 @@ import (
 	tgraph "github.com/toby3d/telegraph"
 )
 
+//ProgramName is the name of the program.
+const ProgramName = "eNote"
+
 func main() {
+	//Logger
+	log.SetPrefix(ProgramName + ": ")
+	log.SetFlags(log.Ltime | log.Lshortfile)
+	verbose := flag.Bool("verbose", false, "Output logging")
+	//Flags
 	options := eNote.Options{
 		InputFile:  flag.String("i", "-", "Input file, - for stdin"),
 		OutputFile: flag.String("o", "out.html", "Output file"),
@@ -30,14 +39,17 @@ func main() {
 	}
 
 	flag.Parse()
+	if !*verbose {
+		log.SetOutput(ioutil.Discard)
+	}
 	input, err := streamFromFilename(*options.InputFile)
 	if os.IsNotExist(err) {
-		fmt.Println("Error: File doesn't exist")
+		fmt.Fprintln(os.Stderr, "Error: File doesn't exist")
 		flag.PrintDefaults()
 		os.Exit(1)
 	}
 	if err != nil {
-		panic(err)
+		log.Fatalf("Error: Could not open file: %v", err)
 	}
 
 	fmt.Println("Filename: ", *options.InputFile)
@@ -45,16 +57,19 @@ func main() {
 
 	reader := bufio.NewReader(input)
 
-	fmt.Println("Resetting Reader")
+	log.Println("Resetting Reader")
 	input.Seek(0, os.SEEK_SET)
 	reader = bufio.NewReader(input)
 
+	log.Println("Parsing")
 	tokenList, err := parser.ParseReader(reader)
-	options.Update(parser.OptionsFromParagraphs(&tokenList))
-	// options = parser.OptionsFromParagraphs(&tokenList)
 	if err != nil {
-		panic(err)
+		log.Fatalf("Error: Could not parse: %v", err)
 	}
+	log.Println("Parsing DONE")
+	log.Println("Updating Options")
+	options.Update(parser.OptionsFromParagraphs(&tokenList))
+	log.Println("Updating Options DONE")
 
 	spew.Dump(tokenList)
 	fmt.Printf("%v\n", len(tokenList))
@@ -64,9 +79,12 @@ func main() {
 
 	//TODO: Add more flexibility to the chose of output engine
 	//HTML Output Engine
+	log.Println("Outputting HTML")
 	ioutil.WriteFile(*options.OutputFile, output.ToString(tokenList, options), os.ModePerm)
+	log.Println("Outputting HTML DONE")
 
 	//Telegraph Output Engine
+	log.Println("Outputting Telegraph")
 	page := outTelegraph.ToString(tokenList, options)
 	fmt.Println("Title:", page.Title)
 	spew.Dump(page)
@@ -78,10 +96,12 @@ func main() {
 	}
 	pagePubblished, err := acc.CreatePage(&page, false)
 	if err != nil {
-		fmt.Println("Error: Could not create page:")
-		fmt.Println(err.Error())
+		log.Fatalf("Error: Could not create page: %v", err)
 	}
+
 	spew.Dump(pagePubblished)
+	log.Println("Outputting Telegraph DONE")
+
 }
 
 func streamFromFilename(filename string) (*os.File, error) {
