@@ -25,6 +25,8 @@ func main() {
 	log.SetPrefix(ProgramName + ": ")
 	log.SetFlags(log.Ltime | log.Lshortfile)
 	verbose := flag.Bool("verbose", false, "Output logging")
+	htmlOut := flag.Bool("html", true, "Output HTML")
+	telegraphOut := flag.Bool("telegraph", false, "Output to Telegra.ph")
 	//Flags
 	options := eNote.Options{
 		InputFile:  flag.String("i", "-", "Input file, - for stdin"),
@@ -77,31 +79,33 @@ func main() {
 	fmt.Println("Final Options")
 	spew.Dump(options)
 
-	//TODO: Add more flexibility to the chose of output engine
 	//HTML Output Engine
-	log.Println("Outputting HTML")
-	ioutil.WriteFile(*options.OutputFile, output.ToString(tokenList, options), os.ModePerm)
-	log.Println("Outputting HTML DONE")
+	if *htmlOut {
+		log.Println("Outputting HTML")
+		ioutil.WriteFile(*options.OutputFile, output.ToString(tokenList, options), os.ModePerm)
+		log.Println("Outputting HTML DONE")
+	}
 
 	//Telegraph Output Engine
-	log.Println("Outputting Telegraph")
-	page := outTelegraph.ToString(tokenList, options)
-	fmt.Println("Title:", page.Title)
-	spew.Dump(page)
-	var accessToken string
-	fmt.Println("Insert Access Token: ")
-	fmt.Scan(&accessToken)
-	acc := tgraph.Account{
-		AccessToken: accessToken,
-	}
-	pagePubblished, err := acc.CreatePage(&page, false)
-	if err != nil {
-		log.Fatalf("Error: Could not create page: %v", err)
-	}
+	if *telegraphOut {
+		log.Println("Outputting Telegraph")
+		page := outTelegraph.ToString(tokenList, options)
+		fmt.Println("Title:", page.Title)
+		spew.Dump(page)
+		var accessToken string
+		fmt.Println("Insert Access Token: ")
+		fmt.Scan(&accessToken)
+		acc := tgraph.Account{
+			AccessToken: accessToken,
+		}
+		pagePubblished, err := acc.CreatePage(&page, false)
+		if err != nil {
+			log.Fatalf("Error: Could not create page: %v", err)
+		}
 
-	spew.Dump(pagePubblished)
-	log.Println("Outputting Telegraph DONE")
-
+		spew.Dump(pagePubblished)
+		log.Println("Outputting Telegraph DONE")
+	}
 }
 
 func streamFromFilename(filename string) (*os.File, error) {
