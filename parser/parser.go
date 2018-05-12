@@ -121,3 +121,33 @@ func OptionsFromParagraphs(paragraphs *[]token.ParagraphToken) eNote.Options {
 
 	return options
 }
+
+//TitleFromParagraph resolve a possible title from the passed paragraphs
+func TitleFromParagraph(paragraph []token.ParagraphToken) string {
+	fmt.Println("TitleFromParagraph")
+	titles := map[string]uint{}
+
+	for _, p := range paragraph {
+		if pp, ok := p.(token.TitleParagraph); ok {
+			txt := pp.Text.String()
+			value := pp.Indentation
+
+			if currentValue, ok := titles[txt]; !ok || currentValue < value {
+				titles[txt] = value
+			}
+		}
+
+	}
+
+	max := "No Title"
+	maxV := uint(0)
+
+	for k, v := range titles {
+		if v > maxV {
+			max = k
+			maxV = v
+		}
+	}
+
+	return max
+}

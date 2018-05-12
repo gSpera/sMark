@@ -50,4 +50,5 @@ type LessLine struct {
 //EqualLine rapresent a line containing only LessToken
 type EqualLine struct {
 	LineToken
+	Indentation uint
 }

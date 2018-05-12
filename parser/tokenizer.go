@@ -94,6 +94,7 @@ func checkTokenList(tokenList []token.Token) []token.Token {
 
 //TokenToLine divide a slice of tokens in lines
 func TokenToLine(tokens []token.Token) []token.LineToken {
+	fmt.Println("TokenToLine")
 	lines := []token.LineToken{}
 	currentLine := token.LineContainer{}
 
@@ -106,6 +107,7 @@ func TokenToLine(tokens []token.Token) []token.LineToken {
 				fmt.Println("Adding Indentation")
 				currentLine.Indentation++
 			} else {
+				currentLine.Tokens = append(currentLine.Tokens, token.TabToken{})
 				indent = false
 			}
 		case token.NewLineToken:
@@ -117,9 +119,10 @@ func TokenToLine(tokens []token.Token) []token.LineToken {
 				lines = append(lines, token.HeaderLine{})
 				currentLine = token.LineContainer{}
 				continue
-			case isType(token.TypeEqual, currentLine):
+			case isType(token.TypeEqual, currentLine, isTypeOptions{ignoreTabs: true}):
 				log.Println("\t- Found EqualLine")
-				lines = append(lines, token.EqualLine{})
+				log.Println("\t\t- Indentation:", currentLine.Indentation)
+				lines = append(lines, token.EqualLine{Indentation: currentLine.Indentation})
 				currentLine = token.LineContainer{}
 				continue
 			case isType(token.TypeLess, currentLine):
@@ -129,16 +132,18 @@ func TokenToLine(tokens []token.Token) []token.LineToken {
 				continue
 			default:
 				log.Println("\t- Found TextLine")
+				log.Println("\t\t- Indentation:", currentLine.Indentation)
 				spew.Dump(currentLine.Tokens)
 				fmt.Printf("TextLine: =: %v %T{%+v}\n", isType(token.TypeEqual, currentLine), currentLine, currentLine)
 			}
 
 			lines = append(lines, currentLine)
 			currentLine = token.LineContainer{}
+			indent = true
 			continue
 		case token.LessToken:
 			fmt.Println("Less Token")
-			if !isType(token.TypeLess, currentLine, 0) {
+			if !isType(token.TypeLess, currentLine, isTypeOptions{threshold: 0}) {
 				//Strick-throught
 				continue
 			}
@@ -153,26 +158,41 @@ func TokenToLine(tokens []token.Token) []token.LineToken {
 
 const isTypeThreshold = 2
 
+type isTypeOptions struct {
+	threshold  int
+	ignoreTabs bool
+}
+
 //isType reutnrs wheter or not the passed line contains only the specified type of tokens
 //if the line contains less than the threshold tokens it will return always false
 //the default value for threshold is isTypeThreshold contant
-func isType(typ token.Type, line token.LineContainer, _threshold ...int) bool {
+func isType(typ token.Type, line token.LineContainer, _options ...isTypeOptions) bool {
 	fmt.Printf("isType: %c len: %v\n", typ, len(line.Tokens))
+	fmt.Println(line)
 
 	//Calculate the threshold
-	threshold := isTypeThreshold
-
-	if len(_threshold) != 0 {
-		threshold = _threshold[0]
+	options := isTypeOptions{
+		threshold:  isTypeThreshold,
+		ignoreTabs: false,
 	}
 
+	if len(_options) != 0 {
+		options = _options[0]
+	}
+	if options.threshold == 0 {
+		options.threshold = 2
+	}
 	//Check if there are too few tokens
-	if len(line.Tokens) < threshold {
+	if len(line.Tokens) < options.threshold {
 		return false
 	}
 
 	//Checks the line
 	for _, t := range line.Tokens {
+		if options.ignoreTabs && t.Type() == token.TypeTab {
+			fmt.Println("Ignoring Tab")
+			continue
+		}
 		if typ != t.Type() {
 			fmt.Printf("%c != %c\n", typ, t.Type())
 			return false
@@ -196,24 +216,36 @@ func TokenToParagraph(lines []token.LineToken) []token.ParagraphToken {
 		} else {
 			lastLine = lines[i-1]
 		}
+
 		switch t.(type) {
 		case token.EqualLine:
-			log.Println("\t- Found EqualLine Paragraph")
+			log.Println("\t- Found EqualLine Line")
 			fmt.Println(len(currentParagraph.Lines))
+
 			if len(currentParagraph.Lines) != 2 {
+				// log.Println(currentParagraph)
+				log.Println("\t\t- Wrong number of lines:", len(currentParagraph.Lines))
 				continue
 			}
 
 			if _, ok := lastLine.(token.LineContainer); !ok {
+				log.Println("\t\t- LastLine is not a token.LineContainer")
 				continue
 			}
 			lastLine := lastLine.(token.LineContainer)
 
 			if len(lastLine.Tokens) == 0 {
+				log.Println("\t\t- LastLine is empty")
 				continue
 			}
+
+			if lastLine.Indentation != uint(lastLine.Indentation) {
+				log.Println("\t\t- Indentation are differents", lastLine.Indentation, lastLine.Indentation)
+				continue
+			}
+
 			log.Println("\t- Found Title Paragraph")
-			paragraphs = append(paragraphs, token.TitleParagraph{Text: lastLine})
+			paragraphs = append(paragraphs, token.TitleParagraph{Text: lastLine, Indentation: lastLine.Indentation})
 			currentParagraph = token.TextParagraph{}
 		case token.HeaderLine:
 			fmt.Println("HeaderLine")

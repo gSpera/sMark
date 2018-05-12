@@ -76,6 +76,13 @@ func main() {
 	spew.Dump(tokenList)
 	fmt.Printf("%v\n", len(tokenList))
 
+	log.Println("Selecting Title")
+	if options.Title == nil || *options.Title == "" {
+		log.Println("Changing Title")
+		title := parser.TitleFromParagraph(tokenList)
+		options.Title = &title
+	}
+	log.Println("Selecting Title DONE")
 	fmt.Println("Final Options")
 	spew.Dump(options)
 
