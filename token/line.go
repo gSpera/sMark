@@ -51,4 +51,5 @@ type LessLine struct {
 type EqualLine struct {
 	LineToken
 	Indentation uint
+	Length      uint
 }

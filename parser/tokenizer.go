@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"io"
 	"log"
+	"strings"
 
 	"github.com/davecgh/go-spew/spew"
 )
@@ -122,7 +123,12 @@ func TokenToLine(tokens []token.Token) []token.LineToken {
 			case isType(token.TypeEqual, currentLine, isTypeOptions{ignoreTabs: true}):
 				log.Println("\t- Found EqualLine")
 				log.Println("\t\t- Indentation:", currentLine.Indentation)
-				lines = append(lines, token.EqualLine{Indentation: currentLine.Indentation})
+
+				lines = append(lines, token.EqualLine{
+					Indentation: currentLine.Indentation,
+					Length:      uint(len(currentLine.Tokens)),
+				})
+
 				currentLine = token.LineContainer{}
 				continue
 			case isType(token.TypeLess, currentLine):
@@ -217,30 +223,35 @@ func TokenToParagraph(lines []token.LineToken) []token.ParagraphToken {
 			lastLine = lines[i-1]
 		}
 
-		switch t.(type) {
+		switch tt := t.(type) {
 		case token.EqualLine:
 			log.Println("\t- Found EqualLine Line")
 			fmt.Println(len(currentParagraph.Lines))
 
-			if len(currentParagraph.Lines) != 2 {
+			log.Println("NotEmptyLine:", notEmptyLines(currentParagraph.Lines))
+			if notEmptyLines(currentParagraph.Lines) != 1 {
 				// log.Println(currentParagraph)
-				log.Println("\t\t- Wrong number of lines:", len(currentParagraph.Lines))
+				log.Println("\t\t- Wrong number of lines:", notEmptyLines(currentParagraph.Lines))
+				currentParagraph.Lines = append(currentParagraph.Lines, token.LineContainerFromString(strings.Repeat("=", int(tt.Length))))
 				continue
 			}
 
 			if _, ok := lastLine.(token.LineContainer); !ok {
 				log.Println("\t\t- LastLine is not a token.LineContainer")
+				currentParagraph.Lines = append(currentParagraph.Lines, token.LineContainerFromString(strings.Repeat("=", int(tt.Length))))
 				continue
 			}
 			lastLine := lastLine.(token.LineContainer)
 
 			if len(lastLine.Tokens) == 0 {
 				log.Println("\t\t- LastLine is empty")
+				currentParagraph.Lines = append(currentParagraph.Lines, token.LineContainerFromString(strings.Repeat("=", int(tt.Length))))
 				continue
 			}
 
 			if lastLine.Indentation != uint(lastLine.Indentation) {
 				log.Println("\t\t- Indentation are differents", lastLine.Indentation, lastLine.Indentation)
+				currentParagraph.Lines = append(currentParagraph.Lines, token.LineContainerFromString(strings.Repeat("=", int(tt.Length))))
 				continue
 			}
 
@@ -333,4 +344,17 @@ func parseHeaderLines(paragraph token.TextParagraph) eNote.Options {
 	}
 
 	return res
+}
+
+func notEmptyLines(lines []token.LineContainer) uint {
+	notEmpty := uint(0)
+
+	for _, l := range lines {
+		if len(l.Tokens) != 0 {
+			log.Println("NotEmpty:", l)
+			notEmpty++
+		}
+	}
+
+	return notEmpty
 }
