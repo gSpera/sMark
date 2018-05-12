@@ -6,6 +6,7 @@ import (
 	eNote "eNote/utils"
 	"fmt"
 	"html/template"
+	"log"
 	"os"
 	"strings"
 )
@@ -43,9 +44,17 @@ func ToString(paragraphs []token.ParagraphToken, options eNote.Options) []byte {
 	}
 
 	for _, p := range paragraphs {
-		switch p.(type) {
+		switch pp := p.(type) {
 		case token.TitleParagraph:
-			body += fmt.Sprintf("<h1>%s</h1>", p.(token.TitleParagraph).Text)
+			var tag string
+			switch pp.Indentation {
+			case 0:
+				tag = "<h2>%s</h2>"
+			default:
+				tag = "<h1>%s</h1>"
+			}
+			fmt.Println("TitleParagraph Indentation:", pp.Indentation)
+			body += fmt.Sprintf(tag, pp.Text)
 			continue
 		case token.DivisorParagraph:
 			body += "<hr>"
@@ -103,7 +112,7 @@ func ToString(paragraphs []token.ParagraphToken, options eNote.Options) []byte {
 			}
 			body += "</p>\n"
 		default:
-			fmt.Printf("Paragraph: %T{%+v}\n", p, p)
+			log.Printf("Found Unknown Paragraph: %T{%+v}\n", p, p)
 			panic("Paragraph Type not supported")
 		}
 	}
