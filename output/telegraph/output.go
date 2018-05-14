@@ -24,19 +24,20 @@ func ToString(paragraphs []token.ParagraphToken, options eNote.Options) tgraph.P
 		bold := false
 		italic := false
 
-		switch p.(type) {
+		switch pp := p.(type) {
 		case token.HeaderParagraph:
 			panic("HeaderParagraph in output engine")
 		case token.TitleParagraph:
-			p := p.(token.TitleParagraph)
 
 			if title == "" {
-				title = p.Text.String()
+				title = pp.Text.String()
 			}
 
 			fmt.Println("Title Paragraph")
-			nodes = append(nodes, createTitle(p.Text.String()))
-
+			nodes = append(nodes, createTitle(pp.Text.String()))
+		case token.SubtitleParagraph:
+			fmt.Println("Subtitle Paragraph")
+			nodes = append(nodes, createSubtitle(pp.Text.String()))
 		case token.DivisorParagraph:
 			fmt.Println("Divisor Paragraph")
 			nodes = append(nodes, createTag("hr"))

@@ -9,6 +9,10 @@ func createTitle(txt string) tgraph.NodeElement {
 	return tgraph.NodeElement{Tag: "h3", Children: []tgraph.Node{txt}}
 }
 
+func createSubtitle(txt string) tgraph.NodeElement {
+	return tgraph.NodeElement{Tag: "h4", Children: []tgraph.Node{txt}}
+}
+
 func createBold(txt string) tgraph.NodeElement {
 	return tgraph.NodeElement{Tag: "b", Children: []tgraph.Node{txt}}
 }
