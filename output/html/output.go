@@ -13,6 +13,12 @@ import (
 
 const maxMarkup = 255
 
+//Titles:
+//H1: Indent Title
+//H3: Indent Subtitle
+//H2: Title
+//H4: Subtitle
+
 //ToString is a simple output enging with a simple HTML writer
 func ToString(paragraphs []token.ParagraphToken, options eNote.Options) []byte {
 	var outTemplate *template.Template
@@ -60,9 +66,8 @@ func ToString(paragraphs []token.ParagraphToken, options eNote.Options) []byte {
 			body += "<hr>"
 			continue
 		case token.TextParagraph:
-			p := p.(token.TextParagraph)
-			body += fmt.Sprintf("<p class=\"%s\">", alignMap[p.Indentation])
-			for _, line := range p.Lines {
+			body += fmt.Sprintf("<p class=\"%s\">", alignMap[pp.Indentation])
+			for _, line := range pp.Lines {
 				for i, tok := range line.Tokens {
 					switch tok.(type) {
 					case token.BoldToken:
@@ -111,6 +116,14 @@ func ToString(paragraphs []token.ParagraphToken, options eNote.Options) []byte {
 				}
 			}
 			body += "</p>\n"
+		case token.SubtitleParagraph:
+			log.Println("Found Subtitle:", pp.Text)
+			switch pp.Indentation {
+			case 0:
+				body += fmt.Sprintf("<h4>%s</h4>", pp.Text)
+			default:
+				body += fmt.Sprintf("<h3>%s</h3>", pp.Text)
+			}
 		default:
 			log.Printf("Found Unknown Paragraph: %T{%+v}\n", p, p)
 			panic("Paragraph Type not supported")

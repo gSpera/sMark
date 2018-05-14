@@ -45,6 +45,7 @@ type DivisorLine struct {
 //LessLine rapresent a line containing only LessToken
 type LessLine struct {
 	LineToken
+	Length uint
 }
 
 //EqualLine rapresent a line containing only LessToken

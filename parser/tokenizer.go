@@ -131,7 +131,7 @@ func TokenToLine(tokens []token.Token) []token.LineToken {
 
 				currentLine = token.LineContainer{}
 				continue
-			case isType(token.TypeLess, currentLine):
+			case isType(token.TypeLess, currentLine, isTypeOptions{ignoreTabs: true}):
 				log.Println("\t- Found LessLine")
 				lines = append(lines, token.LessLine{})
 				currentLine = token.LineContainer{}
@@ -147,12 +147,13 @@ func TokenToLine(tokens []token.Token) []token.LineToken {
 			currentLine = token.LineContainer{}
 			indent = true
 			continue
-		case token.LessToken:
-			fmt.Println("Less Token")
-			if !isType(token.TypeLess, currentLine, isTypeOptions{threshold: 0}) {
-				//Strick-throught
-				continue
-			}
+			// case token.LessToken:
+			// 	fmt.Println("Less Token")
+			// 	if !isType(token.TypeLess, currentLine, isTypeOptions{threshold: 0}) {
+			// 		//Strick-throught
+			// 		panic("Strickthrought")
+			// 		continue
+			// 	}
 		}
 
 		currentLine.Tokens = append(currentLine.Tokens, t)
@@ -282,8 +283,39 @@ func TokenToParagraph(lines []token.LineToken) []token.ParagraphToken {
 				log.Println("\t- Found Divisor")
 				paragraphs = append(paragraphs, token.DivisorParagraph{})
 				currentParagraph = token.TextParagraph{}
-			default: //TODO: Subtitle
-				fmt.Println("Subtitle (NOT IMPLEMENTED)")
+			default:
+				log.Println(spew.Sdump(currentParagraph.Lines), notEmptyLines(currentParagraph.Lines))
+				if notEmptyLines(currentParagraph.Lines) != 1 {
+					// log.Println(currentParagraph)
+					log.Println("\t\t- Wrong number of lines:", notEmptyLines(currentParagraph.Lines))
+					currentParagraph.Lines = append(currentParagraph.Lines, token.LineContainerFromString(strings.Repeat("-", int(tt.Length))))
+					continue
+				}
+
+				if _, ok := lastLine.(token.LineContainer); !ok {
+					log.Println("\t\t- LastLine is not a token.LineContainer")
+					currentParagraph.Lines = append(currentParagraph.Lines, token.LineContainerFromString(strings.Repeat("-", int(tt.Length))))
+					continue
+				}
+				lastLine := lastLine.(token.LineContainer)
+
+				if len(lastLine.Tokens) == 0 {
+					log.Println("\t\t- LastLine is empty")
+					currentParagraph.Lines = append(currentParagraph.Lines, token.LineContainerFromString(strings.Repeat("-", int(tt.Length))))
+					continue
+				}
+
+				if lastLine.Indentation != uint(lastLine.Indentation) {
+					log.Println("\t\t- Indentation are differents", lastLine.Indentation, lastLine.Indentation)
+					currentParagraph.Lines = append(currentParagraph.Lines, token.LineContainerFromString(strings.Repeat("-", int(tt.Length))))
+					continue
+				}
+
+				paragraphs = append(paragraphs, token.SubtitleParagraph{
+					Text:        lastLine,
+					Indentation: lastLine.Indentation,
+				})
+				currentParagraph = token.TextParagraph{}
 			}
 
 		case token.LineContainer:
@@ -349,10 +381,29 @@ func notEmptyLines(lines []token.LineContainer) uint {
 	notEmpty := uint(0)
 
 	for _, l := range lines {
-		if len(l.Tokens) != 0 {
-			notEmpty++
+		if len(l.Tokens) == 0 {
+			continue
 		}
+
+		for _, t := range l.Tokens {
+			switch tt := t.(type) {
+			case token.TabToken:
+				continue
+			case token.TextToken:
+				if isOnlyWhiteSpace(tt.Text) {
+					continue
+				}
+			}
+		}
+
+		notEmpty++
 	}
 
 	return notEmpty
+}
+
+//isOnlyWhiteSpace returns true if the passed string contains only space, as defined by Unicode.
+func isOnlyWhiteSpace(txt string) bool {
+	txt = strings.TrimSpace(txt)
+	return len(txt) == 0
 }

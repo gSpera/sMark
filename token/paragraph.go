@@ -51,3 +51,11 @@ type TitleParagraph struct {
 	Text        LineContainer
 	Indentation uint
 }
+
+//SubtitleParagraph is a paragraph rapresenting a Subtitle,
+//it is similar to TitleParagraph
+type SubtitleParagraph struct {
+	ParagraphToken
+	Text        LineContainer
+	Indentation uint
+}
