@@ -228,7 +228,6 @@ func TokenToParagraph(lines []token.LineToken) []token.ParagraphToken {
 			log.Println("\t- Found EqualLine Line")
 			fmt.Println(len(currentParagraph.Lines))
 
-			log.Println("NotEmptyLine:", notEmptyLines(currentParagraph.Lines))
 			if notEmptyLines(currentParagraph.Lines) != 1 {
 				// log.Println(currentParagraph)
 				log.Println("\t\t- Wrong number of lines:", notEmptyLines(currentParagraph.Lines))
@@ -351,7 +350,6 @@ func notEmptyLines(lines []token.LineContainer) uint {
 
 	for _, l := range lines {
 		if len(l.Tokens) != 0 {
-			log.Println("NotEmpty:", l)
 			notEmpty++
 		}
 	}
