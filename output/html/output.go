@@ -117,7 +117,6 @@ func ToString(paragraphs []token.ParagraphToken, options eNote.Options) []byte {
 			}
 			body += "</p>\n"
 		case token.SubtitleParagraph:
-			log.Println("Found Subtitle:", pp.Text)
 			switch pp.Indentation {
 			case 0:
 				body += fmt.Sprintf("<h4>%s</h4>", pp.Text)
