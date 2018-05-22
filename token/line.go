@@ -21,14 +21,26 @@ type LineContainer struct {
 //Type return the type of the Token
 func (t LineContainer) Type() Type { return TypeTokenLine }
 
+//String returns a string of the line with all tokens
 func (t LineContainer) String() string {
-	str := ""
+	var str string
 	for i := uint(0); i < t.LineState.Indentation; i++ {
 		str += "\t"
 	}
 	for _, t := range t.Tokens {
 		str += fmt.Sprintf("%v", t)
 	}
+	return str
+}
+
+//StringNoTab returns a string of the line with all tokens without tab
+func (t LineContainer) StringNoTab() string {
+	var str string
+
+	for _, t := range t.Tokens {
+		str += t.String()
+	}
+
 	return str
 }
 
