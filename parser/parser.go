@@ -113,10 +113,10 @@ func OptionsFromParagraphs(paragraphs *[]token.ParagraphToken) eNote.Options {
 
 		fmt.Println("After Update")
 		spew.Dump(options)
+
 		//Removing the paragraph
 		par := *paragraphs
-		par = append(par[:i], par[i+1:]...)
-		paragraphs = &par
+		*paragraphs = append(par[:i], par[i+1:]...)
 	}
 
 	return options

@@ -8,6 +8,8 @@ import (
 	"strings"
 )
 
+const divisorLen = 10
+
 //Output generate eNote valid code as output, it can be used to prettify the eNote source code
 func Output(paragraphs []token.ParagraphToken, options eNote.Options) ([]byte, error) {
 	data := make([]byte, 0)
@@ -19,11 +21,9 @@ func Output(paragraphs []token.ParagraphToken, options eNote.Options) ([]byte, e
 		case token.SubtitleParagraph:
 			data = append(data, makeSubtitle(pp)...)
 		case token.TextParagraph:
-			// newData := fmt.Sprintf("<text>%s</text>\n", textParagraphToString(pp))
-			// data = append(data, newData...)
 			data = append(data, textParagraphToString(pp)...)
 		case token.DivisorParagraph:
-			data = append(data, fmt.Sprintf("%s\n", strings.Repeat("-", 10))...)
+			data = append(data, fmt.Sprintf("%s\n", strings.Repeat("-", divisorLen))...)
 		default:
 			log.Printf("ERROR: Not Implemented: %T{%v}\n", pp, pp)
 		}
