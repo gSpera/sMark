@@ -9,6 +9,7 @@ import (
 	"os"
 
 	output "eNote/output/html"
+	"eNote/output/prettify"
 	"eNote/output/telegraph"
 	"eNote/parser"
 	eNote "eNote/utils"
@@ -27,6 +28,8 @@ func main() {
 	verbose := flag.Bool("verbose", false, "Output logging")
 	htmlOut := flag.Bool("html", true, "Output HTML")
 	telegraphOut := flag.Bool("telegraph", false, "Output to Telegra.ph")
+	prettifyFlag := flag.String("prettify", "", "Prettify")
+
 	//Flags
 	options := eNote.Options{
 		InputFile:  flag.String("i", "-", "Input file, - for stdin"),
@@ -112,6 +115,28 @@ func main() {
 
 		spew.Dump(pagePubblished)
 		log.Println("Outputting Telegraph DONE")
+	}
+
+	//eNote Output Engine
+	if *prettifyFlag != "" {
+		log.Println("Outputting eNote")
+		data, err := prettify.Output(tokenList, options)
+		if err != nil {
+			log.Fatalf("Could not compile to eNote: %v\n", err)
+		}
+		spew.Dump(data)
+
+		f, err := os.Create(*prettifyFlag)
+		if err != nil {
+			log.Fatalf("Could not create file %s: %v", *prettifyFlag, err)
+		}
+		defer f.Close()
+		_, err = f.Write(data)
+		if err != nil {
+			log.Fatalf("Could not output to file: %v\n", err)
+		}
+
+		log.Println("Outputting eNote DONE")
 	}
 }
 

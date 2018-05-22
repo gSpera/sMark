@@ -284,7 +284,6 @@ func TokenToParagraph(lines []token.LineToken) []token.ParagraphToken {
 				paragraphs = append(paragraphs, token.DivisorParagraph{})
 				currentParagraph = token.TextParagraph{}
 			default:
-				log.Println(spew.Sdump(currentParagraph.Lines), notEmptyLines(currentParagraph.Lines))
 				if notEmptyLines(currentParagraph.Lines) != 1 {
 					// log.Println(currentParagraph)
 					log.Println("\t\t- Wrong number of lines:", notEmptyLines(currentParagraph.Lines))
