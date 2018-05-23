@@ -13,6 +13,7 @@ const divisorLen = 10
 //Output generate eNote valid code as output, it can be used to prettify the eNote source code
 func Output(paragraphs []token.ParagraphToken, options eNote.Options) ([]byte, error) {
 	data := make([]byte, 0)
+	data = append(data, makeHeader(options)...)
 
 	for _, p := range paragraphs {
 		switch pp := p.(type) {
@@ -65,8 +66,23 @@ func makeSubtitle(subtitle token.SubtitleParagraph) string {
 	return str
 }
 
+func makeHeader(options eNote.Options) string {
+	delim := strings.Repeat("+", 10)
+	var content string
+
+	content += fmt.Sprintf("Title=%v\n", strings.TrimSpace(*options.Title))
+	content += fmt.Sprintf("TabWidth=%v\n", *options.TabWidth)
+	content += fmt.Sprintf("InputFile=%v\n", *options.InputFile)
+	content += fmt.Sprintf("NewLine=%v\n", *options.NewLine)
+	content += fmt.Sprintf("OutputFile=%v\n", *options.OutputFile)
+	content += fmt.Sprintf("OnlyBody=%v\n", *options.OnlyBody)
+	content += fmt.Sprintf("EnableFont=%v\n", *options.EnableFont)
+	content += fmt.Sprintf("InlineCSS=%v\n", *options.InlineCSS)
+	content += fmt.Sprintf("CustomCSS=%v\n", *options.CustomCSS)
+
+	return fmt.Sprintf("%s\n%s%s\n\n", delim, content, delim)
+}
+
 func indentation(n uint) string {
 	return strings.Repeat("\t", int(n))
 }
-
-func nothing() {}
