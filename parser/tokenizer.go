@@ -136,6 +136,12 @@ func TokenToLine(tokens []token.Token) []token.LineToken {
 				lines = append(lines, token.LessLine{})
 				currentLine = token.LineContainer{}
 				continue
+			case isListLine(currentLine):
+				log.Println("\t- Found ListLine")
+				currentLine.Tokens = currentLine.Tokens[1:]
+				lines = append(lines, token.ListLine{Text: currentLine})
+				currentLine = token.LineContainer{}
+				continue
 			default:
 				log.Println("\t- Found TextLine")
 				log.Println("\t\t- Indentation:", currentLine.Indentation)
@@ -209,12 +215,25 @@ func isType(typ token.Type, line token.LineContainer, _options ...isTypeOptions)
 	return true
 }
 
+func isListLine(line token.LineContainer) bool {
+	if len(line.Tokens) < 2 {
+		return false
+	}
+
+	if _, ok := line.Tokens[0].(token.LessToken); !ok {
+		return false
+	}
+
+	return true
+}
+
 //TokenToParagraph divide a slice of lines in paragraphs
 func TokenToParagraph(lines []token.LineToken) []token.ParagraphToken {
 	fmt.Printf("Paragraphs: %d Lines\n", len(lines))
 	paragraphs := []token.ParagraphToken{}
 	currentParagraph := token.TextParagraph{}
 	header := false
+	var list []token.ListLine
 
 	for i, t := range lines {
 		var lastLine token.LineToken
@@ -222,6 +241,10 @@ func TokenToParagraph(lines []token.LineToken) []token.ParagraphToken {
 			lastLine = nil
 		} else {
 			lastLine = lines[i-1]
+		}
+		if _, ok := t.(token.ListLine); !ok && list != nil {
+			paragraphs = append(paragraphs, token.ListParagraph{Items: list})
+			list = nil
 		}
 
 		switch tt := t.(type) {
@@ -336,6 +359,10 @@ func TokenToParagraph(lines []token.LineToken) []token.ParagraphToken {
 				spew.Dump(t.Tokens)
 				currentParagraph.Lines = append(currentParagraph.Lines, t)
 			}
+		case token.ListLine:
+			list = append(list, tt)
+		default:
+			panic(fmt.Sprintf("Line=>Paragraph for %T{%+v} not defined", tt, tt))
 		}
 
 	}
