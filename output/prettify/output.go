@@ -25,6 +25,8 @@ func Output(paragraphs []token.ParagraphToken, options eNote.Options) ([]byte, e
 			data = append(data, textParagraphToString(pp)...)
 		case token.DivisorParagraph:
 			data = append(data, fmt.Sprintf("%s\n", strings.Repeat("-", divisorLen))...)
+		case token.ListParagraph:
+			data = append(data, makeList(pp)...)
 		default:
 			log.Printf("ERROR: Not Implemented: %T{%v}\n", pp, pp)
 		}
@@ -85,4 +87,12 @@ func makeHeader(options eNote.Options) string {
 
 func indentation(n uint) string {
 	return strings.Repeat("\t", int(n))
+}
+
+func makeList(list token.ListParagraph) string {
+	var content string
+	for _, item := range list.Items {
+		content += fmt.Sprintf("- %s\n", item.Text.String())
+	}
+	return content
 }
