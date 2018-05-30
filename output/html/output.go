@@ -123,6 +123,14 @@ func ToString(paragraphs []token.ParagraphToken, options eNote.Options) []byte {
 			default:
 				body += fmt.Sprintf("<h3>%s</h3>", pp.Text)
 			}
+		case token.ListParagraph:
+			body += "<ul>"
+
+			for _, item := range pp.Items {
+				body += fmt.Sprintf("<li>%s</li>", item.Text.String())
+			}
+
+			body += "</ul>"
 		default:
 			log.Printf("Found Unknown Paragraph: %T{%+v}\n", p, p)
 			panic("Paragraph Type not supported")
