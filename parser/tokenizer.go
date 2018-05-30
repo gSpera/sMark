@@ -139,6 +139,11 @@ func TokenToLine(tokens []token.Token) []token.LineToken {
 			case isListLine(currentLine):
 				log.Println("\t- Found ListLine")
 				currentLine.Tokens = currentLine.Tokens[1:]
+				fToken := currentLine.Tokens[0]
+				if ft, ok := fToken.(token.TextToken); ok {
+					ft.Text = ft.Text[1:]
+					currentLine.Tokens[0] = ft
+				}
 				lines = append(lines, token.ListLine{Text: currentLine})
 				currentLine = token.LineContainer{}
 				continue
