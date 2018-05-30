@@ -59,3 +59,9 @@ type SubtitleParagraph struct {
 	Text        LineContainer
 	Indentation uint
 }
+
+//ListParagraph is a paragraph rapresenting a List
+type ListParagraph struct {
+	ParagraphToken
+	Items []ListLine
+}

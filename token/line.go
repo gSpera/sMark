@@ -66,3 +66,10 @@ type EqualLine struct {
 	Indentation uint
 	Length      uint
 }
+
+//ListLine rapresent an element of a list
+type ListLine struct {
+	LineToken
+	Text        LineContainer
+	Indentation uint
+}
