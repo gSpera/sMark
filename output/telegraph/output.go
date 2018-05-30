@@ -63,6 +63,18 @@ func ToString(paragraphs []token.ParagraphToken, options eNote.Options) tgraph.P
 			spew.Dump(par)
 			nodes = append(nodes, par)
 			lastParagraph = p
+		case token.ListParagraph:
+			fmt.Println("ListParagraph")
+			list := createTag("ul")
+			for _, item := range pp.Items {
+				fmt.Println("Appending Item")
+				li := createLi(item.Text.String())
+				list.Children = append(list.Children, li)
+			}
+
+			spew.Dump(list)
+			nodes = append(nodes, list)
+			lastParagraph = pp
 		}
 
 		if _, ok := lastParagraph.(token.TextParagraph); ok {
@@ -104,4 +116,10 @@ func createLine(line []token.Token, bold *bool, italic *bool) []tgraph.Node {
 	fmt.Println("Create Line:")
 	spew.Dump(nodes)
 	return nodes
+}
+
+func createLi(text string) tgraph.Node {
+	li := createTag("li")
+	li.Children = []tgraph.Node{text}
+	return li
 }
