@@ -1,6 +1,7 @@
 package parser
 
 import (
+	"bufio"
 	"eNote/token"
 	"eNote/utils"
 	"fmt"
@@ -14,12 +15,17 @@ import (
 //Tokenizer parse a *os.File and return a slice of tokens
 func Tokenizer(reader io.Reader) ([]token.Token, error) {
 	tokenList := []token.Token{}
-	char := make([]byte, 1)
+	r := bufio.NewReader(reader)
 	buffer := ""
 
 	for {
-		n, err := reader.Read(char)
-		if n == 0 {
+		// n, err := reader.Read(char)
+		n, size, err := r.ReadRune()
+		log.Println("Rune:", n, string(n), "Size:", size, "Err:", err)
+		if size != 1 {
+			log.Println()
+		}
+		if size == 0 {
 			addBufferToTokenBuffer(&tokenList, &buffer)
 			tokenList = append(tokenList, token.NewLineToken{})
 			fmt.Println("EOF")
@@ -30,7 +36,7 @@ func Tokenizer(reader io.Reader) ([]token.Token, error) {
 			return nil, err
 		}
 
-		switch char[0] {
+		switch n {
 		case token.TypeTab:
 			log.Println("\t- Found TabToken")
 			tokenList = append(tokenList, token.TabToken{})
@@ -67,7 +73,7 @@ func Tokenizer(reader io.Reader) ([]token.Token, error) {
 			tokenList = append(tokenList, token.EqualToken{})
 		default:
 			// fmt.Printf("Char: %c\n", char[0])
-			buffer += string(char[0])
+			buffer += string(n)
 		}
 	}
 }

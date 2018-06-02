@@ -2,10 +2,12 @@ package eNote
 
 import (
 	"fmt"
+	"html"
 	"html/template"
 	"log"
 	"reflect"
 	"strconv"
+	"strings"
 
 	"github.com/davecgh/go-spew/spew"
 	"github.com/pkg/errors"
@@ -124,4 +126,25 @@ func (o *Options) Update(oo Options) {
 
 	fmt.Println("Update Done")
 	spew.Dump(o)
+}
+
+//EscapeHTML escapes the html string passed as parameter,
+//it sanitaze more html entities than html.EscapeString
+func EscapeHTML(data string) string {
+	data = html.EscapeString(data)
+	data = strings.NewReplacer(
+		"<", " &lt;",
+		">", " &gt;",
+		"&", "&amp;",
+		"\"", "&quot;",
+		"'", "&apos;",
+		"¢", "&cent;",
+		"£", "&pound;",
+		"¥", "&yen;",
+		"€", "&euro;",
+		"©", "&copy;",
+		"®", "&reg;",
+	).Replace(data)
+
+	return data
 }
