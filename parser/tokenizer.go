@@ -21,10 +21,7 @@ func Tokenizer(reader io.Reader) ([]token.Token, error) {
 	for {
 		// n, err := reader.Read(char)
 		n, size, err := r.ReadRune()
-		log.Println("Rune:", n, string(n), "Size:", size, "Err:", err)
-		if size != 1 {
-			log.Println()
-		}
+
 		if size == 0 {
 			addBufferToTokenBuffer(&tokenList, &buffer)
 			tokenList = append(tokenList, token.NewLineToken{})

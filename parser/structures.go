@@ -2,7 +2,6 @@ package parser
 
 import (
 	"eNote/token"
-	"fmt"
 )
 
 const maxTokenDistance = 255
@@ -12,8 +11,6 @@ func TokenToStructure(tokens []token.Token) []token.Token {
 	toSkip := 0 //toSkip contains to token that the for loop need to skip
 
 	for i, tok := range tokens {
-		_ = tok
-		_ = i
 		if toSkip > 0 {
 			toSkip--
 			continue
@@ -26,7 +23,6 @@ func TokenToStructure(tokens []token.Token) []token.Token {
 			tokens = checkRangeStruct(token.BoldToken{}, fn, tokens, i)
 			return tokens
 		case token.ItalicToken:
-			fmt.Println("ItalicToken")
 			fn := func(buffer string) token.TextToken { return token.TextToken{Text: buffer, Italic: true} }
 			tokens = checkRangeStruct(token.ItalicToken{}, fn, tokens, i)
 		}
