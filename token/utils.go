@@ -14,7 +14,7 @@ func LineContainerFromString(txt string) LineContainer {
 	}
 
 	//Remove starting tabs
-	tokens = append(tokens, TextToken{txt[len(tokens):]})
+	tokens = append(tokens, TextToken{Text: txt[len(tokens):]})
 	return LineContainer{
 		Tokens: tokens,
 	}

@@ -114,9 +114,11 @@ func (t TabToken) String() string { return "\t" }
 //DebugString is used for ast outputting
 func (t TabToken) DebugString() string { return "<TabToken>" }
 
-//TextToken a token conteining text
+//TextToken a token containing text
 type TextToken struct {
-	Text string
+	Text   string
+	Bold   bool
+	Italic bool
 }
 
 //Type returns the type of the Token
