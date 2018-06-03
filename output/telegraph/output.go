@@ -30,14 +30,14 @@ func ToString(paragraphs []token.ParagraphToken, options eNote.Options) tgraph.P
 		case token.TitleParagraph:
 
 			if title == "" {
-				title = eNote.EscapeHTML(pp.Text.String())
+				title = pp.Text.String()
 			}
 
 			fmt.Println("Title Paragraph")
-			nodes = append(nodes, createTitle(eNote.EscapeHTML(pp.Text.String())))
+			nodes = append(nodes, createTitle(pp.Text.String()))
 		case token.SubtitleParagraph:
 			fmt.Println("Subtitle Paragraph")
-			nodes = append(nodes, createSubtitle(eNote.EscapeHTML(pp.Text.String())))
+			nodes = append(nodes, createSubtitle(pp.Text.String()))
 		case token.DivisorParagraph:
 			fmt.Println("Divisor Paragraph")
 			nodes = append(nodes, createTag("hr"))
@@ -68,7 +68,7 @@ func ToString(paragraphs []token.ParagraphToken, options eNote.Options) tgraph.P
 			list := createTag("ul")
 			for _, item := range pp.Items {
 				fmt.Println("Appending Item")
-				li := createLi(eNote.EscapeHTML(item.Text.String()))
+				li := createLi(item.Text.String())
 				list.Children = append(list.Children, li)
 			}
 
@@ -104,11 +104,11 @@ func createLine(line []token.Token, bold *bool, italic *bool) []tgraph.Node {
 		case token.TypeText:
 			switch {
 			case *bold:
-				nodes = append(nodes, createBold(eNote.EscapeHTML(t.String())))
+				nodes = append(nodes, createBold(t.String()))
 			case *italic:
-				nodes = append(nodes, createItalic(eNote.EscapeHTML(t.String())))
+				nodes = append(nodes, createItalic(t.String()))
 			default:
-				nodes = append(nodes, eNote.EscapeHTML(t.String()))
+				nodes = append(nodes, t.String())
 			}
 		}
 	}

@@ -5,6 +5,7 @@ import (
 	"eNote/token"
 	eNote "eNote/utils"
 	"fmt"
+	"html"
 	"html/template"
 	"log"
 	"os"
@@ -60,7 +61,7 @@ func ToString(paragraphs []token.ParagraphToken, options eNote.Options) []byte {
 				tag = "<h1>%s</h1>"
 			}
 			fmt.Println("TitleParagraph Indentation:", pp.Indentation)
-			body += fmt.Sprintf(tag, pp.Text)
+			body += fmt.Sprintf(tag, html.EscapeString(pp.Text.String()))
 			continue
 		case token.DivisorParagraph:
 			body += "<hr>"
@@ -99,7 +100,7 @@ func ToString(paragraphs []token.ParagraphToken, options eNote.Options) []byte {
 					}
 
 					fmt.Printf("Adding Text: %s, Bold: %v, Italic: %v\n", tok.String(), bold, italic)
-					body += tok.String()
+					body += html.EscapeString(tok.String())
 					if bold {
 						fmt.Println("Apply bold")
 						fmt.Println(tok.String())
@@ -119,15 +120,15 @@ func ToString(paragraphs []token.ParagraphToken, options eNote.Options) []byte {
 		case token.SubtitleParagraph:
 			switch pp.Indentation {
 			case 0:
-				body += fmt.Sprintf("<h4>%s</h4>", pp.Text)
+				body += fmt.Sprintf("<h4>%s</h4>", html.EscapeString(pp.Text.String()))
 			default:
-				body += fmt.Sprintf("<h3>%s</h3>", pp.Text)
+				body += fmt.Sprintf("<h3>%s</h3>", html.EscapeString(pp.Text.String()))
 			}
 		case token.ListParagraph:
 			body += "<ul>"
 
 			for _, item := range pp.Items {
-				body += fmt.Sprintf("<li>%s</li>", item.Text.String())
+				body += fmt.Sprintf("<li>%s</li>", html.EscapeString(item.Text.String()))
 			}
 
 			body += "</ul>"
