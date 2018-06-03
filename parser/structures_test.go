@@ -60,6 +60,34 @@ func TestStructure(t *testing.T) {
 				token.TextToken{Text: "Test", Italic: true},
 			},
 		},
+		{
+			"Token after end",
+			[]token.Token{
+				token.ItalicToken{},
+				token.TextToken{Text: "Test"},
+				token.ItalicToken{},
+				token.TextToken{Text: "AnotherText"},
+			},
+			[]token.Token{
+				token.TextToken{Text: "Test", Italic: true},
+				token.TextToken{Text: "AnotherText"},
+			},
+		},
+		{
+			"Two Times",
+			[]token.Token{
+				token.ItalicToken{},
+				token.TextToken{Text: "Test"},
+				token.ItalicToken{},
+				token.ItalicToken{},
+				token.TextToken{Text: "AnotherText"},
+				token.ItalicToken{},
+			},
+			[]token.Token{
+				token.TextToken{Text: "Test", Italic: true},
+				token.TextToken{Text: "AnotherText", Italic: true},
+			},
+		},
 	}
 
 	for _, test := range tests {

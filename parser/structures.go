@@ -2,6 +2,7 @@ package parser
 
 import (
 	"eNote/token"
+	"log"
 )
 
 const maxTokenDistance = 255
@@ -18,11 +19,13 @@ func TokenToStructure(tokens []token.Token) []token.Token {
 
 		switch ttok := tok.(type) {
 		case token.BoldToken:
+			log.Println("\t-Found BoldToken")
 			_ = ttok
 			fn := func(buffer string) token.TextToken { return token.TextToken{Text: buffer, Bold: true} }
 			tokens = checkRangeStruct(token.BoldToken{}, fn, tokens, i)
 			return tokens
 		case token.ItalicToken:
+			log.Println("\t-Found ItalicToken")
 			fn := func(buffer string) token.TextToken { return token.TextToken{Text: buffer, Italic: true} }
 			tokens = checkRangeStruct(token.ItalicToken{}, fn, tokens, i)
 		}
@@ -48,6 +51,10 @@ func checkRangeStruct(ending token.Token, generateToken func(string) token.TextT
 			newTokens := make([]token.Token, start) //create new buffer
 			copy(newTokens, tokens)
 			newTokens = append(newTokens, generateToken(buffer))
+
+			if i != len(tokens) {
+				newTokens = append(newTokens, tokens[i+1:]...)
+			}
 			return newTokens
 		}
 
