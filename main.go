@@ -22,6 +22,7 @@ import (
 const ProgramName = "eNote"
 
 func main() {
+	spew.Config = spew.ConfigState{DisableMethods: true, Indent: "\t"}
 	//Logger
 	log.SetPrefix(ProgramName + ": ")
 	log.SetFlags(log.Ltime | log.Lshortfile)
@@ -88,6 +89,8 @@ func main() {
 	log.Println("Selecting Title DONE")
 	fmt.Println("Final Options")
 	spew.Dump(options)
+
+	// ioutil.WriteFile("dump.ent.out", []byte(spew.Sdump(tokenList)), 0665)
 
 	//HTML Output Engine
 	if *htmlOut {

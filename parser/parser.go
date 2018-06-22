@@ -6,7 +6,6 @@ import (
 	"eNote/utils"
 	"fmt"
 	"io"
-	"io/ioutil"
 	"log"
 
 	"github.com/davecgh/go-spew/spew"
@@ -29,7 +28,7 @@ func ParseReader(fl io.Reader) ([]token.ParagraphToken, error) {
 	log.Println("Token To Line")
 	lines := TokenToLine(tokens)
 	log.Println("Token To Line DONE")
-	ioutil.WriteFile("lines.dump", []byte(spew.Sdump(lines)), 0665)
+	// ioutil.WriteFile("lines.dump", []byte(spew.Sdump(lines)), 0665)
 
 	log.Println("Line To Paragraph")
 	paragraphs := TokenToParagraph(lines)
