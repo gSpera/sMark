@@ -24,11 +24,11 @@ func Output(paragraphs []token.ParagraphToken, options eNote.Options) ([]byte, e
 		case token.TextParagraph:
 			data = append(data, textParagraphToString(pp)...)
 		case token.DivisorParagraph:
-			data = append(data, fmt.Sprintf("%s\n", strings.Repeat("-", divisorLen))...)
+			data = append(data, fmt.Sprintf("%s\n\n", strings.Repeat("-", divisorLen))...)
 		case token.ListParagraph:
 			data = append(data, makeList(pp)...)
 		default:
-			log.Printf("ERROR: Not Implemented: %T{%v}\n", pp, pp)
+			log.Printf("\t\t- ERROR: Not Implemented: %T{%v}\n", pp, pp)
 		}
 	}
 	return data, nil
@@ -37,8 +37,8 @@ func Output(paragraphs []token.ParagraphToken, options eNote.Options) ([]byte, e
 func textParagraphToString(p token.TextParagraph) string {
 	var str string
 	for _, line := range p.Lines {
-		lineString := line.StringNoTab()
-
+		lineString := strings.Repeat("\t", line.Indentation)
+		lineString += lineContainerToString(line)
 		if len(lineString) == 0 { //Do not add line if it is empty
 			continue
 		}
@@ -52,18 +52,18 @@ func textParagraphToString(p token.TextParagraph) string {
 
 func makeTitle(title token.TitleParagraph) string {
 	var str string
-	str = fmt.Sprintf("%s\n%s%s\n\n",
-		title.Text.StringNoTab(),
-		indentation(title.Indentation), strings.Repeat("=", len(title.Text.StringNoTab())-1),
+	str = fmt.Sprintf("%s%s\n%s%s\n\n",
+		indentation(title.Indentation), title.Text,
+		indentation(title.Indentation), strings.Repeat("=", len(title.Text)-1),
 	)
 	return str
 }
 
 func makeSubtitle(subtitle token.SubtitleParagraph) string {
 	var str string
-	str = fmt.Sprintf("%s\n%s%s\n\n",
-		subtitle.Text.StringNoTab(),
-		indentation(subtitle.Indentation), strings.Repeat("-", len(subtitle.Text.StringNoTab())-1),
+	str = fmt.Sprintf("%s%s\n%s%s\n\n",
+		indentation(subtitle.Indentation), subtitle.Text,
+		indentation(subtitle.Indentation), strings.Repeat("-", len(subtitle.Text)-1),
 	)
 	return str
 }
@@ -85,7 +85,7 @@ func makeHeader(options eNote.Options) string {
 	return fmt.Sprintf("%s\n%s%s\n\n", delim, content, delim)
 }
 
-func indentation(n uint) string {
+func indentation(n int) string {
 	return strings.Repeat("\t", int(n))
 }
 
@@ -94,5 +94,28 @@ func makeList(list token.ListParagraph) string {
 	for _, item := range list.Items {
 		content += fmt.Sprintf("- %s\n", item.Text.String())
 	}
+
+	content += "\n"
 	return content
+}
+
+func lineContainerToString(container token.LineContainer) string {
+	var str string
+	for _, t := range container.Tokens {
+		switch tt := t.(type) {
+		case token.TextToken:
+			str += textTokenToString(tt)
+		default:
+			if st, ok := tt.(token.SimpleToken); ok {
+				str += string(st.Char())
+				continue
+			}
+			panic(fmt.Sprintf("LineContainer contains unknown token %T{%v}", tt, tt))
+		}
+	}
+	return str
+}
+
+func textTokenToString(t token.TextToken) string {
+	return t.String()
 }
