@@ -9,7 +9,6 @@ import (
 	"html/template"
 	"log"
 	"os"
-	"strings"
 )
 
 const maxMarkup = 255
@@ -42,8 +41,8 @@ func ToString(paragraphs []token.ParagraphToken, options eNote.Options) []byte {
 	}
 
 	body := ""
-	bold := false
-	italic := false
+	// bold := false
+	// italic := false
 	alignMap := map[int]string{
 		0: "align-left",
 		1: "align-center",
@@ -61,68 +60,52 @@ func ToString(paragraphs []token.ParagraphToken, options eNote.Options) []byte {
 				tag = "<h1>%s</h1>"
 			}
 			fmt.Println("TitleParagraph Indentation:", pp.Indentation)
-			body += fmt.Sprintf(tag, html.EscapeString(pp.Text.String()))
+			body += fmt.Sprintf(tag, html.EscapeString(pp.Text))
 			continue
 		case token.DivisorParagraph:
 			body += "<hr>"
 			continue
 		case token.TextParagraph:
-			body += fmt.Sprintf("<p class=\"%s\">", alignMap[pp.Indentation])
+			var paragraph string
 			for _, line := range pp.Lines {
-				for i, tok := range line.Tokens {
-					switch tok.(type) {
-					case token.BoldToken:
-						if distance := findToken(line, i, token.TypeBold); !bold && distance > maxMarkup || distance == -1 {
-							break
+				for _, text := range line.Tokens {
+					switch tt := text.(type) {
+					case token.TextToken:
+						if tt.Bold {
+							paragraph += "<b>"
 						}
-
-						fmt.Println("Bold")
-						bold = !bold
-						if bold {
-							body += "<b>"
-						} else {
-							body += "</b> "
+						if tt.Italic {
+							paragraph += "<i>"
 						}
-						continue
-					case token.ItalicToken:
-						fmt.Println("Italic")
-						italic = !italic
-						if italic {
-							body += "<i>"
-						} else {
-							body += "</i> "
+						paragraph += tt.Text
+						if tt.Bold {
+							paragraph += "</b>"
 						}
-						continue
-					case token.TabToken:
-						fmt.Println("TAB")
-						body += strings.Repeat("&nbsp;", int(*options.TabWidth))
-						continue
+						if tt.Italic {
+							paragraph += "</i>"
+						}
+					default:
+						if st, ok := tt.(token.SimpleToken); ok {
+							paragraph += string(st.Char())
+							continue
+						}
+						panic(fmt.Sprintf("LineContainer contains unknown token %T{%v}", tt, tt))
 					}
-
-					fmt.Printf("Adding Text: %s, Bold: %v, Italic: %v\n", tok.String(), bold, italic)
-					body += html.EscapeString(tok.String())
-					if bold {
-						fmt.Println("Apply bold")
-						fmt.Println(tok.String())
-					}
-					if italic {
-						fmt.Println("Apply Italic")
-						fmt.Println(tok.String())
-					}
-
 				}
-
 				if *options.NewLine {
-					body += "<br>\n"
+					paragraph += "<br>\n"
 				}
 			}
-			body += "</p>\n"
+			if paragraph == "" || paragraph == "<br>\n" {
+				continue
+			}
+			body += fmt.Sprintf("<p class=\"%s\">%s</p>", alignMap[pp.Indentation], paragraph)
 		case token.SubtitleParagraph:
 			switch pp.Indentation {
 			case 0:
-				body += fmt.Sprintf("<h4>%s</h4>", html.EscapeString(pp.Text.String()))
+				body += fmt.Sprintf("<h4>%s</h4>", html.EscapeString(pp.Text))
 			default:
-				body += fmt.Sprintf("<h3>%s</h3>", html.EscapeString(pp.Text.String()))
+				body += fmt.Sprintf("<h3>%s</h3>", html.EscapeString(pp.Text))
 			}
 		case token.ListParagraph:
 			body += "<ul>"
