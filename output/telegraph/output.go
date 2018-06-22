@@ -4,6 +4,7 @@ import (
 	"eNote/token"
 	"eNote/utils"
 	"fmt"
+	"log"
 
 	"github.com/davecgh/go-spew/spew"
 	tgraph "github.com/toby3d/telegraph"
@@ -21,23 +22,15 @@ func ToString(paragraphs []token.ParagraphToken, options eNote.Options) tgraph.P
 	var lastParagraph token.ParagraphToken
 
 	for _, p := range paragraphs {
-		bold := false
-		italic := false
-
 		switch pp := p.(type) {
 		case token.HeaderParagraph:
 			panic("HeaderParagraph in output engine")
 		case token.TitleParagraph:
-
-			if title == "" {
-				title = pp.Text.String()
-			}
-
 			fmt.Println("Title Paragraph")
-			nodes = append(nodes, createTitle(pp.Text.String()))
+			nodes = append(nodes, createTitle(pp.Text))
 		case token.SubtitleParagraph:
 			fmt.Println("Subtitle Paragraph")
-			nodes = append(nodes, createSubtitle(pp.Text.String()))
+			nodes = append(nodes, createSubtitle(pp.Text))
 		case token.DivisorParagraph:
 			fmt.Println("Divisor Paragraph")
 			nodes = append(nodes, createTag("hr"))
@@ -46,21 +39,31 @@ func ToString(paragraphs []token.ParagraphToken, options eNote.Options) tgraph.P
 			fmt.Println("New Paragraph")
 			p := p.(token.TextParagraph)
 			par := createTag("p")
-			var fullLine []token.Token
 			for _, line := range p.Lines {
 				fmt.Println("Appending Line")
-				fullLine = append(fullLine, line.Tokens...)
+
+				for _, tok := range line.Tokens {
+					switch t := tok.(type) {
+					case token.TextToken:
+						par.Children = append(par.Children, createLine(t.Text, t.Bold, t.Italic))
+					default:
+						if st, ok := t.(token.SimpleToken); ok {
+							par.Children = append(par.Children, string(st.Char()))
+							continue
+						}
+						panic(fmt.Sprintf("LineContainer contains unknown token %T{%v}", t, t))
+					}
+				}
 
 				//Appending NewLine if the options allows it
 				if *options.NewLine {
 					fmt.Println("Adding NewLine")
-					fullLine = append(fullLine, token.TextToken{Text: "\n"})
+					par.Children = append(par.Children, "\n")
 				}
 			}
 
-			par.Children = append(par.Children, createLine(fullLine, &bold, &italic)...)
 			fmt.Println("Finished Paragraph")
-			spew.Dump(par)
+			log.Println(spew.Sdump(par))
 			nodes = append(nodes, par)
 			lastParagraph = p
 		case token.ListParagraph:
@@ -91,31 +94,19 @@ func ToString(paragraphs []token.ParagraphToken, options eNote.Options) tgraph.P
 	return p
 }
 
-func createLine(line []token.Token, bold *bool, italic *bool) []tgraph.Node {
-	nodes := []tgraph.Node{}
+func createLine(line string, bold bool, italic bool) tgraph.Node {
 	fmt.Println("createLine")
 	spew.Dump(line)
-	for _, t := range line {
-		switch t.Type() {
-		case token.TypeBold:
-			*bold = !*bold
-		case token.TypeItalic:
-			*italic = !*italic
-		case token.TypeText:
-			switch {
-			case *bold:
-				nodes = append(nodes, createBold(t.String()))
-			case *italic:
-				nodes = append(nodes, createItalic(t.String()))
-			default:
-				nodes = append(nodes, t.String())
-			}
-		}
+	var node tgraph.Node = line
+	if bold {
+		node = tgraph.NodeElement{Tag: "b", Children: []tgraph.Node{node}}
+	}
+	if italic {
+		node = tgraph.NodeElement{Tag: "b", Children: []tgraph.Node{node}}
 	}
 
 	fmt.Println("Create Line:")
-	spew.Dump(nodes)
-	return nodes
+	return node
 }
 
 func createLi(text string) tgraph.Node {
