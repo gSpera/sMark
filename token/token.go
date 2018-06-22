@@ -6,7 +6,7 @@ type Token interface {
 
 	//String returns a string rapresentation of the token.
 	//String is deprecated
-	String() string
+	Stringa() string
 
 	//Type returns the Type of the token
 	//Type is deprecated
@@ -17,7 +17,8 @@ type Token interface {
 type TextToken struct {
 	Token
 
-	Text string
+	Indentation int
+	Text        string
 
 	//Attributes
 	Bold   bool

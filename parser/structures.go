@@ -10,33 +10,46 @@ const maxTokenDistance = 255
 //TokenToStructure checks the slice of tokens for multi-token tokens, like bold/italic text
 func TokenToStructure(tokens []token.Token) []token.Token {
 	toSkip := 0 //toSkip contains to token that the for loop need to skip
-
+	var newTokens []token.Token
 	for i, tok := range tokens {
 		if toSkip > 0 {
 			toSkip--
 			continue
 		}
 
-		switch ttok := tok.(type) {
+		switch tok.(type) {
 		case token.BoldToken:
 			log.Println("\t-Found BoldToken")
-			_ = ttok
 			fn := func(buffer string) token.TextToken { return token.TextToken{Text: buffer, Bold: true} }
-			tokens = checkRangeStruct(token.BoldToken{}, fn, tokens, i)
-			return tokens
+			t, skip := checkRangeStruct(token.BoldToken{}, fn, tokens, i)
+			if skip == -1 {
+				newTokens = append(newTokens, tok)
+				continue
+			}
+			toSkip = skip
+			newTokens = append(newTokens, t)
 		case token.ItalicToken:
 			log.Println("\t-Found ItalicToken")
 			fn := func(buffer string) token.TextToken { return token.TextToken{Text: buffer, Italic: true} }
-			tokens = checkRangeStruct(token.ItalicToken{}, fn, tokens, i)
+			t, skip := checkRangeStruct(token.ItalicToken{}, fn, tokens, i)
+			if skip == -1 {
+				newTokens = append(newTokens, tok)
+				continue
+			}
+			toSkip = skip
+			newTokens = append(newTokens, t)
+		default:
+			newTokens = append(newTokens, tok)
 		}
 	}
 
-	return tokens
+	return newTokens
 }
 
 //checkRangeStruct searchs for a strcture like <token><Text></token>, for example with Bold *Text*
 //but it could be used also for other tokens like italic
-func checkRangeStruct(ending token.Token, generateToken func(string) token.TextToken, tokens []token.Token, start int) []token.Token {
+//returns the new token and tokens to skips, -1 if no structure found
+func checkRangeStruct(ending token.Token, generateToken func(string) token.TextToken, tokens []token.Token, start int) (token.Token, int) {
 	var buffer string
 
 	//Starting from next token, stop after maxTokenDistance or when tokens finish
@@ -44,18 +57,10 @@ func checkRangeStruct(ending token.Token, generateToken func(string) token.TextT
 
 		//Found Ending Token
 		if tokens[i] == ending {
-			if i == start { //The two tokens are adjacent
-				return tokens
+			if i == start+1 { //The two tokens are adjacent
+				return ending, -1
 			}
-
-			newTokens := make([]token.Token, start) //create new buffer
-			copy(newTokens, tokens)
-			newTokens = append(newTokens, generateToken(buffer))
-
-			if i != len(tokens) {
-				newTokens = append(newTokens, tokens[i+1:]...)
-			}
-			return newTokens
+			return generateToken(buffer), i - start
 		}
 
 		switch tt := tokens[i].(type) {
@@ -63,12 +68,12 @@ func checkRangeStruct(ending token.Token, generateToken func(string) token.TextT
 		case token.TextToken:
 			buffer += tt.Text
 
-		//Another token is not accepted inside bold
+		//Another token is not accepted inside
 		default:
-			return tokens
+			return ending, -1
 		}
 	}
 
 	//No ending token found
-	return tokens
+	return ending, -1
 }

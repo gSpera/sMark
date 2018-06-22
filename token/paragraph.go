@@ -48,16 +48,16 @@ type DivisorParagraph struct {
 //TitleParagraph is a paragraph rapresenting a Title
 type TitleParagraph struct {
 	ParagraphToken
-	Text        LineContainer
-	Indentation uint
+	Text        string
+	Indentation int
 }
 
 //SubtitleParagraph is a paragraph rapresenting a Subtitle,
 //it is similar to TitleParagraph
 type SubtitleParagraph struct {
 	ParagraphToken
-	Text        LineContainer
-	Indentation uint
+	Text        string
+	Indentation int
 }
 
 //ListParagraph is a paragraph rapresenting a List

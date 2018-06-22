@@ -45,7 +45,7 @@ func (t TextToken) DebugString() string { return fmt.Sprintf("<TextToken: %s>\n"
 
 //LineState is the line metadata
 type LineState struct {
-	Indentation uint
+	Indentation int
 }
 
 //Type is deprecated
@@ -80,4 +80,20 @@ func (t NewLineToken) String() string { return "<NewLineToken>" }
 func (t TabToken) String() string     { return "\t" }
 func (t LessToken) String() string    { return "<LessToken>" }
 func (t EqualToken) String() string   { return "<EqualToken>" }
-func (t TextToken) String() string    { return t.Text }
+
+func (t TextToken) String() string {
+	var str string
+	addAttr := func(str string) string {
+		if t.Bold {
+			return str + "*"
+		}
+		if t.Italic {
+			return str + "/"
+		}
+		return str
+	}
+	str = addAttr("")
+	str += t.Text
+	str = addAttr(str)
+	return str
+}

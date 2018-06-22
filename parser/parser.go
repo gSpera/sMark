@@ -6,6 +6,7 @@ import (
 	"eNote/utils"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"log"
 
 	"github.com/davecgh/go-spew/spew"
@@ -28,7 +29,7 @@ func ParseReader(fl io.Reader) ([]token.ParagraphToken, error) {
 	log.Println("Token To Line")
 	lines := TokenToLine(tokens)
 	log.Println("Token To Line DONE")
-	spew.Dump(lines)
+	ioutil.WriteFile("lines.dump", []byte(spew.Sdump(lines)), 0665)
 
 	log.Println("Line To Paragraph")
 	paragraphs := TokenToParagraph(lines)
@@ -129,11 +130,11 @@ func OptionsFromParagraphs(paragraphs *[]token.ParagraphToken) eNote.Options {
 //TitleFromParagraph resolve a possible title from the passed paragraphs
 func TitleFromParagraph(paragraph []token.ParagraphToken) string {
 	fmt.Println("TitleFromParagraph")
-	titles := map[string]uint{}
+	titles := map[string]int{}
 
 	for _, p := range paragraph {
 		if pp, ok := p.(token.TitleParagraph); ok {
-			txt := pp.Text.String()
+			txt := pp.Text
 			value := pp.Indentation
 
 			if currentValue, ok := titles[txt]; !ok || currentValue < value {
@@ -144,7 +145,7 @@ func TitleFromParagraph(paragraph []token.ParagraphToken) string {
 	}
 
 	max := "No Title"
-	maxV := uint(0)
+	maxV := 0
 
 	for k, v := range titles {
 		if v > maxV {
