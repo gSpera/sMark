@@ -4,12 +4,8 @@ package token
 type Token interface {
 	IsToken()
 
-	//String returns a string rapresentation of the token.
-	//String is deprecated
-	Stringa() string
-
 	//Type returns the Type of the token
-	//Type is deprecated
+	//It is used for recognizing the Token
 	Type() Type
 }
 

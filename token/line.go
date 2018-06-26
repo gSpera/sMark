@@ -17,27 +17,19 @@ type HeaderLine struct {
 //TODO: Should be Tokens []TextToken??
 type LineContainer struct {
 	LineToken
-	LineState
-	Tokens []Token
+	Indentation int
+	Tokens      []Token
 }
 
-//Type return the type of the Token
-func (t LineContainer) Type() Type { return TypeTokenLine }
-
 //String returns a string of the line with all tokens
-//This method is deprecated
 func (t LineContainer) String() string {
 	var str string
-	for i := 0; i < t.LineState.Indentation; i++ {
+	for i := 0; i < t.Indentation; i++ {
 		str += "\t"
 	}
-	for _, t := range t.Tokens {
-		if tt, ok := t.(SimpleToken); ok {
-			str += string(tt.Char())
-		} else {
-			str += fmt.Sprintf("%v", t)
-		}
-	}
+
+	str += t.StringNoTab()
+
 	return str
 }
 
@@ -58,11 +50,6 @@ func (t LineContainer) StringNoTab() string {
 	}
 
 	return str
-}
-
-//DebugString is used for ast outputting
-func (t LineContainer) DebugString() string {
-	return fmt.Sprintf("<LineToken: {%+v}%s>\n", t.LineState, t.Tokens)
 }
 
 //DivisorLine rapresent a header line
