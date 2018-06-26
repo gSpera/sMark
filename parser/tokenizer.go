@@ -15,12 +15,14 @@ func Tokenizer(reader io.Reader) ([]token.Token, error) {
 	buffer := ""
 
 	for {
-		// n, err := reader.Read(char)
 		n, size, err := r.ReadRune()
 
 		if size == 0 {
 			addBufferToTokenBuffer(&tokenList, &buffer)
-			tokenList = append(tokenList, token.NewLineToken{})
+			//Adds new line at end if no one
+			if tokenList[len(tokenList)-1].Type() != token.TypeNewLine {
+				tokenList = append(tokenList, token.NewLineToken{})
+			}
 			fmt.Println("EOF")
 			tokenList = checkTokenList(tokenList)
 			return tokenList, nil
@@ -53,18 +55,12 @@ func Tokenizer(reader io.Reader) ([]token.Token, error) {
 			tokenList = append(tokenList, token.LessToken{})
 		case token.TypeHeader:
 			log.Println("\t- Found HeaderToken")
-			if len(buffer) == 0 {
-				// 	addBufferToTokenBuffer(&tokenList, &buffer)
-				// } else {
-				tokenList = append(tokenList, token.HeaderToken{})
-				break
-			}
+			tokenList = append(tokenList, token.HeaderToken{})
 		case token.TypeEqual:
 			log.Println("\t- Found EqualToken")
 			addBufferToTokenBuffer(&tokenList, &buffer)
 			tokenList = append(tokenList, token.EqualToken{})
 		default:
-			// fmt.Printf("Char: %c\n", char[0])
 			buffer += string(n)
 		}
 	}
@@ -84,6 +80,7 @@ func checkTokenList(tokenList []token.Token) []token.Token {
 		return tokenList
 	}
 
+	//Remove first TextToken if it is empty
 	if t, ok := tokenList[0].(token.TextToken); ok && len(t.Text) == 0 {
 		return tokenList[1:]
 	}

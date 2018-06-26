@@ -19,11 +19,12 @@ func TokenToParagraph(lines []token.LineToken) []token.ParagraphToken {
 	var skip int
 
 	for i, t := range lines {
+		var lastLine token.LineToken
+
 		if skip > 0 {
 			skip--
 			continue
 		}
-		var lastLine token.LineToken
 		if i == 0 {
 			lastLine = nil
 		} else {
