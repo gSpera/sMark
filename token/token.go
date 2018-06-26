@@ -19,6 +19,7 @@ type TextToken struct {
 	//Attributes
 	Bold   bool
 	Italic bool
+	Strike bool
 }
 
 //String creates a string with the content of the TextToken
@@ -31,6 +32,9 @@ func (t TextToken) String() string {
 		}
 		if t.Italic {
 			return str + "/"
+		}
+		if t.Strike {
+			return str + "-"
 		}
 		return str
 	}

@@ -77,12 +77,18 @@ func ToString(paragraphs []token.ParagraphToken, options eNote.Options) []byte {
 						if tt.Italic {
 							paragraph += "<i>"
 						}
+						if tt.Strike {
+							paragraph += "<s>"
+						}
 						paragraph += tt.Text
 						if tt.Bold {
 							paragraph += "</b>"
 						}
 						if tt.Italic {
 							paragraph += "</i>"
+						}
+						if tt.Strike {
+							paragraph += "</s>"
 						}
 					default:
 						if st, ok := tt.(token.SimpleToken); ok {

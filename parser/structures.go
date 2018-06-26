@@ -38,6 +38,16 @@ func TokenToStructure(tokens []token.Token) []token.Token {
 			}
 			toSkip = skip
 			newTokens = append(newTokens, t)
+		case token.LessToken:
+			log.Println("\t-Found LessToken")
+			fn := func(buffer string) token.TextToken { return token.TextToken{Text: buffer, Strike: true} }
+			t, skip := checkRangeStruct(token.LessToken{}, fn, tokens, i)
+			if skip == -1 {
+				newTokens = append(newTokens, tok)
+				continue
+			}
+			toSkip = skip
+			newTokens = append(newTokens, t)
 		default:
 			newTokens = append(newTokens, tok)
 		}

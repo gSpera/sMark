@@ -45,7 +45,7 @@ func ToString(paragraphs []token.ParagraphToken, options eNote.Options) tgraph.P
 				for _, tok := range line.Tokens {
 					switch t := tok.(type) {
 					case token.TextToken:
-						par.Children = append(par.Children, createLine(t.Text, t.Bold, t.Italic))
+						par.Children = append(par.Children, createLine(t))
 					default:
 						if st, ok := t.(token.SimpleToken); ok {
 							par.Children = append(par.Children, string(st.Char()))
@@ -94,15 +94,17 @@ func ToString(paragraphs []token.ParagraphToken, options eNote.Options) tgraph.P
 	return p
 }
 
-func createLine(line string, bold bool, italic bool) tgraph.Node {
+func createLine(text token.TextToken) tgraph.Node {
 	fmt.Println("createLine")
-	spew.Dump(line)
-	var node tgraph.Node = line
-	if bold {
+	var node tgraph.Node = text.Text
+	if text.Bold {
 		node = tgraph.NodeElement{Tag: "b", Children: []tgraph.Node{node}}
 	}
-	if italic {
+	if text.Italic {
 		node = tgraph.NodeElement{Tag: "b", Children: []tgraph.Node{node}}
+	}
+	if text.Strike {
+		node = tgraph.NodeElement{Tag: "s", Children: []tgraph.Node{node}}
 	}
 
 	fmt.Println("Create Line:")
