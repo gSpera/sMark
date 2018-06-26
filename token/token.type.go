@@ -8,15 +8,29 @@ type Type int
 
 //Default Types
 const (
+	//TypeUndefined is an undefined token
 	TypeUndefined = iota
-	TypeBold      = '*'
-	TypeItalic    = '/'
-	TypeNewLine   = '\n'
-	TypeTab       = '\t'
-	TypeHeader    = '+'
-	TypeLess      = '-'
-	TypeEqual     = '='
-	TypeText      = -1
+	//TypeBold is an bold starting/ending token
+	TypeBold = '*'
+	//TypeItalic is an italic starting/ending token
+	TypeItalic = '/'
+
+	//TypeNewLine is a newline
+	TypeNewLine = '\n'
+	//TypeTab is a tab
+	TypeTab = '\t'
+
+	//TypeHeader is the token used in an header
+	TypeHeader = '+'
+
+	//TypeLess is the token used for subtitle and for divisor
+	TypeLess = '-'
+
+	//TypeEqual is the token used for title
+	TypeEqual = '='
+
+	//TypeText is a text token
+	TypeText = -1
 
 	TypeParagraphHeader
 	TypeParagraphText
@@ -69,23 +83,3 @@ func (p SubtitleParagraph) Type() Type { return TypeParagraphSubtitle }
 
 //Type returns the type of the Token
 func (p ListParagraph) Type() Type { return TypeParagraphList }
-
-//String creates a string with the content of the TextToken
-//It respect attributes
-func (t TextToken) String() string {
-	var str string
-	addAttr := func(str string) string {
-		if t.Bold {
-			return str + "*"
-		}
-		if t.Italic {
-			return str + "/"
-		}
-		return str
-	}
-
-	str = addAttr("")
-	str += t.Text
-	str = addAttr(str)
-	return str
-}

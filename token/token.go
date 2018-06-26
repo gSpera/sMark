@@ -20,3 +20,23 @@ type TextToken struct {
 	Bold   bool
 	Italic bool
 }
+
+//String creates a string with the content of the TextToken
+//It respect attributes
+func (t TextToken) String() string {
+	var str string
+	addAttr := func(str string) string {
+		if t.Bold {
+			return str + "*"
+		}
+		if t.Italic {
+			return str + "/"
+		}
+		return str
+	}
+
+	str = addAttr("")
+	str += t.Text
+	str = addAttr(str)
+	return str
+}
