@@ -68,36 +68,7 @@ func ToString(paragraphs []token.ParagraphToken, options eNote.Options) []byte {
 		case token.TextParagraph:
 			var paragraph string
 			for _, line := range pp.Lines {
-				for _, text := range line.Tokens {
-					switch tt := text.(type) {
-					case token.TextToken:
-						if tt.Bold {
-							paragraph += "<b>"
-						}
-						if tt.Italic {
-							paragraph += "<i>"
-						}
-						if tt.Strike {
-							paragraph += "<s>"
-						}
-						paragraph += tt.Text
-						if tt.Bold {
-							paragraph += "</b>"
-						}
-						if tt.Italic {
-							paragraph += "</i>"
-						}
-						if tt.Strike {
-							paragraph += "</s>"
-						}
-					default:
-						if st, ok := tt.(token.SimpleToken); ok {
-							paragraph += string(st.Char())
-							continue
-						}
-						panic(fmt.Sprintf("LineContainer contains unknown token %T{%v}", tt, tt))
-					}
-				}
+				paragraph += fromLineContainer(line)
 				if *options.NewLine {
 					paragraph += "<br>\n"
 				}
@@ -117,7 +88,7 @@ func ToString(paragraphs []token.ParagraphToken, options eNote.Options) []byte {
 			body += "<ul>"
 
 			for _, item := range pp.Items {
-				body += fmt.Sprintf("<li>%s</li>", html.EscapeString(item.Text.String()))
+				body += fmt.Sprintf("<li>%s</li>", fromLineContainer(item.Text))
 			}
 
 			body += "</ul>"
@@ -143,4 +114,46 @@ func findToken(line token.LineContainer, start int, t token.Type) int {
 		}
 	}
 	return -1
+}
+
+func fromLineContainer(line token.LineContainer) string {
+	var str string
+	for _, text := range line.Tokens {
+		switch tt := text.(type) {
+		case token.TextToken:
+			if tt.Bold {
+				str += "<b>"
+			}
+			if tt.Italic {
+				str += "<i>"
+			}
+			if tt.Strike {
+				str += "<s>"
+			}
+			str += tt.Text
+			if tt.Bold {
+				str += "</b>"
+			}
+			if tt.Italic {
+				str += "</i>"
+			}
+			if tt.Strike {
+				str += "</s>"
+			}
+		case token.CheckBoxToken:
+			var data string
+			if tt.Char != ' ' {
+				data += "checked"
+			}
+			str += fmt.Sprintf("<input type=\"checkbox\" %s/>", data)
+		default:
+			if st, ok := tt.(token.SimpleToken); ok {
+				str += string(st.Char())
+				continue
+			}
+			panic(fmt.Sprintf("LineContainer contains unknown token %T{%v}", tt, tt))
+		}
+	}
+
+	return str
 }
