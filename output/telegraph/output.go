@@ -42,21 +42,10 @@ func ToString(paragraphs []token.ParagraphToken, options eNote.Options) tgraph.P
 			for _, line := range p.Lines {
 				fmt.Println("Appending Line")
 
-				for _, tok := range line.Tokens {
-					switch t := tok.(type) {
-					case token.TextToken:
-						par.Children = append(par.Children, createLine(t))
-					default:
-						if st, ok := t.(token.SimpleToken); ok {
-							par.Children = append(par.Children, string(st.Char()))
-							continue
-						}
-						panic(fmt.Sprintf("LineContainer contains unknown token %T{%v}", t, t))
-					}
-				}
+				par.Children = append(par.Children, fromLineContainer(line).Children...)
 
 				//Appending NewLine if the options allows it
-				if *options.NewLine {
+				if *options.NewLine && len(par.Children) != 0 {
 					fmt.Println("Adding NewLine")
 					par.Children = append(par.Children, "\n")
 				}
@@ -64,14 +53,16 @@ func ToString(paragraphs []token.ParagraphToken, options eNote.Options) tgraph.P
 
 			fmt.Println("Finished Paragraph")
 			log.Println(spew.Sdump(par))
-			nodes = append(nodes, par)
+			if len(par.Children) != 0 {
+				nodes = append(nodes, par)
+			}
 			lastParagraph = p
 		case token.ListParagraph:
 			fmt.Println("ListParagraph")
 			list := createTag("ul")
 			for _, item := range pp.Items {
 				fmt.Println("Appending Item")
-				li := createLi(item.Text.String())
+				li := createLi(fromLineContainer(item.Text))
 				list.Children = append(list.Children, li)
 			}
 
@@ -83,7 +74,6 @@ func ToString(paragraphs []token.ParagraphToken, options eNote.Options) tgraph.P
 		if _, ok := lastParagraph.(token.TextParagraph); ok {
 			// nodes = append(nodes, tgraph.NodeElement{Tag: "br"})
 		}
-
 	}
 
 	p := tgraph.Page{
@@ -111,8 +101,32 @@ func createLine(text token.TextToken) tgraph.Node {
 	return node
 }
 
-func createLi(text string) tgraph.Node {
+func createLi(text tgraph.Node) tgraph.Node {
 	li := createTag("li")
 	li.Children = []tgraph.Node{text}
 	return li
+}
+
+func createCheckBox(t token.CheckBoxToken) tgraph.Node {
+	code := createTag("code")
+	code.Children = []tgraph.Node{fmt.Sprintf("[%c]", t.Char)}
+	return code
+}
+
+func fromLineContainer(line token.LineContainer) tgraph.NodeElement {
+	res := createTag("p")
+	for _, tok := range line.Tokens {
+		switch t := tok.(type) {
+		case token.TextToken:
+			res.Children = append(res.Children, createLine(t))
+		case token.SimpleToken:
+			res.Children = append(res.Children, string(t.Char()))
+		case token.CheckBoxToken:
+			res.Children = append(res.Children, createCheckBox(t))
+		default:
+			panic(fmt.Sprintf("LineContainer contains unknown token %T{%v}", t, t))
+		}
+	}
+
+	return res
 }
