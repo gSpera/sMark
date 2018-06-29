@@ -105,11 +105,12 @@ func lineContainerToString(container token.LineContainer) string {
 		switch tt := t.(type) {
 		case token.TextToken:
 			str += textTokenToString(tt)
+		case token.SimpleToken:
+			str += string(tt.Char())
+		case token.CheckBoxToken:
+			str += fmt.Sprintf("[%c]", tt.Char)
 		default:
-			if st, ok := tt.(token.SimpleToken); ok {
-				str += string(st.Char())
-				continue
-			}
+
 			panic(fmt.Sprintf("LineContainer contains unknown token %T{%v}", tt, tt))
 		}
 	}
