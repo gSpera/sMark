@@ -3,6 +3,7 @@ package parser
 import (
 	"eNote/token"
 	"log"
+	"unicode/utf8"
 )
 
 const maxTokenDistance = 255
@@ -48,6 +49,16 @@ func TokenToStructure(tokens []token.Token) []token.Token {
 			}
 			toSkip = skip
 			newTokens = append(newTokens, t)
+		case token.SBracketOpenToken:
+			log.Println("\t-Found Opening Square Bracket")
+			t, skip := searchCheckbox(tokens, i)
+			if skip == -1 {
+				newTokens = append(newTokens, tok)
+				continue
+			}
+			log.Println("\t-Found CheckBox")
+			toSkip = skip
+			newTokens = append(newTokens, t)
 		default:
 			newTokens = append(newTokens, tok)
 		}
@@ -86,4 +97,33 @@ func checkRangeStruct(ending token.Token, generateToken func(string) token.TextT
 
 	//No ending token found
 	return ending, -1
+}
+
+func searchCheckbox(tokens []token.Token, start int) (token.CheckBoxToken, int) {
+	var res token.CheckBoxToken
+
+	//Check opening bracket
+	if tokens[start].Type() != token.TypeSBracketOpen {
+		log.Println("\t\t- Start is not a SBracketOpenToken")
+		return res, -1
+	}
+
+	//Check closing bracket
+	if tokens[start+2].Type() != token.TypeSBracketClose {
+		log.Println("\t\t- Start+1 is not a SBracketCloseToken")
+		return res, -1
+	}
+	if _, ok := tokens[start+1].(token.TextToken); !ok {
+		log.Println("\t\t- Start is not a String size is not 1")
+		return res, -1
+	}
+
+	text := tokens[start+1].(token.TextToken)
+
+	if utf8.RuneCountInString(text.Text) != 1 { //Text inside Brackets must be only one char
+		return res, -1
+	}
+
+	char, _ := utf8.DecodeRuneInString(text.Text)
+	return token.CheckBoxToken{Char: char}, 2
 }

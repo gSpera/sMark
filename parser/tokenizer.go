@@ -60,6 +60,14 @@ func Tokenizer(reader io.Reader) ([]token.Token, error) {
 			log.Println("\t- Found EqualToken")
 			addBufferToTokenBuffer(&tokenList, &buffer)
 			tokenList = append(tokenList, token.EqualToken{})
+		case token.TypeSBracketOpen:
+			log.Println("\t- Found Opening Square Bracket")
+			addBufferToTokenBuffer(&tokenList, &buffer)
+			tokenList = append(tokenList, token.SBracketOpenToken{})
+		case token.TypeSBracketClose:
+			log.Println("\t- Found Closing Square Bracket")
+			addBufferToTokenBuffer(&tokenList, &buffer)
+			tokenList = append(tokenList, token.SBracketCloseToken{})
 		default:
 			buffer += string(n)
 		}

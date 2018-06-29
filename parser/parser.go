@@ -23,7 +23,7 @@ func ParseReader(fl io.Reader) ([]token.ParagraphToken, error) {
 
 	log.Println("Searching Structures")
 	tokens = TokenToStructure(tokens)
-	log.Println("Searching Structures")
+	log.Println("Searching Structures DONE")
 
 	log.Println("Token To Line")
 	lines := TokenToLine(tokens)

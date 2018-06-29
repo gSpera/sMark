@@ -30,3 +30,9 @@ type LessToken struct{ SimpleToken }
 
 //EqualToken rapresent a - token
 type EqualToken struct{ SimpleToken }
+
+//SBracketOpenToken rapresent a [ token
+type SBracketOpenToken struct{ SimpleToken }
+
+//SBracketCloseToken rapresent a ] token
+type SBracketCloseToken struct{ SimpleToken }

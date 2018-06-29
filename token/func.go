@@ -20,3 +20,9 @@ func (t LessToken) Char() rune { return '-' }
 
 //Char returns =
 func (t EqualToken) Char() rune { return '=' }
+
+//Char returns [
+func (t SBracketOpenToken) Char() rune { return '[' }
+
+//Char returns ]
+func (t SBracketCloseToken) Char() rune { return ']' }

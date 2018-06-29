@@ -14,7 +14,6 @@ type HeaderLine struct {
 }
 
 //LineContainer is a token which rappresent a list of Tokens with some attributes
-//TODO: Should be Tokens []TextToken??
 type LineContainer struct {
 	LineToken
 	Indentation int
@@ -43,6 +42,8 @@ func (t LineContainer) StringNoTab() string {
 			str += string(tt.Char())
 		case TextToken:
 			str += tt.String()
+		case CheckBoxToken:
+			str += fmt.Sprintf("[%c]", tt.Char)
 		default:
 			panic(fmt.Sprintf("LineContainer contains unknown token %T{%v}", t, t))
 

@@ -44,3 +44,9 @@ func (t TextToken) String() string {
 	str = addAttr(str)
 	return str
 }
+
+//CheckBoxToken rapresent a checkbox, it is composed by [Char] (SBRacketOpenToken,TextToken,SBRacketCloseToken)
+type CheckBoxToken struct {
+	Token
+	Char rune
+}

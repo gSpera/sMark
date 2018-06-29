@@ -29,6 +29,9 @@ const (
 	//TypeEqual is the token used for title
 	TypeEqual = '='
 
+	TypeSBracketOpen  = '['
+	TypeSBracketClose = ']'
+
 	//TypeText is a text token
 	TypeText = -1
 
@@ -38,6 +41,7 @@ const (
 	TypeParagraphTitle
 	TypeParagraphSubtitle
 	TypeParagraphList
+	TypeCheckBoxToken
 )
 
 //Defaults Type Method
@@ -83,3 +87,12 @@ func (p SubtitleParagraph) Type() Type { return TypeParagraphSubtitle }
 
 //Type returns the type of the Token
 func (p ListParagraph) Type() Type { return TypeParagraphList }
+
+//Type returns the type of the Token
+func (p SBracketOpenToken) Type() Type { return TypeSBracketOpen }
+
+//Type returns the type of the Token
+func (p SBracketCloseToken) Type() Type { return TypeSBracketClose }
+
+//Type returns the type of the Token
+func (p CheckBoxToken) Type() Type { return TypeCheckBoxToken }
