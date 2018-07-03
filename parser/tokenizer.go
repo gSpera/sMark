@@ -31,45 +31,31 @@ func Tokenizer(reader io.Reader) ([]token.Token, error) {
 			return nil, err
 		}
 
-		switch n {
-		case token.TypeTab:
-			log.Println("\t- Found TabToken")
-			tokenList = append(tokenList, token.TabToken{})
-		case token.TypeNewLine:
-			log.Println("\t- Found NewLineToken")
-			if len(buffer) != 0 {
-				addBufferToTokenBuffer(&tokenList, &buffer)
+		tokensMap := map[token.Type]token.Token{
+			token.TypeBold:          token.BoldToken{},
+			token.TypeItalic:        token.ItalicToken{},
+			token.TypeLess:          token.LessToken{},
+			token.TypeHeader:        token.HeaderToken{},
+			token.TypeEqual:         token.EqualToken{},
+			token.TypeSBracketOpen:  token.SBracketOpenToken{},
+			token.TypeSBracketClose: token.SBracketCloseToken{},
+			token.TypeTab:           token.TabToken{},
+		}
+
+		if tok, ok := tokensMap[token.Type(n)]; ok {
+			addBufferToTokenBuffer(&tokenList, &buffer)
+			tokenList = append(tokenList, tok)
+		} else {
+			switch n {
+			case token.TypeNewLine:
+				log.Println("\t- Found NewLineToken")
+				if len(buffer) != 0 {
+					addBufferToTokenBuffer(&tokenList, &buffer)
+				}
+				tokenList = append(tokenList, token.NewLineToken{})
+			default:
+				buffer += string(n)
 			}
-			tokenList = append(tokenList, token.NewLineToken{})
-		case token.TypeBold:
-			log.Println("\t- Found BoldToken")
-			addBufferToTokenBuffer(&tokenList, &buffer)
-			tokenList = append(tokenList, token.BoldToken{})
-		case token.TypeItalic:
-			log.Println("\t- Found ItalicToken")
-			addBufferToTokenBuffer(&tokenList, &buffer)
-			tokenList = append(tokenList, token.ItalicToken{})
-		case token.TypeLess:
-			log.Println("\t- Found LessToken")
-			addBufferToTokenBuffer(&tokenList, &buffer)
-			tokenList = append(tokenList, token.LessToken{})
-		case token.TypeHeader:
-			log.Println("\t- Found HeaderToken")
-			tokenList = append(tokenList, token.HeaderToken{})
-		case token.TypeEqual:
-			log.Println("\t- Found EqualToken")
-			addBufferToTokenBuffer(&tokenList, &buffer)
-			tokenList = append(tokenList, token.EqualToken{})
-		case token.TypeSBracketOpen:
-			log.Println("\t- Found Opening Square Bracket")
-			addBufferToTokenBuffer(&tokenList, &buffer)
-			tokenList = append(tokenList, token.SBracketOpenToken{})
-		case token.TypeSBracketClose:
-			log.Println("\t- Found Closing Square Bracket")
-			addBufferToTokenBuffer(&tokenList, &buffer)
-			tokenList = append(tokenList, token.SBracketCloseToken{})
-		default:
-			buffer += string(n)
 		}
 	}
 }
