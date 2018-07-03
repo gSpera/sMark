@@ -1,5 +1,7 @@
 package token
 
+import "strings"
+
 //Char returns *
 func (t BoldToken) Char() rune { return '*' }
 
@@ -26,3 +28,12 @@ func (t SBracketOpenToken) Char() rune { return '[' }
 
 //Char returns ]
 func (t SBracketCloseToken) Char() rune { return ']' }
+
+//EscapeString escapes the current string from charachetrs like * or /
+func EscapeString(str string) string {
+	for _, ch := range WhitespaceEscape {
+		str = strings.Replace(str, string(ch), "\\"+string(ch), -1)
+	}
+
+	return str
+}

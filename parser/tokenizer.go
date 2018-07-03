@@ -8,11 +8,23 @@ import (
 	"log"
 )
 
+var tokensMap = map[token.Type]token.Token{
+	token.TypeBold:          token.BoldToken{},
+	token.TypeItalic:        token.ItalicToken{},
+	token.TypeLess:          token.LessToken{},
+	token.TypeHeader:        token.HeaderToken{},
+	token.TypeEqual:         token.EqualToken{},
+	token.TypeSBracketOpen:  token.SBracketOpenToken{},
+	token.TypeSBracketClose: token.SBracketCloseToken{},
+	token.TypeTab:           token.TabToken{},
+}
+
 //Tokenizer parse a *os.File and return a slice of tokens
 func Tokenizer(reader io.Reader) ([]token.Token, error) {
 	tokenList := []token.Token{}
 	r := bufio.NewReader(reader)
 	buffer := ""
+	currentEscape := false
 
 	for {
 		n, size, err := r.ReadRune()
@@ -31,16 +43,18 @@ func Tokenizer(reader io.Reader) ([]token.Token, error) {
 			return nil, err
 		}
 
-		tokensMap := map[token.Type]token.Token{
-			token.TypeBold:          token.BoldToken{},
-			token.TypeItalic:        token.ItalicToken{},
-			token.TypeLess:          token.LessToken{},
-			token.TypeHeader:        token.HeaderToken{},
-			token.TypeEqual:         token.EqualToken{},
-			token.TypeSBracketOpen:  token.SBracketOpenToken{},
-			token.TypeSBracketClose: token.SBracketCloseToken{},
-			token.TypeTab:           token.TabToken{},
+		if n == token.TypeEscape && !currentEscape {
+			currentEscape = true
+			continue
 		}
+
+		if currentEscape && in(token.Type(n), token.WhitespaceEscape) {
+			buffer += string(n)
+			currentEscape = false
+			continue
+		}
+
+		currentEscape = false
 
 		if tok, ok := tokensMap[token.Type(n)]; ok {
 			addBufferToTokenBuffer(&tokenList, &buffer)
@@ -80,4 +94,14 @@ func checkTokenList(tokenList []token.Token) []token.Token {
 	}
 
 	return tokenList
+}
+
+func in(t token.Type, slice []token.Type) bool {
+	for _, tok := range slice {
+		if t == tok {
+			return true
+		}
+	}
+
+	return false
 }

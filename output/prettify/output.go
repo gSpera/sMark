@@ -104,7 +104,7 @@ func lineContainerToString(container token.LineContainer) string {
 	for _, t := range container.Tokens {
 		switch tt := t.(type) {
 		case token.TextToken:
-			str += textTokenToString(tt)
+			str += tt.StringEscape()
 		case token.SimpleToken:
 			str += string(tt.Char())
 		case token.CheckBoxToken:
@@ -115,8 +115,4 @@ func lineContainerToString(container token.LineContainer) string {
 		}
 	}
 	return str
-}
-
-func textTokenToString(t token.TextToken) string {
-	return t.String()
 }

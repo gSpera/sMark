@@ -36,3 +36,6 @@ type SBracketOpenToken struct{ SimpleToken }
 
 //SBracketCloseToken rapresent a ] token
 type SBracketCloseToken struct{ SimpleToken }
+
+//EscapeToken is a special toekn used for escpaing other tokens, it rapresent a \ token
+type EscapeToken struct{ SimpleToken }

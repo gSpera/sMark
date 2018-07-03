@@ -31,6 +31,7 @@ const (
 
 	TypeSBracketOpen  = '['
 	TypeSBracketClose = ']'
+	TypeEscape        = '\\'
 
 	//TypeText is a text token
 	TypeText = -1
@@ -41,8 +42,16 @@ const (
 	TypeParagraphTitle
 	TypeParagraphSubtitle
 	TypeParagraphList
-	TypeCheckBoxToken
+	TypeCheckBox
 )
+
+//WhitespaceEscape is a slice of types that can be escaped from the EscapeToken
+var WhitespaceEscape = []Type{
+	TypeBold,
+	TypeItalic,
+	TypeTab,
+	TypeLess,
+}
 
 //Defaults Type Method
 
@@ -95,4 +104,7 @@ func (p SBracketOpenToken) Type() Type { return TypeSBracketOpen }
 func (p SBracketCloseToken) Type() Type { return TypeSBracketClose }
 
 //Type returns the type of the Token
-func (p CheckBoxToken) Type() Type { return TypeCheckBoxToken }
+func (p CheckBoxToken) Type() Type { return TypeCheckBox }
+
+//Type returns the type of the Token
+func (p EscapeToken) Type() Type { return TypeEscape }

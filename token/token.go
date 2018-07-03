@@ -45,6 +45,29 @@ func (t TextToken) String() string {
 	return str
 }
 
+//StringEscape creates a string with the content of the TextToken
+//It respect attributes, it escapes with backslash if it find escaped char
+func (t TextToken) StringEscape() string {
+	var str string
+	addAttr := func(str string) string {
+		if t.Bold {
+			return str + "*"
+		}
+		if t.Italic {
+			return str + "/"
+		}
+		if t.Strike {
+			return str + "-"
+		}
+		return str
+	}
+
+	str = addAttr("")
+	str += EscapeString(t.Text)
+	str = addAttr(str)
+	return str
+}
+
 //CheckBoxToken rapresent a checkbox, it is composed by [Char] (SBRacketOpenToken,TextToken,SBRacketCloseToken)
 type CheckBoxToken struct {
 	Token
