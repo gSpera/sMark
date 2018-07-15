@@ -4,11 +4,8 @@ import (
 	"bufio"
 	"eNote/token"
 	"eNote/utils"
-	"fmt"
 	"io"
 	"log"
-
-	"github.com/davecgh/go-spew/spew"
 )
 
 //ParseReader parse a source file and returns the paragraphs
@@ -16,7 +13,6 @@ func ParseReader(fl io.Reader) ([]token.ParagraphToken, error) {
 	log.Println("Tokenizer")
 	tokens, err := Tokenizer(fl)
 	log.Println("Tokenizer DONE")
-	spew.Dump(tokens)
 	if err != nil {
 		return nil, err
 	}
@@ -42,15 +38,12 @@ func ParseHeader(r *bufio.Reader) (eNote.Options, bool) {
 
 	line, err := r.ReadBytes('\n')
 	if err != nil {
-		fmt.Println(err)
 		return res, false
 	}
 
 	//Check if line is a header starting
 	for _, ch := range line[:1] {
 		if ch != '+' {
-			fmt.Println("First Line is not heading start")
-			fmt.Println(line)
 			return res, false
 		}
 	}
@@ -73,7 +66,6 @@ func ParseHeader(r *bufio.Reader) (eNote.Options, bool) {
 		}
 
 		key, value := parseHeader(line)
-		fmt.Printf("Key: %s, Value: %s\n", key, value)
 		res.AddString(key, value)
 	}
 
@@ -84,7 +76,6 @@ func ParseHeader(r *bufio.Reader) (eNote.Options, bool) {
 func parseHeader(line string) (string, string) {
 	key := ""
 	buffer := []rune{}
-	fmt.Println(len(line))
 	for _, ch := range line {
 		switch ch {
 		case '=':
@@ -101,21 +92,14 @@ func parseHeader(line string) (string, string) {
 //OptionsFromParagraphs analyze the passed slice of paragraphs returning the final options contined in token.HeaderParagraphs.
 //It update the slice removing any HeaderParagraph token
 func OptionsFromParagraphs(paragraphs *[]token.ParagraphToken) eNote.Options {
-	fmt.Println("OptionsFromParagraphs")
 	options := eNote.Options{}
 
 	for i, p := range *paragraphs {
-		fmt.Println("Paragraph")
 		if _, ok := p.(token.HeaderParagraph); !ok {
 			continue
 		}
-		fmt.Println(" - Header")
 		p := p.(token.HeaderParagraph)
-		spew.Dump(p)
 		options.Update(p.Options)
-
-		fmt.Println("After Update")
-		spew.Dump(options)
 
 		//Removing the paragraph
 		par := *paragraphs
@@ -127,7 +111,6 @@ func OptionsFromParagraphs(paragraphs *[]token.ParagraphToken) eNote.Options {
 
 //TitleFromParagraph resolve a possible title from the passed paragraphs
 func TitleFromParagraph(paragraph []token.ParagraphToken) string {
-	fmt.Println("TitleFromParagraph")
 	titles := map[string]int{}
 
 	for _, p := range paragraph {

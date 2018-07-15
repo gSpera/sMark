@@ -1,13 +1,11 @@
 package eNote
 
 import (
-	"fmt"
 	"html/template"
 	"log"
 	"reflect"
 	"strconv"
 
-	"github.com/davecgh/go-spew/spew"
 	"github.com/pkg/errors"
 )
 
@@ -57,27 +55,22 @@ func (o Options) ToTemplate() OptionsTemplate {
 func (o *Options) AddString(key, sValue string) error {
 	switch key {
 	case "NewLine":
-		fmt.Println("NewLine")
 		value, err := strconv.ParseBool(key)
 		if err != nil {
 			return errors.Wrap(err, "Could not parse value to bool")
 		}
 		o.NewLine = &value
 	case "Title":
-		fmt.Println("Title")
 		o.Title = &sValue
 	case "InlineCSS":
-		fmt.Println("InlineCSS")
 		o.InlineCSS = &sValue
 	case "EnableFont":
-		fmt.Println("EnableFont")
 		value, err := strconv.ParseBool(key)
 		if err != nil {
 			return errors.Wrap(err, "Could not parse value to bool")
 		}
 		o.EnableFont = &value
 	case "OnlyBody":
-		fmt.Println("OnlyBody")
 		value, err := strconv.ParseBool(key)
 		if err != nil {
 			return errors.Wrap(err, "Could not parse value to bool")
@@ -92,21 +85,15 @@ func (o *Options) AddString(key, sValue string) error {
 
 //Update adds non specified value from the passed Options
 func (o *Options) Update(oo Options) {
-	fmt.Println("Update")
-	spew.Dump(oo)
 	oR := reflect.ValueOf(o).Elem()
 	ooR := reflect.ValueOf(&oo).Elem()
 	structType := reflect.TypeOf(*o)
 
-	fmt.Println(reflect.TypeOf(oR).NumField())
-	fmt.Println(oR.Type(), ooR.Type())
 	for i := 0; i < structType.NumField(); i++ {
 		oF := oR.Field(i)
 		ooF := ooR.Field(i)
-		fmt.Println("Field", i, structType.Field(i).Name, oF.Elem(), ooF.Elem())
 
 		if ooF.IsNil() {
-			fmt.Println("ooF is nil")
 			continue
 		}
 
@@ -121,7 +108,4 @@ func (o *Options) Update(oo Options) {
 		log.Printf("%v = %v", structType.Field(i).Name, ooF.Elem())
 		oF.Set(ooF)
 	}
-
-	fmt.Println("Update Done")
-	spew.Dump(o)
 }

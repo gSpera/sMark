@@ -26,47 +26,42 @@ func ToString(paragraphs []token.ParagraphToken, options eNote.Options) tgraph.P
 		case token.HeaderParagraph:
 			panic("HeaderParagraph in output engine")
 		case token.TitleParagraph:
-			fmt.Println("Title Paragraph")
+			log.Println("\t- Title Paragraph")
 			nodes = append(nodes, createTitle(pp.Text))
 		case token.SubtitleParagraph:
-			fmt.Println("Subtitle Paragraph")
+			log.Println("\t- Subtitle Paragraph")
 			nodes = append(nodes, createSubtitle(pp.Text))
 		case token.DivisorParagraph:
-			fmt.Println("Divisor Paragraph")
+			log.Println("\t- Divisor Paragraph")
 			nodes = append(nodes, createTag("hr"))
 
 		case token.TextParagraph:
-			fmt.Println("New Paragraph")
+			log.Println("\t- New Paragraph")
 			p := p.(token.TextParagraph)
 			par := createTag("p")
 			for _, line := range p.Lines {
-				fmt.Println("Appending Line")
-
 				par.Children = append(par.Children, fromLineContainer(line).Children...)
 
 				//Appending NewLine if the options allows it
 				if *options.NewLine && len(par.Children) != 0 {
-					fmt.Println("Adding NewLine")
 					par.Children = append(par.Children, "\n")
 				}
 			}
 
-			fmt.Println("Finished Paragraph")
+			log.Println("\t- Finished Paragraph")
 			log.Println(spew.Sdump(par))
 			if len(par.Children) != 0 {
 				nodes = append(nodes, par)
 			}
 			lastParagraph = p
 		case token.ListParagraph:
-			fmt.Println("ListParagraph")
+			log.Println("\t- ListParagraph")
 			list := createTag("ul")
 			for _, item := range pp.Items {
-				fmt.Println("Appending Item")
 				li := createLi(fromLineContainer(item.Text))
 				list.Children = append(list.Children, li)
 			}
 
-			spew.Dump(list)
 			nodes = append(nodes, list)
 			lastParagraph = pp
 		}
@@ -80,12 +75,10 @@ func ToString(paragraphs []token.ParagraphToken, options eNote.Options) tgraph.P
 		Title:   title,
 		Content: nodes,
 	}
-	spew.Dump(p)
 	return p
 }
 
 func createLine(text token.TextToken) tgraph.Node {
-	fmt.Println("createLine")
 	var node tgraph.Node = text.Text
 	if text.Bold {
 		node = tgraph.NodeElement{Tag: "b", Children: []tgraph.Node{node}}
@@ -97,7 +90,6 @@ func createLine(text token.TextToken) tgraph.Node {
 		node = tgraph.NodeElement{Tag: "s", Children: []tgraph.Node{node}}
 	}
 
-	fmt.Println("Create Line:")
 	return node
 }
 

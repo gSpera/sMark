@@ -59,7 +59,6 @@ func ToString(paragraphs []token.ParagraphToken, options eNote.Options) []byte {
 			default:
 				tag = "<h1>%s</h1>"
 			}
-			fmt.Println("TitleParagraph Indentation:", pp.Indentation)
 			body += fmt.Sprintf(tag, html.EscapeString(pp.Text))
 			continue
 		case token.DivisorParagraph:

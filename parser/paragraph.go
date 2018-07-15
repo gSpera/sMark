@@ -5,13 +5,10 @@ import (
 	"fmt"
 	"log"
 	"strings"
-
-	"github.com/davecgh/go-spew/spew"
 )
 
 //TokenToParagraph divide a slice of lines in paragraphs
 func TokenToParagraph(lines []token.LineToken) []token.ParagraphToken {
-	fmt.Printf("Paragraphs: %d Lines\n", len(lines))
 	paragraphs := []token.ParagraphToken{}
 	currentParagraph := token.TextParagraph{}
 	header := false
@@ -39,7 +36,6 @@ func TokenToParagraph(lines []token.LineToken) []token.ParagraphToken {
 		switch tt := t.(type) {
 		case token.EqualLine:
 			log.Println("\t- Found EqualLine")
-			fmt.Println(len(currentParagraph.Lines))
 			p, ok := equalLine(currentParagraph, lines, i)
 			if ok {
 				paragraphs = append(paragraphs, p)
@@ -49,9 +45,9 @@ func TokenToParagraph(lines []token.LineToken) []token.ParagraphToken {
 					simpleText(strings.Repeat("=", tt.Length)))
 			}
 		case token.HeaderLine:
-			fmt.Println("HeaderLine")
+			log.Println("\t- Found HeaderLine")
 			if !header && len(currentParagraph.Lines) != 0 {
-				fmt.Println("Not at first")
+				log.Println("\t\t- Not at first")
 				continue
 			}
 
@@ -65,7 +61,6 @@ func TokenToParagraph(lines []token.LineToken) []token.ParagraphToken {
 
 		case token.LessLine:
 			log.Println("\t- Found LessLine")
-			fmt.Println(len(currentParagraph.Lines))
 			p, ok := lessLine(currentParagraph, lines, i)
 			if ok {
 				log.Println("\t\t- Subtitle")
@@ -88,22 +83,15 @@ func TokenToParagraph(lines []token.LineToken) []token.ParagraphToken {
 			currentParagraph = token.TextParagraph{}
 
 		case token.LineContainer:
-			fmt.Println("LineContainer")
 			currentEmpty := len(tt.Tokens) == 0
-			spew.Dump(tt.Tokens)
 
 			//Check if line is empty causing End Of Paragraph
 			if l, ok := lastLine.(token.LineContainer); currentEmpty && ok && len(l.Tokens) != 0 {
 				log.Println("\t- Found Text Paragraph")
-				fmt.Printf("LastLine: Len: %d %T: %+v\n", len(l.Tokens), l, l)
-				spew.Dump(l.Tokens)
 				checkIndentation(&currentParagraph)
-				fmt.Printf("Indentation after: %d\n", currentParagraph.Indentation)
 				paragraphs = append(paragraphs, currentParagraph)
 				currentParagraph = token.TextParagraph{}
 			} else {
-				fmt.Println("Old Paragraph")
-				spew.Dump(tt.Tokens)
 				currentParagraph.Lines = append(currentParagraph.Lines, tt)
 			}
 		default:

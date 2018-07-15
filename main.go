@@ -14,7 +14,6 @@ import (
 	"eNote/parser"
 	eNote "eNote/utils"
 
-	"github.com/davecgh/go-spew/spew"
 	tgraph "github.com/toby3d/telegraph"
 )
 
@@ -22,7 +21,6 @@ import (
 const ProgramName = "eNote"
 
 func main() {
-	spew.Config = spew.ConfigState{DisableMethods: true, Indent: "\t"}
 	//Logger
 	log.SetPrefix(ProgramName + ": ")
 	log.SetFlags(log.Ltime | log.Lshortfile)
@@ -58,8 +56,7 @@ func main() {
 		log.Fatalf("Error: Could not open file: %v", err)
 	}
 
-	fmt.Println("Filename: ", *options.InputFile)
-	fmt.Println("Input: ", input)
+	log.Println("Filename: ", *options.InputFile)
 
 	reader := bufio.NewReader(input)
 
@@ -77,9 +74,6 @@ func main() {
 	options.Update(parser.OptionsFromParagraphs(&tokenList))
 	log.Println("Updating Options DONE")
 
-	spew.Dump(tokenList)
-	fmt.Printf("%v\n", len(tokenList))
-
 	log.Println("Selecting Title")
 	if options.Title == nil || *options.Title == "" {
 		log.Println("Changing Title")
@@ -87,10 +81,6 @@ func main() {
 		options.Title = &title
 	}
 	log.Println("Selecting Title DONE")
-	fmt.Println("Final Options")
-	spew.Dump(options)
-
-	// ioutil.WriteFile("dump.ent.out", []byte(spew.Sdump(tokenList)), 0665)
 
 	//HTML Output Engine
 	if *htmlOut {
@@ -103,8 +93,7 @@ func main() {
 	if *telegraphOut {
 		log.Println("Outputting Telegraph")
 		page := outTelegraph.ToString(tokenList, options)
-		fmt.Println("Title:", page.Title)
-		spew.Dump(page)
+		log.Println("Title:", page.Title)
 		var accessToken string
 		fmt.Println("Insert Access Token: ")
 		fmt.Scan(&accessToken)
@@ -116,8 +105,9 @@ func main() {
 			log.Fatalf("Error: Could not create page: %v", err)
 		}
 
-		spew.Dump(pagePubblished)
 		log.Println("Outputting Telegraph DONE")
+		fmt.Println("Title:", pagePubblished.Title)
+		fmt.Println("URL:", pagePubblished.URL)
 	}
 
 	//eNote Output Engine
@@ -127,7 +117,6 @@ func main() {
 		if err != nil {
 			log.Fatalf("Could not compile to eNote: %v\n", err)
 		}
-		spew.Dump(data)
 
 		f, err := os.Create(*prettifyFlag)
 		if err != nil {

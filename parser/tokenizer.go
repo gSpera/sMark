@@ -3,7 +3,6 @@ package parser
 import (
 	"bufio"
 	"eNote/token"
-	"fmt"
 	"io"
 	"log"
 )
@@ -35,7 +34,6 @@ func Tokenizer(reader io.Reader) ([]token.Token, error) {
 			if tokenList[len(tokenList)-1].Type() != token.TypeNewLine {
 				tokenList = append(tokenList, token.NewLineToken{})
 			}
-			fmt.Println("EOF")
 			tokenList = checkTokenList(tokenList)
 			return tokenList, nil
 		}
