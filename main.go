@@ -15,6 +15,7 @@ import (
 	eNote "eNote/utils"
 
 	tgraph "github.com/toby3d/telegraph"
+	fsnotify "gopkg.in/fsnotify.v1"
 )
 
 //ProgramName is the name of the program.
@@ -28,6 +29,7 @@ func main() {
 	htmlOut := flag.Bool("html", true, "Output HTML")
 	telegraphOut := flag.Bool("telegraph", false, "Output to Telegra.ph")
 	prettifyFlag := flag.String("prettify", "", "Prettify")
+	watchFlag := flag.Bool("watch", false, "Watches the file for changes (CTRL + c to exit)")
 
 	//Flags
 	options := eNote.Options{
@@ -46,6 +48,41 @@ func main() {
 	if !*verbose {
 		log.SetOutput(ioutil.Discard)
 	}
+
+	if *watchFlag {
+		fmt.Println("Watching File, use CTRL + c to stop")
+		watcher, err := fsnotify.NewWatcher()
+		if err != nil {
+			fmt.Fprintf(os.Stderr, "Could not create watcher: %v", err)
+		}
+		defer watcher.Close()
+
+		err = watcher.Add(*options.InputFile)
+		if err != nil {
+			fmt.Printf("Cannot watch %s: %v\n", *options.InputFile, err)
+		}
+
+		for {
+			select {
+			case event := <-watcher.Events:
+				if event.Op == fsnotify.Remove || event.Op == fsnotify.Rename {
+					fmt.Println("Quitting, file is being removed or renamed")
+					return
+				}
+				if event.Op != fsnotify.Write {
+					continue
+				}
+				compile(options, verbose, htmlOut, telegraphOut, prettifyFlag)
+			case err := <-watcher.Errors:
+				fmt.Println("Error in watcher:", err)
+			}
+		}
+	}
+
+	compile(options, verbose, htmlOut, telegraphOut, prettifyFlag)
+}
+
+func compile(options eNote.Options, verbose, htmlOut, telegraphOut *bool, prettifyFlag *string) {
 	input, err := streamFromFilename(*options.InputFile)
 	if os.IsNotExist(err) {
 		fmt.Fprintln(os.Stderr, "Error: File doesn't exist")
