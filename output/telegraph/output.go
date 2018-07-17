@@ -11,15 +11,9 @@ import (
 )
 
 //ToString creates a telegraph that can be pubblished
-//Options Meaning:
-// - Only Body  has no meaning
-// - CustomCSS  has no meaning
-// - InlineCSS  has no meaning
-// - EnableFont has no meaning
 func ToString(paragraphs []token.ParagraphToken, options eNote.Options) tgraph.Page {
 	nodes := []tgraph.Node{}
-	title := *options.Title
-	var lastParagraph token.ParagraphToken
+	title := options.String["Title"]
 
 	for _, p := range paragraphs {
 		switch pp := p.(type) {
@@ -43,7 +37,7 @@ func ToString(paragraphs []token.ParagraphToken, options eNote.Options) tgraph.P
 				par.Children = append(par.Children, fromLineContainer(line).Children...)
 
 				//Appending NewLine if the options allows it
-				if *options.NewLine && len(par.Children) != 0 {
+				if options.Bool["NewLine"] && len(par.Children) != 0 {
 					par.Children = append(par.Children, "\n")
 				}
 			}
@@ -53,7 +47,6 @@ func ToString(paragraphs []token.ParagraphToken, options eNote.Options) tgraph.P
 			if len(par.Children) != 0 {
 				nodes = append(nodes, par)
 			}
-			lastParagraph = p
 		case token.ListParagraph:
 			log.Println("\t- ListParagraph")
 			list := createTag("ul")
@@ -63,11 +56,6 @@ func ToString(paragraphs []token.ParagraphToken, options eNote.Options) tgraph.P
 			}
 
 			nodes = append(nodes, list)
-			lastParagraph = pp
-		}
-
-		if _, ok := lastParagraph.(token.TextParagraph); ok {
-			// nodes = append(nodes, tgraph.NodeElement{Tag: "br"})
 		}
 	}
 

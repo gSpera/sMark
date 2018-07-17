@@ -1,9 +1,9 @@
 <html>
 
 <head>
-    <title>{{.Options.Title}}</title>
+    <title>{{.Options.String.Title}}</title>
     <meta charset="UTF-8"></meta>
-    {{ if .Options.EnableFont }}<link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">{{ end }}
+    {{ if .Options.Bool.EnableFont }}<link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">{{ end }}
     <style>
         p.align-left {
             text-align: left;
@@ -31,11 +31,11 @@
             font-family: 'Roboto', sans-serif;
             font-size: 1.05rem;
         }
-        {{ .Options.InlineCSS }}
+        {{ .Options.String.InlineCSS }}
 
     </style>
-    {{if .Options.CustomCSS }}
-        <link rel="stylesheet" href="{{.Options.CustomCSS}}">
+    {{if .Options.String.CustomCSS }}
+        <link rel="stylesheet" href="{{.Options.String.CustomCSS}}">
     {{ end }}
 </head>
 

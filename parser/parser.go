@@ -66,7 +66,7 @@ func ParseHeader(r *bufio.Reader) (eNote.Options, bool) {
 		}
 
 		key, value := parseHeader(line)
-		res.AddString(key, value)
+		res.String[key] = value
 	}
 
 	return res, true
@@ -76,11 +76,20 @@ func ParseHeader(r *bufio.Reader) (eNote.Options, bool) {
 func parseHeader(line string) (string, string) {
 	key := ""
 	buffer := []rune{}
-	for _, ch := range line {
+
+	for i, ch := range line {
 		switch ch {
 		case '=':
 			key = string(buffer)
 			buffer = []rune{}
+		case ';': //Comment
+			return key, string(buffer)
+		case ' ':
+			if line[i-1] == '=' || line[i+1] == '=' { //Space are allowed around equal sign
+				continue
+			}
+			//Else insert it
+			fallthrough
 		default:
 			buffer = append(buffer, ch)
 		}
@@ -92,7 +101,7 @@ func parseHeader(line string) (string, string) {
 //OptionsFromParagraphs analyze the passed slice of paragraphs returning the final options contined in token.HeaderParagraphs.
 //It update the slice removing any HeaderParagraph token
 func OptionsFromParagraphs(paragraphs *[]token.ParagraphToken) eNote.Options {
-	options := eNote.Options{}
+	options := eNote.NewOptions()
 
 	for i, p := range *paragraphs {
 		if _, ok := p.(token.HeaderParagraph); !ok {

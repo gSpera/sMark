@@ -107,11 +107,11 @@ func checkIndentation(paragraph *token.TextParagraph) {
 }
 
 func parseHeaderLines(paragraph token.TextParagraph) eNote.Options {
-	res := eNote.Options{}
+	res := eNote.NewOptions()
 
 	for _, line := range paragraph.Lines {
 		key, value := parseHeader(line.String())
-		res.AddString(key, value)
+		res.String[key] = value
 	}
 
 	return res

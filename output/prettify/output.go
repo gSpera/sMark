@@ -72,15 +72,15 @@ func makeHeader(options eNote.Options) string {
 	delim := strings.Repeat("+", 10)
 	var content string
 
-	content += fmt.Sprintf("Title=%v\n", strings.TrimSpace(*options.Title))
-	content += fmt.Sprintf("TabWidth=%v\n", *options.TabWidth)
-	content += fmt.Sprintf("InputFile=%v\n", *options.InputFile)
-	content += fmt.Sprintf("NewLine=%v\n", *options.NewLine)
-	content += fmt.Sprintf("OutputFile=%v\n", *options.OutputFile)
-	content += fmt.Sprintf("OnlyBody=%v\n", *options.OnlyBody)
-	content += fmt.Sprintf("EnableFont=%v\n", *options.EnableFont)
-	content += fmt.Sprintf("InlineCSS=%v\n", *options.InlineCSS)
-	content += fmt.Sprintf("CustomCSS=%v\n", *options.CustomCSS)
+	for k, v := range options.String {
+		content += fmt.Sprintf("%s = %s\n", k, v)
+	}
+	for k, v := range options.Bool {
+		content += fmt.Sprintf("%s = %t\n", k, v)
+	}
+	for k, v := range options.Generic {
+		content += fmt.Sprintf("%s = %v\n", k, v)
+	}
 
 	return fmt.Sprintf("%s\n%s%s\n\n", delim, content, delim)
 }

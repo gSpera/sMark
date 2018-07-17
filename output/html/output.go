@@ -23,7 +23,7 @@ const maxMarkup = 255
 func ToString(paragraphs []token.ParagraphToken, options eNote.Options) []byte {
 	var outTemplate *template.Template
 	var err error
-	if *options.OnlyBody {
+	if options.Bool["OnlyBody"] {
 		outTemplate, err = template.New("Only Body").Parse(`{{.Body}}`)
 	} else {
 		outTemplate = template.New("HTML Output")
@@ -68,7 +68,7 @@ func ToString(paragraphs []token.ParagraphToken, options eNote.Options) []byte {
 			var paragraph string
 			for _, line := range pp.Lines {
 				paragraph += fromLineContainer(line)
-				if *options.NewLine {
+				if options.Bool["NewLine"] {
 					paragraph += "<br>\n"
 				}
 			}
@@ -98,10 +98,13 @@ func ToString(paragraphs []token.ParagraphToken, options eNote.Options) []byte {
 	}
 
 	var out bytes.Buffer
-	outTemplate.Execute(&out, struct {
+	err = outTemplate.Execute(&out, struct {
 		Body    template.HTML
-		Options eNote.OptionsTemplate
-	}{template.HTML(body), options.ToTemplate()})
+		Options eNote.Options
+	}{template.HTML(body), options})
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "Could not execute template:", err)
+	}
 	return out.Bytes()
 }
 
