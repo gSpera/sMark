@@ -25,32 +25,34 @@ func main() {
 	//Logger
 	log.SetPrefix(ProgramName + ": ")
 	log.SetFlags(log.Ltime | log.Lshortfile)
-	verbose := flag.Bool("verbose", false, "Output logging")
-	htmlOut := flag.Bool("html", true, "Output HTML")
-	telegraphOut := flag.Bool("telegraph", false, "Output to Telegra.ph")
-	prettifyFlag := flag.String("prettify", "", "Prettify")
-	watchFlag := flag.Bool("watch", false, "Watches the file for changes (CTRL + c to exit)")
 
 	//Flags
 	options := eNote.Options{
-		InputFile:  flag.String("i", "-", "Input file, - for stdin"),
-		OutputFile: flag.String("o", "out.html", "Output file"),
-		NewLine:    flag.Bool("newline", true, "Include newlines as in source"),
-		CustomCSS:  flag.String("css", "", "A custom css file"),
-		InlineCSS:  flag.String("inline-css", "", "Inline CSS"),
-		EnableFont: flag.Bool("font", true, "Enable a default font"),
-		OnlyBody:   flag.Bool("only-body", false, "Output only the html boy and not the whole page"),
-		Title:      flag.String("title", "", "The title of the output document"),
-		TabWidth:   flag.Uint("tabs-width", 4, "The width (in spaces) of one tab"),
+		InputFile:    flag.String("i", "-", "Input file, - for stdin"),
+		OutputFile:   flag.String("o", "out.html", "Output file"),
+		NewLine:      flag.Bool("newline", true, "Include newlines as in source"),
+		CustomCSS:    flag.String("css", "", "A custom css file"),
+		InlineCSS:    flag.String("inline-css", "", "Inline CSS"),
+		EnableFont:   flag.Bool("font", true, "Enable a default font"),
+		OnlyBody:     flag.Bool("only-body", false, "Output only the html boy and not the whole page"),
+		Title:        flag.String("title", "", "The title of the output document"),
+		TabWidth:     flag.Uint("tabs-width", 4, "The width (in spaces) of one tab"),
+		Verbose:      flag.Bool("verbose", false, "Output logging"),
+		HTMLOut:      flag.Bool("html", true, "Output HTML"),
+		TelegraphOut: flag.Bool("telegraph", false, "Output to Telegra.ph"),
+		Prettify:     flag.String("prettify", "", "Prettify"),
+		Watch:        flag.Bool("watch", false, "Watches the file for changes (CTRL + c to exit)"),
 	}
 
 	flag.Parse()
-	if !*verbose {
+	if !*options.Verbose {
 		log.SetOutput(ioutil.Discard)
 	}
 
-	if *watchFlag {
+	if *options.Watch {
 		fmt.Println("Watching File, use CTRL + c to stop")
+		compile(options)
+
 		watcher, err := fsnotify.NewWatcher()
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "Could not create watcher: %v", err)
@@ -72,21 +74,19 @@ func main() {
 				if event.Op != fsnotify.Write {
 					continue
 				}
-				compile(options, verbose, htmlOut, telegraphOut, prettifyFlag)
+				compile(options)
 			case err := <-watcher.Errors:
 				fmt.Println("Error in watcher:", err)
 			}
 		}
 	}
-
-	compile(options, verbose, htmlOut, telegraphOut, prettifyFlag)
 }
 
-func compile(options eNote.Options, verbose, htmlOut, telegraphOut *bool, prettifyFlag *string) {
+func compile(options eNote.Options) {
+	log.Println("Start Compilation")
 	input, err := streamFromFilename(*options.InputFile)
 	if os.IsNotExist(err) {
 		fmt.Fprintln(os.Stderr, "Error: File doesn't exist")
-		flag.PrintDefaults()
 		os.Exit(1)
 	}
 	if err != nil {
@@ -120,14 +120,14 @@ func compile(options eNote.Options, verbose, htmlOut, telegraphOut *bool, pretti
 	log.Println("Selecting Title DONE")
 
 	//HTML Output Engine
-	if *htmlOut {
+	if *options.HTMLOut {
 		log.Println("Outputting HTML")
 		ioutil.WriteFile(*options.OutputFile, output.ToString(tokenList, options), os.ModePerm)
 		log.Println("Outputting HTML DONE")
 	}
 
 	//Telegraph Output Engine
-	if *telegraphOut {
+	if *options.TelegraphOut {
 		log.Println("Outputting Telegraph")
 		page := outTelegraph.ToString(tokenList, options)
 		log.Println("Title:", page.Title)
@@ -148,16 +148,16 @@ func compile(options eNote.Options, verbose, htmlOut, telegraphOut *bool, pretti
 	}
 
 	//eNote Output Engine
-	if *prettifyFlag != "" {
+	if *options.Prettify != "" {
 		log.Println("Outputting eNote")
 		data, err := prettify.Output(tokenList, options)
 		if err != nil {
 			log.Fatalf("Could not compile to eNote: %v\n", err)
 		}
 
-		f, err := os.Create(*prettifyFlag)
+		f, err := os.Create(*options.Prettify)
 		if err != nil {
-			log.Fatalf("Could not create file %s: %v", *prettifyFlag, err)
+			log.Fatalf("Could not create file %s: %v", *options.Prettify, err)
 		}
 		defer f.Close()
 		_, err = f.Write(data)

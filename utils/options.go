@@ -11,43 +11,58 @@ import (
 
 //Options are the command line parameters
 type Options struct {
-	InputFile  *string
-	OutputFile *string
-	NewLine    *bool
-	CustomCSS  *string
-	InlineCSS  *string
-	EnableFont *bool
-	OnlyBody   *bool
-	Title      *string
-	TabWidth   *uint
+	InputFile    *string
+	OutputFile   *string
+	NewLine      *bool
+	CustomCSS    *string
+	InlineCSS    *string
+	EnableFont   *bool
+	OnlyBody     *bool
+	Title        *string
+	TabWidth     *uint
+	Verbose      *bool
+	HTMLOut      *bool
+	TelegraphOut *bool
+	Prettify     *string
+	Watch        *bool
 }
 
-//OptionsTemplate is a copy of Options but members arte not pointer
+//OptionsTemplate is a copy of Options but members are not pointer
 //You may use it only within a template
 type OptionsTemplate struct {
-	InputFile  string
-	OutputFile string
-	NewLine    bool
-	CustomCSS  template.URL
-	InlineCSS  template.CSS
-	EnableFont bool
-	OnlyBody   bool
-	Title      string
-	TabWidth   uint
+	InputFile    string
+	OutputFile   string
+	NewLine      bool
+	CustomCSS    template.URL
+	InlineCSS    template.CSS
+	EnableFont   bool
+	OnlyBody     bool
+	Title        string
+	TabWidth     uint
+	Verbose      bool
+	HTMLOut      bool
+	TelegraphOut bool
+	Prettify     string
+	Watch        bool
 }
 
 //ToTemplate returtns a copy of Options with out pointers
 func (o Options) ToTemplate() OptionsTemplate {
 	return OptionsTemplate{
-		InputFile:  *o.InputFile,
-		OutputFile: *o.OutputFile,
-		NewLine:    *o.NewLine,
-		CustomCSS:  template.URL(*o.CustomCSS),
-		InlineCSS:  template.CSS(*o.InlineCSS),
-		EnableFont: *o.EnableFont,
-		OnlyBody:   *o.OnlyBody,
-		Title:      *o.Title,
-		TabWidth:   *o.TabWidth,
+		InputFile:    *o.InputFile,
+		OutputFile:   *o.OutputFile,
+		NewLine:      *o.NewLine,
+		CustomCSS:    template.URL(*o.CustomCSS),
+		InlineCSS:    template.CSS(*o.InlineCSS),
+		EnableFont:   *o.EnableFont,
+		OnlyBody:     *o.OnlyBody,
+		Title:        *o.Title,
+		TabWidth:     *o.TabWidth,
+		Verbose:      *o.Verbose,
+		HTMLOut:      *o.HTMLOut,
+		TelegraphOut: *o.TelegraphOut,
+		Prettify:     *o.Prettify,
+		Watch:        *o.Watch,
 	}
 }
 
