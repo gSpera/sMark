@@ -20,42 +20,45 @@ func TokenToStructure(tokens []token.Token) []token.Token {
 
 		switch tok.(type) {
 		case token.BoldToken:
-			log.Println("\t-Found BoldToken")
 			fn := func(buffer string) token.TextToken { return token.TextToken{Text: buffer, Bold: true} }
 			t, skip := checkRangeStruct(token.BoldToken{}, fn, tokens, i)
 			if skip == -1 {
 				newTokens = append(newTokens, tok)
 				continue
 			}
+
+			log.Println("\t-Found Bold Text")
 			toSkip = skip
 			newTokens = append(newTokens, t)
 		case token.ItalicToken:
-			log.Println("\t-Found ItalicToken")
 			fn := func(buffer string) token.TextToken { return token.TextToken{Text: buffer, Italic: true} }
 			t, skip := checkRangeStruct(token.ItalicToken{}, fn, tokens, i)
 			if skip == -1 {
 				newTokens = append(newTokens, tok)
 				continue
 			}
+
+			log.Println("\t-Found Italic Text")
 			toSkip = skip
 			newTokens = append(newTokens, t)
 		case token.LessToken:
-			log.Println("\t-Found LessToken")
 			fn := func(buffer string) token.TextToken { return token.TextToken{Text: buffer, Strike: true} }
 			t, skip := checkRangeStruct(token.LessToken{}, fn, tokens, i)
 			if skip == -1 {
 				newTokens = append(newTokens, tok)
 				continue
 			}
+
+			log.Println("\t-Found Strike-Throught Text")
 			toSkip = skip
 			newTokens = append(newTokens, t)
 		case token.SBracketOpenToken:
-			log.Println("\t-Found Opening Square Bracket")
 			t, skip := searchCheckbox(tokens, i)
 			if skip == -1 {
 				newTokens = append(newTokens, tok)
 				continue
 			}
+
 			log.Println("\t-Found CheckBox")
 			toSkip = skip
 			newTokens = append(newTokens, t)
