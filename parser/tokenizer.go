@@ -18,7 +18,7 @@ var tokensMap = map[token.Type]token.Token{
 	token.TypeTab:           token.TabToken{},
 }
 
-//Tokenizer parse a *os.File and return a slice of tokens
+//Tokenizer parse a io.Reader and return a slice of tokens or error
 func Tokenizer(reader io.Reader) ([]token.Token, error) {
 	tokenList := []token.Token{}
 	r := bufio.NewReader(reader)
@@ -28,8 +28,11 @@ func Tokenizer(reader io.Reader) ([]token.Token, error) {
 	for {
 		n, size, err := r.ReadRune()
 
-		if size == 0 {
+		if size == 0 && err == io.EOF {
 			addBufferToTokenBuffer(&tokenList, &buffer)
+			if len(tokenList) == 0 {
+				return []token.Token{}, nil
+			}
 			//Adds new line at end if no one
 			if tokenList[len(tokenList)-1].Type() != token.TypeNewLine {
 				tokenList = append(tokenList, token.NewLineToken{})
