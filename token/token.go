@@ -1,5 +1,7 @@
 package token
 
+import "strings"
+
 //Token is an interface for simple and complex tokens
 type Token interface {
 	IsToken()
@@ -25,45 +27,34 @@ type TextToken struct {
 //String creates a string with the content of the TextToken
 //It respect attributes
 func (t TextToken) String() string {
-	var str string
-	addAttr := func(str string) string {
-		if t.Bold {
-			return str + "*"
-		}
-		if t.Italic {
-			return str + "/"
-		}
-		if t.Strike {
-			return str + "-"
-		}
-		return str
-	}
-
-	str = addAttr("")
-	str += t.Text
-	str = addAttr(str)
-	return str
+	return t.string(func(s string) string { return s })
 }
 
 //StringEscape creates a string with the content of the TextToken
 //It respect attributes, it escapes with backslash if it find escaped char
 func (t TextToken) StringEscape() string {
+	return t.string(EscapeString)
+}
+
+func (t TextToken) string(applyToText func(string) string) string {
 	var str string
 	addAttr := func(str string) string {
+		var attr string
 		if t.Bold {
-			return str + "*"
+			attr += "*"
 		}
 		if t.Italic {
-			return str + "/"
+			attr += "/"
 		}
 		if t.Strike {
-			return str + "-"
+			attr += "-"
 		}
-		return str
+		return str + attr
 	}
 
-	str = addAttr("")
-	str += EscapeString(t.Text)
+	str = strings.Repeat("\t", t.Indentation)
+	str += addAttr("")
+	str += applyToText(t.Text)
 	str = addAttr(str)
 	return str
 }

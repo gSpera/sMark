@@ -46,7 +46,6 @@ func (t LineContainer) StringNoTab() string {
 			str += fmt.Sprintf("[%c]", tt.Char)
 		default:
 			panic(fmt.Sprintf("LineContainer contains unknown token %T{%v}", t, t))
-
 		}
 	}
 
