@@ -1,9 +1,0 @@
-- [ ] Subtitle
-- [ ] Test
-- [ ] Parse
-- [X] Header
-- [x] trailing-line
-- [x] HR tag not working
-- [ ] Add more flexibility and modularity
-- [ ] Update logging system
-- [ ] Update telegraph engine
