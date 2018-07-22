@@ -27,6 +27,8 @@ func Output(paragraphs []token.ParagraphToken, options eNote.Options) ([]byte, e
 			data = append(data, fmt.Sprintf("%s\n\n", strings.Repeat("-", divisorLen))...)
 		case token.ListParagraph:
 			data = append(data, makeList(pp)...)
+		case token.CodeParagraph:
+			data = append(data, makeCode(pp)...)
 		default:
 			log.Printf("\t\t- ERROR: Not Implemented: %T{%v}\n", pp, pp)
 		}
@@ -114,5 +116,12 @@ func lineContainerToString(container token.LineContainer) string {
 			panic(fmt.Sprintf("LineContainer contains unknown token %T{%v}", tt, tt))
 		}
 	}
+	return str
+}
+
+func makeCode(p token.CodeParagraph) string {
+	var str string
+	str = fmt.Sprintf("[%s]\n", p.Lang)
+	str += textParagraphToString(p.Text)
 	return str
 }
