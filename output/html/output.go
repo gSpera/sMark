@@ -9,6 +9,7 @@ import (
 	"html/template"
 	"log"
 	"os"
+	"strings"
 )
 
 const maxMarkup = 255
@@ -91,6 +92,12 @@ func ToString(paragraphs []token.ParagraphToken, options eNote.Options) []byte {
 			}
 
 			body += "</ul>"
+		case token.CodeParagraph:
+			body += fmt.Sprintf("<pre><code class=\"%s\">", pp.Lang)
+			for _, line := range pp.Text.Lines {
+				body += strings.Repeat("\t", line.Indentation) + fromLineContainer(line) + "\n"
+			}
+			body += "</code></pre>"
 		default:
 			log.Printf("Found Unknown Paragraph: %T{%+v}\n", p, p)
 			panic("Paragraph Type not supported")
