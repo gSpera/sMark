@@ -123,6 +123,25 @@ func isOnlyWhiteSpace(txt string) bool {
 	return len(txt) == 0
 }
 
+//isCodeHeader checks if the line can be the header for a code block
+//[langName]
+func isCodeHeader(line token.LineContainer) bool {
+	if len(line.Tokens) < 3 {
+		return false
+	}
+
+	if _, ok := line.Tokens[0].(token.SBracketOpenToken); !ok {
+		return false
+	}
+	if _, ok := line.Tokens[2].(token.SBracketCloseToken); !ok {
+		return false
+	}
+	if text, ok := line.Tokens[1].(token.TextToken); !ok || len(text.Text) < 2 {
+		return false
+	}
+	return true
+}
+
 //parseLine parses the passed token.LineContainer searching for special
 func parseLine(currentLine token.LineContainer) token.LineToken {
 	switch {
@@ -149,6 +168,10 @@ func parseLine(currentLine token.LineContainer) token.LineToken {
 			currentLine.Tokens[0] = ft
 		}
 		return token.ListLine{Text: currentLine}
+	case isCodeHeader(currentLine):
+		log.Println("\t- Found CodeLine")
+		lang := currentLine.Tokens[1].(token.TextToken).Text
+		return token.CodeLine{Lang: lang}
 	}
 
 	return currentLine

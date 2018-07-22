@@ -14,6 +14,7 @@ func TokenToParagraph(lines []token.LineToken) []token.ParagraphToken {
 	header := false
 	var list []token.ListLine
 	var skip int
+	var codeLang string
 
 	for i, t := range lines {
 		var lastLine token.LineToken
@@ -87,21 +88,45 @@ func TokenToParagraph(lines []token.LineToken) []token.ParagraphToken {
 
 			//Check if line is empty causing End Of Paragraph
 			if l, ok := lastLine.(token.LineContainer); currentEmpty && ok && len(l.Tokens) != 0 {
-				log.Println("\t- Found Text Paragraph")
+
+				if codeLang != "" {
+					log.Println("\t- Found Code Paragraph")
+					paragraphs = append(paragraphs, token.CodeParagraph{Lang: codeLang, Text: currentParagraph})
+					currentParagraph = token.TextParagraph{}
+					codeLang = ""
+					continue
+				}
+
 				checkIndentation(&currentParagraph)
+				log.Println("\t- Found Text Paragraph")
 				paragraphs = append(paragraphs, currentParagraph)
 				currentParagraph = token.TextParagraph{}
 			} else {
 				currentParagraph.Lines = append(currentParagraph.Lines, tt)
 			}
+		case token.CodeLine:
+			if len(currentParagraph.Lines) != 0 {
+				currentParagraph.Lines = append(currentParagraph.Lines, token.LineContainer{
+					Tokens: []token.Token{token.TextToken{
+						Text: fmt.Sprintf("[%s]", tt.Lang),
+					}},
+				})
+				continue
+			}
+			codeLang = tt.Lang
 		default:
 			panic(fmt.Sprintf("Line=>Paragraph for %T{%+v} not defined", tt, tt))
 		}
 
 	}
 
-	checkIndentation(&currentParagraph)
-	paragraphs = append(paragraphs, currentParagraph)
+	if codeLang != "" {
+		log.Println("\t- Found Code Paragraph")
+		paragraphs = append(paragraphs, token.CodeParagraph{Lang: codeLang, Text: currentParagraph})
+	} else {
+		checkIndentation(&currentParagraph)
+		paragraphs = append(paragraphs, currentParagraph)
+	}
 	return paragraphs
 }
 

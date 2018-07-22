@@ -48,3 +48,10 @@ type ListParagraph struct {
 	ParagraphToken
 	Items []ListLine
 }
+
+//CodeParagraph is a paragraph containing code
+type CodeParagraph struct {
+	ParagraphToken
+	Lang string
+	Text TextParagraph
+}

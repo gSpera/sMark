@@ -78,3 +78,9 @@ type ListLine struct {
 	Text        LineContainer
 	Indentation uint
 }
+
+//CodeLine is a line containing the language name for CodeParagraph
+type CodeLine struct {
+	LineToken
+	Lang string
+}
