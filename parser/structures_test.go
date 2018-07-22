@@ -1,7 +1,6 @@
-package parser_test
+package parser
 
 import (
-	"eNote/parser"
 	"eNote/token"
 	"errors"
 	"fmt"
@@ -61,6 +60,37 @@ func TestStructure(t *testing.T) {
 			},
 		},
 		{
+			"Italic Not Ending",
+			[]token.Token{
+				token.ItalicToken{},
+				token.TextToken{Text: "Test"},
+			},
+			[]token.Token{
+				token.ItalicToken{},
+				token.TextToken{Text: "Test"}},
+		}, //End Italic Not Ending
+		{
+			"Strike-Throught",
+			[]token.Token{
+				token.LessToken{},
+				token.TextToken{Text: "Test"},
+				token.LessToken{},
+			},
+			[]token.Token{
+				token.TextToken{Text: "Test", Strike: true},
+			},
+		},
+		{
+			"Strike-Throught Not Ending",
+			[]token.Token{
+				token.LessToken{},
+				token.TextToken{Text: "Test"},
+			},
+			[]token.Token{
+				token.LessToken{},
+				token.TextToken{Text: "Test"}},
+		}, //End Italic Not Ending
+		{
 			"Token after end",
 			[]token.Token{
 				token.ItalicToken{},
@@ -72,6 +102,65 @@ func TestStructure(t *testing.T) {
 				token.TextToken{Text: "Test", Italic: true},
 				token.TextToken{Text: "AnotherText"},
 			},
+		},
+		{
+			"CheckBox",
+			[]token.Token{
+				token.SBracketOpenToken{},
+				token.TextToken{Text: " "},
+				token.SBracketCloseToken{},
+			},
+			[]token.Token{
+				token.CheckBoxToken{Char: ' '},
+			},
+		},
+		{
+			"CheckBox_NotEnoughTokens",
+			[]token.Token{
+				token.SBracketOpenToken{},
+				token.TextToken{Text: " "},
+			},
+			[]token.Token{
+				token.SBracketOpenToken{},
+				token.TextToken{Text: " "},
+			},
+		},
+		{
+			"CheckBox_NotClose",
+			[]token.Token{
+				token.SBracketOpenToken{},
+				token.TextToken{Text: " "},
+				token.BoldToken{},
+			},
+			[]token.Token{
+				token.SBracketOpenToken{},
+				token.TextToken{Text: " "},
+				token.BoldToken{},
+			},
+		},
+		{
+			"CheckBox_StringNoCorrectSize",
+			[]token.Token{
+				token.SBracketOpenToken{},
+				token.TextToken{Text: "  "},
+				token.SBracketCloseToken{},
+			},
+			[]token.Token{
+				token.SBracketOpenToken{},
+				token.TextToken{Text: "  "},
+				token.SBracketCloseToken{}},
+		},
+		{
+			"CheckBox_StringNoCorrectSize",
+			[]token.Token{
+				token.SBracketOpenToken{},
+				token.BoldToken{},
+				token.SBracketCloseToken{},
+			},
+			[]token.Token{
+				token.SBracketOpenToken{},
+				token.BoldToken{},
+				token.SBracketCloseToken{}},
 		},
 		{
 			"Two Times",
@@ -88,11 +177,40 @@ func TestStructure(t *testing.T) {
 				token.TextToken{Text: "AnotherText", Italic: true},
 			},
 		},
+		{
+			"Adiacent",
+			[]token.Token{
+				token.BoldToken{},
+				token.BoldToken{},
+			},
+			[]token.Token{
+				token.BoldToken{},
+				token.BoldToken{},
+			},
+		},
+		{
+			"Token inside",
+			[]token.Token{
+				token.BoldToken{},
+				token.CheckBoxToken{Char: 'X'},
+				token.BoldToken{},
+			},
+			[]token.Token{
+				token.BoldToken{},
+				token.CheckBoxToken{Char: 'X'},
+				token.BoldToken{},
+			},
+		},
+	}
+
+	spew.Config = spew.ConfigState{
+		DisableMethods: true,
+		Indent:         "\t",
 	}
 
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
-			structure := parser.TokenToStructure(test.input)
+			structure := TokenToStructure(test.input)
 
 			if ok, err := checkSlice(structure, test.output); !ok {
 				fmt.Println("Not expected output")
@@ -106,6 +224,20 @@ func TestStructure(t *testing.T) {
 	}
 }
 
+func TestSearchCheckBoxPanic(t *testing.T) {
+	defer func() {
+		if err := recover(); err == nil {
+			t.Fatalf("Expected panic")
+		}
+	}()
+
+	searchCheckbox([]token.Token{
+		token.BoldToken{},
+		token.BoldToken{},
+		token.BoldToken{},
+	}, 0)
+}
+
 //checkSlice checks if two tokens slice are equal,
 //it checks for len and elements
 func checkSlice(arr1, arr2 []token.Token) (bool, error) {
@@ -115,7 +247,7 @@ func checkSlice(arr1, arr2 []token.Token) (bool, error) {
 
 	for i := range arr1 {
 		if arr1[i] != arr2[i] {
-			return false, errors.New(fmt.Sprintf("Differ at pos: %d", i))
+			return false, fmt.Errorf("Differ at pos: %d", i)
 		}
 	}
 

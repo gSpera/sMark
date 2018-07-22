@@ -105,19 +105,23 @@ func checkRangeStruct(ending token.Token, generateToken func(string) token.TextT
 func searchCheckbox(tokens []token.Token, start int) (token.CheckBoxToken, int) {
 	var res token.CheckBoxToken
 
+	if len(tokens)-start < 3 {
+		log.Printf("Not enough tokens: %d (len(tokens)[%d] - start[%d] [= %d] < 3)\n", len(tokens), len(tokens), start, len(tokens)-start)
+		return res, -1
+	}
+
 	//Check opening bracket
 	if tokens[start].Type() != token.TypeSBracketOpen {
-		log.Println("\t\t- Start is not a SBracketOpenToken")
-		return res, -1
+		panic("SBracketOpenToken not found")
 	}
 
 	//Check closing bracket
 	if tokens[start+2].Type() != token.TypeSBracketClose {
-		log.Println("\t\t- Start+1 is not a SBracketCloseToken")
+		log.Println("\t\t- SBracketCloseToken not found")
 		return res, -1
 	}
 	if _, ok := tokens[start+1].(token.TextToken); !ok {
-		log.Println("\t\t- Start is not a String size is not 1")
+		log.Println("\t\t- TextToken not found")
 		return res, -1
 	}
 
