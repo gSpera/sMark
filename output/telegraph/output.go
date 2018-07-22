@@ -56,6 +56,13 @@ func ToString(paragraphs []token.ParagraphToken, options eNote.Options) tgraph.P
 			}
 
 			nodes = append(nodes, list)
+		case token.CodeParagraph:
+			log.Println("\t- CodeParagraph")
+			pre := createTag("pre")
+			for _, line := range pp.Text.Lines {
+				pre.Children = append(pre.Children, line.String()+"\n")
+			}
+			nodes = append(nodes, pre)
 		}
 	}
 
