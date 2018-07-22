@@ -10,6 +10,9 @@ import (
 	"log"
 	"os"
 	"strings"
+
+	//Lexers for highlight
+	_ "github.com/johnsto/go-highlight/lexers"
 )
 
 const maxMarkup = 255

@@ -43,8 +43,15 @@
         {{ .Options.String.InlineCSS }}
 
     </style>
-    {{if .Options.String.CustomCSS }}
+    {{ if .Options.String.CustomCSS }}
         <link rel="stylesheet" href="{{.Options.String.CustomCSS}}">
+    {{ end }}
+
+    {{ if .Options.Bool.EnableJS }}
+        <!--Code Highlight-->
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css">
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
+        <script>hljs.initHighlightingOnLoad();</script>
     {{ end }}
 </head>
 

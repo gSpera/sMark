@@ -41,6 +41,7 @@ func main() {
 	telegraphOut := flag.Bool("telegraph", false, "Output to Telegra.ph")
 	prettify := flag.String("prettify", "", "Prettify")
 	watch := flag.Bool("watch", false, "Watches the file for changes (CTRL + c to exit)")
+	enableJs := flag.Bool("enable-js", true, "Enable JavaScript in HTML")
 
 	flag.Parse()
 	options := eNote.Options{
@@ -60,6 +61,7 @@ func main() {
 			"HTMLOut":      *htmlOut,
 			"TelegraphOut": *telegraphOut,
 			"Watch":        *watch,
+			"EnableJS":     *enableJs,
 		},
 		Generic: map[string]interface{}{
 			"TabWidth": *tabWidth, //Uint
