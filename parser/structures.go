@@ -120,17 +120,23 @@ func searchCheckbox(tokens []token.Token, start int) (token.CheckBoxToken, int) 
 		log.Println("\t\t- SBracketCloseToken not found")
 		return res, -1
 	}
-	if _, ok := tokens[start+1].(token.TextToken); !ok {
+
+	var char rune
+	textToken, ok0 := tokens[start+1].(token.TextToken)
+	simpleToken, ok1 := tokens[start+1].(token.SimpleToken)
+
+	if ok0 {
+		text := textToken.Text
+		if utf8.RuneCountInString(text) != 1 { //Text inside Brackets must be only one char
+			return res, -1
+		}
+		char, _ = utf8.DecodeRuneInString(text)
+	} else if ok1 {
+		char = simpleToken.Char()
+	} else {
 		log.Println("\t\t- TextToken not found")
 		return res, -1
 	}
 
-	text := tokens[start+1].(token.TextToken)
-
-	if utf8.RuneCountInString(text.Text) != 1 { //Text inside Brackets must be only one char
-		return res, -1
-	}
-
-	char, _ := utf8.DecodeRuneInString(text.Text)
 	return token.CheckBoxToken{Char: char}, 2
 }
