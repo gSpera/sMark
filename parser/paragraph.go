@@ -14,7 +14,6 @@ func TokenToParagraph(lines []token.LineToken) []token.ParagraphToken {
 	header := false
 	var list []token.ListLine
 	var skip int
-	var codeLang string
 
 	for i, t := range lines {
 		var lastLine token.LineToken
@@ -88,15 +87,6 @@ func TokenToParagraph(lines []token.LineToken) []token.ParagraphToken {
 
 			//Check if line is empty causing End Of Paragraph
 			if l, ok := lastLine.(token.LineContainer); currentEmpty && ok && len(l.Tokens) != 0 {
-
-				if codeLang != "" {
-					log.Println("\t- Found Code Paragraph")
-					paragraphs = append(paragraphs, token.CodeParagraph{Lang: codeLang, Text: currentParagraph})
-					currentParagraph = token.TextParagraph{}
-					codeLang = ""
-					continue
-				}
-
 				checkIndentation(&currentParagraph)
 				log.Println("\t- Found Text Paragraph")
 				paragraphs = append(paragraphs, currentParagraph)
@@ -113,20 +103,46 @@ func TokenToParagraph(lines []token.LineToken) []token.ParagraphToken {
 				})
 				continue
 			}
-			codeLang = tt.Lang
+
+			if tt.Lang == "end" { // Malformed Code Block
+				currentParagraph.Lines = append(currentParagraph.Lines, token.LineContainerFromString(fmt.Sprintf("[%s]", tt.Lang)))
+				continue
+			}
+
+			codeBlock := token.TextParagraph{}
+			for j := i + 1; j < len(lines); j++ {
+				end, ok := lines[j].(token.CodeLine)
+
+				if (ok && end.Lang == "end") || j == len(lines)-1 {
+					log.Println("\t- Found Code Block:", tt.Lang)
+
+					if line, ok := lines[j].(token.LineContainer); j == len(lines)-1 && ok {
+						codeBlock.Lines = append(codeBlock.Lines, line)
+					}
+					checkIndentation(&codeBlock)
+					paragraphs = append(paragraphs, token.CodeParagraph{
+						Lang: tt.Lang,
+						Text: codeBlock,
+					})
+					currentParagraph = token.TextParagraph{}
+					skip = j - i
+					continue
+				}
+
+				line, ok := lines[j].(token.LineContainer)
+				if !ok {
+					break
+				}
+				codeBlock.Lines = append(codeBlock.Lines, line)
+			}
 		default:
 			panic(fmt.Sprintf("Line=>Paragraph for %T{%+v} not defined", tt, tt))
 		}
 
 	}
 
-	if codeLang != "" {
-		log.Println("\t- Found Code Paragraph")
-		paragraphs = append(paragraphs, token.CodeParagraph{Lang: codeLang, Text: currentParagraph})
-	} else {
-		checkIndentation(&currentParagraph)
-		paragraphs = append(paragraphs, currentParagraph)
-	}
+	checkIndentation(&currentParagraph)
+	paragraphs = append(paragraphs, currentParagraph)
 	return paragraphs
 }
 
@@ -250,4 +266,16 @@ func simpleText(text string) token.LineContainer {
 			token.TextToken{Text: text},
 		},
 	}
+}
+
+func lineTokenToLineContainer(lines []token.LineToken) ([]token.LineContainer, bool) {
+	res := make([]token.LineContainer, 0, len(lines))
+	for i, v := range lines {
+		container, ok := v.(token.LineContainer)
+		if !ok {
+			return res, false
+		}
+		res[i] = container
+	}
+	return res, true
 }
