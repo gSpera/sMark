@@ -24,3 +24,8 @@ func createItalic(txt string) tgraph.NodeElement {
 func createTag(tag string) tgraph.NodeElement {
 	return tgraph.NodeElement{Tag: tag}
 }
+
+type tree struct {
+	tgraph.NodeElement
+	parent *tree
+}

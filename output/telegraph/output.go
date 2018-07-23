@@ -5,6 +5,7 @@ import (
 	"eNote/utils"
 	"fmt"
 	"log"
+	"strings"
 
 	"github.com/davecgh/go-spew/spew"
 	tgraph "github.com/toby3d/telegraph"
@@ -49,13 +50,38 @@ func ToString(paragraphs []token.ParagraphToken, options eNote.Options) tgraph.P
 			}
 		case token.ListParagraph:
 			log.Println("\t- ListParagraph")
-			list := createTag("ul")
+			tre := &tree{createTag("ul"), nil}
+			root := tre
+			currentIndentation := 0
+
+			//Telegra.ph doesn't support nested ul so this is pretty useless,
+			//maybe in a future update they will add them
 			for _, item := range pp.Items {
-				li := createLi(fromLineContainer(item.Text))
-				list.Children = append(list.Children, li)
+				if item.Indentation > currentIndentation {
+					for i := currentIndentation; i < item.Indentation; i++ {
+						tr := &tree{createTag("ul"), tre}
+						tre.Children = append(tre.Children, tr)
+						tre = tr
+					}
+				} else if item.Indentation < currentIndentation {
+					for i := currentIndentation; i > item.Indentation; i-- {
+						tre = tre.parent
+					}
+				}
+
+				li := createTag("li")
+				//Emulate nested list
+				if item.Indentation > 1 {
+					stars := createBold(strings.Repeat("*", item.Indentation-1))
+					li.Children = append(li.Children, stars)
+					li.Children = append(li.Children, ": ")
+				}
+				li.Children = append(li.Children, fromLineContainer(item.Text))
+				tre.Children = append(tre.Children, li)
 			}
 
-			nodes = append(nodes, list)
+			spew.Dump(root)
+			nodes = append(nodes, root)
 		case token.CodeParagraph:
 			log.Println("\t- CodeParagraph")
 			pre := createTag("pre")
