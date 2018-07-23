@@ -76,7 +76,7 @@ type EqualLine struct {
 type ListLine struct {
 	LineToken
 	Text        LineContainer
-	Indentation uint
+	Indentation int
 }
 
 //CodeLine is a line containing the language name for CodeParagraph

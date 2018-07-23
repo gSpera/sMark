@@ -5,8 +5,11 @@ This is the TODO list for the release of eNote 1.0
 ==================================================
 
 - [ ] Block Quotes
-- [ ] Code (Inline & Block)
+- [-] Code
+-- [ ] Inline
+-- [X] Block
 - [ ] Better Options
 - [ ] Documentation
 - [ ] Rename Package
 - [ ] Better Tests
+- [ ] HTML Output Engine prettier

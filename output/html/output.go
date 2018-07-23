@@ -88,13 +88,24 @@ func ToString(paragraphs []token.ParagraphToken, options eNote.Options) []byte {
 				body += fmt.Sprintf("<h3>%s</h3>", html.EscapeString(pp.Text))
 			}
 		case token.ListParagraph:
-			body += "<ul>"
-
+			currentIndentation := 0
 			for _, item := range pp.Items {
+				if item.Indentation > currentIndentation {
+					for i := currentIndentation; i < item.Indentation; i++ {
+						body += "<ul>"
+					}
+					currentIndentation = item.Indentation
+				} else if item.Indentation < currentIndentation {
+					for i := currentIndentation; i > item.Indentation; i-- {
+						body += "</ul>"
+					}
+					currentIndentation = item.Indentation
+				}
 				body += fmt.Sprintf("<li>%s</li>", fromLineContainer(item.Text))
 			}
-
-			body += "</ul>"
+			for i := currentIndentation; i > 0; i-- {
+				body += "</ul>"
+			}
 		case token.CodeParagraph:
 			body += fmt.Sprintf("<pre><code class=\"%s\">", pp.Lang)
 			for _, line := range pp.Text.Lines {

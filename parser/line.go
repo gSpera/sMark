@@ -161,13 +161,22 @@ func parseLine(currentLine token.LineContainer) token.LineToken {
 		}
 	case isListLine(currentLine):
 		log.Println("\t- Found ListLine")
-		currentLine.Tokens = currentLine.Tokens[1:]
+		indentation := 0
+		for _, t := range currentLine.Tokens {
+			if _, ok := t.(token.LessToken); ok {
+				indentation++
+			} else {
+				currentLine.Tokens = currentLine.Tokens[indentation:]
+				break
+			}
+		}
+
 		fToken := currentLine.Tokens[0]
 		if ft, ok := fToken.(token.TextToken); ok {
 			ft.Text = ft.Text[1:]
 			currentLine.Tokens[0] = ft
 		}
-		return token.ListLine{Text: currentLine}
+		return token.ListLine{Text: currentLine, Indentation: indentation}
 	case isCodeHeader(currentLine):
 		log.Println("\t- Found CodeLine")
 		lang := currentLine.Tokens[1].(token.TextToken).Text
