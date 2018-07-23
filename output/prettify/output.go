@@ -94,7 +94,7 @@ func indentation(n int) string {
 func makeList(list token.ListParagraph) string {
 	var content string
 	for _, item := range list.Items {
-		content += fmt.Sprintf("- %s\n", item.Text.String())
+		content += fmt.Sprintf("%s %s\n", strings.Repeat("-", item.Indentation), item.Text.String())
 	}
 
 	content += "\n"
