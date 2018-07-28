@@ -7,7 +7,6 @@ import (
 	"log"
 	"strings"
 
-	"github.com/davecgh/go-spew/spew"
 	tgraph "github.com/toby3d/telegraph"
 )
 
@@ -34,17 +33,32 @@ func ToString(paragraphs []token.ParagraphToken, options eNote.Options) tgraph.P
 			log.Println("\t- New Paragraph")
 			p := p.(token.TextParagraph)
 			par := createTag("p")
+			var quote bool
+			quoteBlock := createTag("blockquote")
+
 			for _, line := range p.Lines {
-				par.Children = append(par.Children, fromLineContainer(line).Children...)
+				if !line.Quote && quote { //End of block of quote
+					par.Children = append(par.Children, quoteBlock)
+					quoteBlock = createTag("blockquote")
+				}
+				quote = line.Quote
+				if quote {
+					quoteBlock.Children = append(quoteBlock.Children, fromLineContainer(line).Children...)
+				} else {
+					par.Children = append(par.Children, fromLineContainer(line).Children...)
+				}
 
 				//Appending NewLine if the options allows it
 				if options.Bool["NewLine"] && len(par.Children) != 0 {
-					par.Children = append(par.Children, "\n")
+					node := &par
+					if quote {
+						node = &quoteBlock
+					}
+					node.Children = append(node.Children, "\n")
 				}
 			}
 
 			log.Println("\t- Finished Paragraph")
-			log.Println(spew.Sdump(par))
 			if len(par.Children) != 0 {
 				nodes = append(nodes, par)
 			}
@@ -80,7 +94,6 @@ func ToString(paragraphs []token.ParagraphToken, options eNote.Options) tgraph.P
 				tre.Children = append(tre.Children, li)
 			}
 
-			spew.Dump(root)
 			nodes = append(nodes, root)
 		case token.CodeParagraph:
 			log.Println("\t- CodeParagraph")
@@ -128,6 +141,7 @@ func createCheckBox(t token.CheckBoxToken) tgraph.Node {
 
 func fromLineContainer(line token.LineContainer) tgraph.NodeElement {
 	res := createTag("p")
+
 	for _, tok := range line.Tokens {
 		switch t := tok.(type) {
 		case token.TextToken:
