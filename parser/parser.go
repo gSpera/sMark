@@ -104,16 +104,14 @@ func OptionsFromParagraphs(paragraphs []token.ParagraphToken) (eNote.Options, []
 	options := eNote.NewOptions()
 	newTokens := make([]token.ParagraphToken, 0, len(paragraphs))
 
-	for i, p := range paragraphs {
-		p, ok := p.(token.HeaderParagraph)
+	for _, p := range paragraphs {
+		header, ok := p.(token.HeaderParagraph)
 		if !ok {
+			newTokens = append(newTokens, p)
 			continue
 		}
 
-		options.Update(p.Options)
-
-		//Removing the paragraph
-		newTokens = append(newTokens[:i], newTokens[i+1:]...)
+		options.Update(header.Options)
 	}
 
 	return options, newTokens
