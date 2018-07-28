@@ -103,6 +103,10 @@ func makeList(list token.ListParagraph) string {
 
 func lineContainerToString(container token.LineContainer) string {
 	var str string
+	if container.Quote {
+		str = "|"
+	}
+
 	for _, t := range container.Tokens {
 		switch tt := t.(type) {
 		case token.TextToken:
@@ -112,7 +116,6 @@ func lineContainerToString(container token.LineContainer) string {
 		case token.CheckBoxToken:
 			str += fmt.Sprintf("[%c]", tt.Char)
 		default:
-
 			panic(fmt.Sprintf("LineContainer contains unknown token %T{%v}", tt, tt))
 		}
 	}
