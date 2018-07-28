@@ -70,7 +70,14 @@ func ToString(paragraphs []token.ParagraphToken, options eNote.Options) []byte {
 			continue
 		case token.TextParagraph:
 			var paragraph string
+			var quote bool
 			for _, line := range pp.Lines {
+				if line.Quote && !quote {
+					paragraph += "<blockquote>"
+				} else if !line.Quote && quote {
+					paragraph += "</blockquote>"
+				}
+				quote = line.Quote
 				paragraph += fromLineContainer(line)
 				if options.Bool["NewLine"] {
 					paragraph += "<br>\n"
@@ -177,6 +184,5 @@ func fromLineContainer(line token.LineContainer) string {
 			panic(fmt.Sprintf("LineContainer contains unknown token %T{%v}", tt, tt))
 		}
 	}
-
 	return str
 }
