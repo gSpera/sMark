@@ -142,6 +142,14 @@ func isCodeHeader(line token.LineContainer) bool {
 	return true
 }
 
+func isQuoteLine(line token.LineContainer) bool {
+	if len(line.Tokens) == 0 {
+		return false
+	}
+	_, ok := line.Tokens[0].(token.PipeToken)
+	return ok
+}
+
 //parseLine parses the passed token.LineContainer searching for special
 func parseLine(currentLine token.LineContainer) token.LineToken {
 	switch {
@@ -181,6 +189,11 @@ func parseLine(currentLine token.LineContainer) token.LineToken {
 		log.Println("\t- Found CodeLine")
 		lang := currentLine.Tokens[1].(token.TextToken).Text
 		return token.CodeLine{Lang: lang}
+	case isQuoteLine(currentLine):
+		log.Println("\t- Found quote line")
+		currentLine.Quote = true
+		currentLine.Tokens = currentLine.Tokens[1:]
+		return currentLine
 	}
 
 	return currentLine

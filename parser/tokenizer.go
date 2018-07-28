@@ -16,6 +16,7 @@ var tokensMap = map[token.Type]token.Token{
 	token.TypeSBracketOpen:  token.SBracketOpenToken{},
 	token.TypeSBracketClose: token.SBracketCloseToken{},
 	token.TypeTab:           token.TabToken{},
+	token.TypePipe:          token.PipeToken{},
 }
 
 //Tokenizer parse a io.Reader and return a slice of tokens or error

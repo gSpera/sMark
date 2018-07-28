@@ -29,6 +29,9 @@ func (t SBracketOpenToken) Char() rune { return '[' }
 //Char returns ]
 func (t SBracketCloseToken) Char() rune { return ']' }
 
+//Char returns |
+func (t PipeToken) Char() rune { return '|' }
+
 //EscapeString escapes the current string from charachetrs like * or /
 func EscapeString(str string) string {
 	for _, ch := range WhitespaceEscape {

@@ -39,3 +39,6 @@ type SBracketCloseToken struct{ SimpleToken }
 
 //EscapeToken is a special toekn used for escpaing other tokens, it rapresent a \ token
 type EscapeToken struct{ SimpleToken }
+
+//PipeToken is a simple token, rapresenting a | token
+type PipeToken struct{ SimpleToken }

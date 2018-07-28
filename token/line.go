@@ -18,6 +18,9 @@ type LineContainer struct {
 	LineToken
 	Indentation int
 	Tokens      []Token
+
+	//Attribute
+	Quote bool
 }
 
 //String returns a string of the line with all tokens

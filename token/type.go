@@ -6,7 +6,8 @@ package token
 //Type rappresent a type of token
 type Type int
 
-//Default Types
+//Types definition
+//They can rapresent the rapresented char but it is not mandatory
 const (
 	//TypeUndefined is an undefined token
 	TypeUndefined = iota
@@ -35,6 +36,8 @@ const (
 
 	//TypeText is a text token
 	TypeText = -1
+
+	TypePipe = '|'
 
 	TypeParagraphHeader
 	TypeParagraphText
@@ -108,3 +111,6 @@ func (p CheckBoxToken) Type() Type { return TypeCheckBox }
 
 //Type returns the type of the Token
 func (p EscapeToken) Type() Type { return TypeEscape }
+
+//Type returns the type of the Token
+func (p PipeToken) Type() Type { return TypePipe }

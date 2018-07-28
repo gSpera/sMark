@@ -151,16 +151,15 @@ func TestStructure(t *testing.T) {
 				token.SBracketCloseToken{}},
 		},
 		{
-			"CheckBox_StringNoCorrectSize",
+			"CheckBox_SimpleToken",
 			[]token.Token{
 				token.SBracketOpenToken{},
 				token.BoldToken{},
 				token.SBracketCloseToken{},
 			},
 			[]token.Token{
-				token.SBracketOpenToken{},
-				token.BoldToken{},
-				token.SBracketCloseToken{}},
+				token.CheckBoxToken{Char: '*'},
+			},
 		},
 		{
 			"Two Times",
