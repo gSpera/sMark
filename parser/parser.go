@@ -99,23 +99,24 @@ func parseHeader(line string) (string, string) {
 }
 
 //OptionsFromParagraphs analyze the passed slice of paragraphs returning the final options contined in token.HeaderParagraphs.
-//It update the slice removing any HeaderParagraph token
-func OptionsFromParagraphs(paragraphs *[]token.ParagraphToken) eNote.Options {
+//It return the optained options and a new list of paragraphs containing all the paragraphs but HeaderParagraphs
+func OptionsFromParagraphs(paragraphs []token.ParagraphToken) (eNote.Options, []token.ParagraphToken) {
 	options := eNote.NewOptions()
+	newTokens := make([]token.ParagraphToken, 0, len(paragraphs))
 
-	for i, p := range *paragraphs {
-		if _, ok := p.(token.HeaderParagraph); !ok {
+	for i, p := range paragraphs {
+		p, ok := p.(token.HeaderParagraph)
+		if !ok {
 			continue
 		}
-		p := p.(token.HeaderParagraph)
+
 		options.Update(p.Options)
 
 		//Removing the paragraph
-		par := *paragraphs
-		*paragraphs = append(par[:i], par[i+1:]...)
+		newTokens = append(newTokens[:i], newTokens[i+1:]...)
 	}
 
-	return options
+	return options, newTokens
 }
 
 //TitleFromParagraph resolve a possible title from the passed paragraphs

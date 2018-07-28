@@ -132,7 +132,8 @@ func compile(options eNote.Options) {
 	}
 	log.Println("Parsing DONE")
 	log.Println("Updating Options")
-	options.Update(parser.OptionsFromParagraphs(&tokenList))
+	newOptions, tokenList := parser.OptionsFromParagraphs(tokenList)
+	options.Update(newOptions)
 	log.Println("Updating Options DONE")
 
 	log.Println("Selecting Title")

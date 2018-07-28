@@ -1,6 +1,7 @@
 package eNote
 
-//Options are the command line parameters
+//Options are the parameters to the compilation.
+//They can be obtained throught command line parameters or HeaderParagraphs
 type Options struct {
 	String  map[string]string
 	Bool    map[string]bool
