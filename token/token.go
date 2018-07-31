@@ -1,6 +1,9 @@
 package token
 
-import "strings"
+import (
+	"fmt"
+	"strings"
+)
 
 //Token is an interface for simple and complex tokens
 type Token interface {
@@ -50,6 +53,9 @@ func (t TextToken) string(applyToText func(string) string) string {
 		if t.Strike {
 			attr += "-"
 		}
+		if t.Link != "" {
+			attr += "\""
+		}
 		return str + attr
 	}
 
@@ -57,6 +63,11 @@ func (t TextToken) string(applyToText func(string) string) string {
 	str += addAttr("")
 	str += applyToText(t.Text)
 	str = addAttr(str)
+
+	if t.Link != "" {
+		str += fmt.Sprintf("@\"%s\"", t.Link)
+	}
+
 	return str
 }
 
