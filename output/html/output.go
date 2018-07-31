@@ -160,7 +160,12 @@ func fromLineContainer(line token.LineContainer) string {
 			if tt.Strike {
 				str += "<s>"
 			}
+			if tt.Link != "" {
+				str += fmt.Sprintf("<a href=\"%s\">", tt.Link)
+			}
+
 			str += tt.Text
+
 			if tt.Bold {
 				str += "</b>"
 			}
@@ -169,6 +174,9 @@ func fromLineContainer(line token.LineContainer) string {
 			}
 			if tt.Strike {
 				str += "</s>"
+			}
+			if tt.Link != "" {
+				str += "</a>"
 			}
 		case token.CheckBoxToken:
 			var data string
