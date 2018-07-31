@@ -123,6 +123,13 @@ func createLine(text token.TextToken) tgraph.Node {
 	if text.Strike {
 		node = tgraph.NodeElement{Tag: "s", Children: []tgraph.Node{node}}
 	}
+	if text.Link != "" {
+		node = tgraph.NodeElement{
+			Tag:      "a",
+			Attrs:    map[string]string{"href": text.Link, "target": "_blank"},
+			Children: []tgraph.Node{node},
+		}
+	}
 
 	return node
 }

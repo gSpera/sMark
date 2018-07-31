@@ -123,7 +123,6 @@ func searchLink(tokens []token.Token, start int) (token.Token, int) {
 	fn := func(buffer string) token.TextToken { return token.TextToken{Text: buffer, Link: ""} }
 	tok, skip := checkRangeStruct(token.QuoteToken{}, fn, tokens, start, true)
 	if skip == -1 {
-		log.Println("Not found first quote")
 		return token.TextToken{}, -1
 	}
 	t, ok := tok.(token.TextToken)
@@ -140,7 +139,6 @@ func searchLink(tokens []token.Token, start int) (token.Token, int) {
 	//Retrive URL
 	tok, sk := checkRangeStruct(token.QuoteToken{}, fn, tokens, i, true)
 	if sk == -1 {
-		log.Println("Not found second quote")
 		return t, -1
 	}
 	url, ok := tok.(token.TextToken)
