@@ -32,6 +32,8 @@ func TestType(t *testing.T) {
 		{"CheckBoxToken", CheckBoxToken{}, TypeCheckBox},
 		{"EscapeToken", EscapeToken{}, TypeEscape},
 		{"PipeToken", PipeToken{}, TypePipe},
+		{"QuoteToken", QuoteToken{}, TypeQuote},
+		{"AtToken", AtToken{}, TypeAt},
 	}
 
 	for _, test := range tt {

@@ -2,6 +2,7 @@ package parser
 
 import (
 	"eNote/token"
+	"fmt"
 	"log"
 	"unicode/utf8"
 )
@@ -21,7 +22,7 @@ func TokenToStructure(tokens []token.Token) []token.Token {
 		switch tok.(type) {
 		case token.BoldToken:
 			fn := func(buffer string) token.TextToken { return token.TextToken{Text: buffer, Bold: true} }
-			t, skip := checkRangeStruct(token.BoldToken{}, fn, tokens, i)
+			t, skip := checkRangeStruct(token.BoldToken{}, fn, tokens, i, false)
 			if skip == -1 {
 				newTokens = append(newTokens, tok)
 				continue
@@ -32,7 +33,7 @@ func TokenToStructure(tokens []token.Token) []token.Token {
 			newTokens = append(newTokens, t)
 		case token.ItalicToken:
 			fn := func(buffer string) token.TextToken { return token.TextToken{Text: buffer, Italic: true} }
-			t, skip := checkRangeStruct(token.ItalicToken{}, fn, tokens, i)
+			t, skip := checkRangeStruct(token.ItalicToken{}, fn, tokens, i, false)
 			if skip == -1 {
 				newTokens = append(newTokens, tok)
 				continue
@@ -43,7 +44,7 @@ func TokenToStructure(tokens []token.Token) []token.Token {
 			newTokens = append(newTokens, t)
 		case token.LessToken:
 			fn := func(buffer string) token.TextToken { return token.TextToken{Text: buffer, Strike: true} }
-			t, skip := checkRangeStruct(token.LessToken{}, fn, tokens, i)
+			t, skip := checkRangeStruct(token.LessToken{}, fn, tokens, i, false)
 			if skip == -1 {
 				newTokens = append(newTokens, tok)
 				continue
@@ -62,6 +63,15 @@ func TokenToStructure(tokens []token.Token) []token.Token {
 			log.Println("\t-Found CheckBox")
 			toSkip = skip
 			newTokens = append(newTokens, t)
+		case token.QuoteToken: //Link
+			t, skip := searchLink(tokens, i)
+			if skip == -1 {
+				newTokens = append(newTokens, tok)
+				continue
+			}
+			log.Println("\t-Found Link Text")
+			toSkip = skip
+			newTokens = append(newTokens, t)
 		default:
 			newTokens = append(newTokens, tok)
 		}
@@ -73,7 +83,7 @@ func TokenToStructure(tokens []token.Token) []token.Token {
 //checkRangeStruct searchs for a strcture like <token><Text></token>, for example with Bold *Text*
 //but it could be used also for other tokens like italic
 //returns the new token and tokens to skips, -1 if no structure found
-func checkRangeStruct(ending token.Token, generateToken func(string) token.TextToken, tokens []token.Token, start int) (token.Token, int) {
+func checkRangeStruct(ending token.Token, generateToken func(string) token.TextToken, tokens []token.Token, start int, ignoreSimple bool) (token.Token, int) {
 	var buffer string
 
 	//Starting from next token, stop after maxTokenDistance or when tokens finish
@@ -92,6 +102,13 @@ func checkRangeStruct(ending token.Token, generateToken func(string) token.TextT
 		case token.TextToken:
 			buffer += tt.Text
 
+		case token.SimpleToken:
+			if ignoreSimple {
+				buffer += string(tt.Char())
+			} else {
+				return ending, -1
+			}
+
 		//Another token is not accepted inside
 		default:
 			return ending, -1
@@ -100,6 +117,39 @@ func checkRangeStruct(ending token.Token, generateToken func(string) token.TextT
 
 	//No ending token found
 	return ending, -1
+}
+
+func searchLink(tokens []token.Token, start int) (token.Token, int) {
+	fn := func(buffer string) token.TextToken { return token.TextToken{Text: buffer, Link: ""} }
+	tok, skip := checkRangeStruct(token.QuoteToken{}, fn, tokens, start, true)
+	if skip == -1 {
+		log.Println("Not found first quote")
+		return token.TextToken{}, -1
+	}
+	t, ok := tok.(token.TextToken)
+	if !ok {
+		panic(fmt.Sprintf("checkRangeStruct didn't return token.TextToken: %T{%+v}, skip: %d", tok, tok, skip))
+	}
+	i := start + skip + 1
+
+	if _, ok := tokens[i].(token.AtToken); !ok {
+		return t, -1
+	}
+	i++
+
+	//Retrive URL
+	tok, sk := checkRangeStruct(token.QuoteToken{}, fn, tokens, i, true)
+	if sk == -1 {
+		log.Println("Not found second quote")
+		return t, -1
+	}
+	url, ok := tok.(token.TextToken)
+	if !ok {
+		panic(fmt.Sprintf("checkRangeStruct didn't return token.TextToken: %T{%+v}, skip: %d", tok, tok, sk))
+	}
+
+	t.Link = url.Text
+	return t, i + sk - start
 }
 
 func searchCheckbox(tokens []token.Token, start int) (token.CheckBoxToken, int) {

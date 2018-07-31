@@ -42,3 +42,9 @@ type EscapeToken struct{ SimpleToken }
 
 //PipeToken is a simple token, rapresenting a | token
 type PipeToken struct{ SimpleToken }
+
+//QuoteToken is a simple token rapresenting a " token
+type QuoteToken struct{ SimpleToken }
+
+//AtToken is a simple token rapresenting a @ token
+type AtToken struct{ SimpleToken }

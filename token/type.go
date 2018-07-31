@@ -37,7 +37,9 @@ const (
 	//TypeText is a text token
 	TypeText = -1
 
-	TypePipe = '|'
+	TypePipe  = '|'
+	TypeQuote = '"'
+	TypeAt    = '@'
 
 	TypeParagraphHeader
 	TypeParagraphText
@@ -114,3 +116,9 @@ func (p EscapeToken) Type() Type { return TypeEscape }
 
 //Type returns the type of the Token
 func (p PipeToken) Type() Type { return TypePipe }
+
+//Type returns the type of the Token
+func (p QuoteToken) Type() Type { return TypeQuote }
+
+//Type returns the type of the Token
+func (p AtToken) Type() Type { return TypeAt }

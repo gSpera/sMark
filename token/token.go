@@ -22,6 +22,7 @@ type TextToken struct {
 	Bold   bool
 	Italic bool
 	Strike bool
+	Link   string
 }
 
 //String creates a string with the content of the TextToken

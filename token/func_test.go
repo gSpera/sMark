@@ -18,6 +18,9 @@ func TestSimpleTokenChar(t *testing.T) {
 		{"EqualToken", EqualToken{}, '='},
 		{"SBracketOpenToken", SBracketOpenToken{}, '['},
 		{"SBracketCloseToken", SBracketCloseToken{}, ']'},
+		{"PipeToken", PipeToken{}, '|'},
+		{"QuoteToken", QuoteToken{}, '"'},
+		{"AtToken", AtToken{}, '@'},
 	}
 
 	for _, test := range tt {
