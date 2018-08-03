@@ -14,6 +14,7 @@ func TestTextToken_String(t *testing.T) {
 		{"Strike-Throught Text", TextToken{Text: "Test", Strike: true}, "-Test-"},
 		{"Indentation Text", TextToken{Text: "Test", Indentation: 3}, "\t\t\tTest"},
 		{"Bold and Italic Text", TextToken{Text: "Test", Bold: true, Italic: true}, "*/Test*/"},
+		{"Link", TextToken{Text: "Test", Link: "https://example.com"}, "\"Test\"@\"https://example.com\""},
 	}
 
 	for _, test := range tt {

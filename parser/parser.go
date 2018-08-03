@@ -85,6 +85,11 @@ func parseHeader(line string) (string, string) {
 		case ';': //Comment
 			return key, string(buffer)
 		case ' ':
+			//Ignore if last character
+			if len(line) <= i+1 {
+				continue
+			}
+
 			if line[i-1] == '=' || line[i+1] == '=' { //Space are allowed around equal sign
 				continue
 			}

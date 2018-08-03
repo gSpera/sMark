@@ -32,7 +32,12 @@ func TokenToLine(tokens []token.Token) []token.LineToken {
 			currentLine.Tokens = append(currentLine.Tokens, t)
 			indent = false
 		}
+	}
 
+	if len(tokens) > 0 {
+		if _, ok := tokens[len(tokens)-1].(token.NewLineToken); !ok {
+			lines = append(lines, parseLine(currentLine))
+		}
 	}
 
 	return lines
@@ -91,18 +96,20 @@ func isListLine(line token.LineContainer) bool {
 	return true
 }
 
+//checkIndentation checks the indentation of the paragraph and replace it with the right value
 func checkIndentation(paragraph *token.TextParagraph) {
-	var indent = -1
-	for i, line := range paragraph.Lines {
-		if indent == -1 || i == 1 {
-			indent = int(line.Indentation)
-		}
+	if len(paragraph.Lines) == 0 {
+		paragraph.Indentation = 0
+		return
+	}
 
-		if indent != int(line.Indentation) {
+	paragraph.Indentation = paragraph.Lines[0].Indentation
+
+	for _, line := range paragraph.Lines {
+		if line.Indentation != paragraph.Indentation {
+			paragraph.Indentation = 0
 			return
 		}
-
-		paragraph.Indentation = indent
 	}
 }
 

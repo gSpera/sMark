@@ -2,7 +2,6 @@ package parser
 
 import (
 	"eNote/token"
-	"fmt"
 	"log"
 	"unicode/utf8"
 )
@@ -125,11 +124,13 @@ func searchLink(tokens []token.Token, start int) (token.Token, int) {
 	if skip == -1 {
 		return token.TextToken{}, -1
 	}
-	t, ok := tok.(token.TextToken)
-	if !ok {
-		panic(fmt.Sprintf("checkRangeStruct didn't return token.TextToken: %T{%+v}, skip: %d", tok, tok, skip))
-	}
+	t := tok.(token.TextToken)
 	i := start + skip + 1
+
+	//No more tokens
+	if i > len(tokens)-1 {
+		return t, -1
+	}
 
 	if _, ok := tokens[i].(token.AtToken); !ok {
 		return t, -1
@@ -141,10 +142,7 @@ func searchLink(tokens []token.Token, start int) (token.Token, int) {
 	if sk == -1 {
 		return t, -1
 	}
-	url, ok := tok.(token.TextToken)
-	if !ok {
-		panic(fmt.Sprintf("checkRangeStruct didn't return token.TextToken: %T{%+v}, skip: %d", tok, tok, sk))
-	}
+	url := tok.(token.TextToken)
 
 	t.Link = url.Text
 	return t, i + sk - start

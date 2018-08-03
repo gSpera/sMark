@@ -200,6 +200,92 @@ func TestStructure(t *testing.T) {
 				token.BoldToken{},
 			},
 		},
+		{
+			"CheckBox invalid",
+			[]token.Token{
+				token.SBracketOpenToken{},
+				token.SubtitleParagraph{Text: "Invalid"},
+				token.SBracketCloseToken{},
+			},
+			[]token.Token{
+				token.SBracketOpenToken{},
+				token.SubtitleParagraph{Text: "Invalid"},
+				token.SBracketCloseToken{},
+			},
+		},
+		{
+			"Link",
+			[]token.Token{
+				token.QuoteToken{},
+				token.TextToken{Text: "Test"},
+				token.QuoteToken{},
+				token.AtToken{},
+				token.QuoteToken{},
+				token.TextToken{Text: "https://example.com"},
+				token.QuoteToken{},
+			},
+			[]token.Token{
+				token.TextToken{Text: "Test", Link: "https://example.com"},
+			},
+		},
+		{
+			"Link Invalid",
+			[]token.Token{
+				token.QuoteToken{},
+				token.TextToken{Text: "Test"},
+				token.QuoteToken{},
+			},
+			[]token.Token{
+				token.QuoteToken{},
+				token.TextToken{Text: "Test"},
+				token.QuoteToken{},
+			},
+		},
+		{
+			"Link No AtToken",
+			[]token.Token{
+				token.QuoteToken{},
+				token.TextToken{Text: "Test"},
+				token.QuoteToken{},
+				token.BoldToken{},
+			},
+			[]token.Token{
+				token.QuoteToken{},
+				token.TextToken{Text: "Test"},
+				token.QuoteToken{},
+				token.BoldToken{},
+			},
+		},
+		{
+			"Link No Close Quote",
+			[]token.Token{
+				token.QuoteToken{},
+				token.TextToken{Text: "Test"},
+				token.QuoteToken{},
+				token.AtToken{},
+				token.QuoteToken{},
+			},
+			[]token.Token{
+				token.QuoteToken{},
+				token.TextToken{Text: "Test"},
+				token.QuoteToken{},
+				token.AtToken{},
+				token.QuoteToken{},
+			},
+		},
+		{
+			"Invalid Simple Token",
+			[]token.Token{
+				token.BoldToken{},
+				token.ItalicToken{},
+				token.BoldToken{},
+			},
+			[]token.Token{
+				token.BoldToken{},
+				token.ItalicToken{},
+				token.BoldToken{},
+			},
+		},
 	}
 
 	spew.Config = spew.ConfigState{
