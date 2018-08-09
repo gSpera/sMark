@@ -267,12 +267,15 @@ func fromLineContainer(line token.LineContainer) *HtmlNode {
 			current.AddChildrenNode(TextNode(tt.Text))
 			root.AddChildrenNode(textRoot.children[0])
 		case token.CheckBoxToken:
+			attrs := map[string]string{
+				"type": "checkbox",
+			}
+			if tt.Char != ' ' {
+				attrs["checked"] = "true"
+			}
 			root.AddChildren(&HtmlNode{
-				tag: "input",
-				attrs: map[string]string{
-					"type":    "checkbox",
-					"checked": "true",
-				},
+				tag:   "input",
+				attrs: attrs,
 			})
 		case token.SimpleToken:
 			root.AddChildrenNode(TextNode(string(tt.Char())))
