@@ -1,10 +1,15 @@
 <html>
 
 <head>
-    <title>{{.Options.String.Title}}</title>
+    <title>{{.String.Title}}</title>
     <meta charset="UTF-8"></meta>
-    {{ if .Options.Bool.EnableFont }}<link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">{{ end }}
+    {{ if .Bool.EnableFont }}<link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">{{ end }}
     <style>
+        :not(.hl-chroma *) {
+            font-family: 'Roboto', sans-serif;
+            font-size: 1.05rem;
+        }
+
         p.align-left {
             text-align: left;
         }
@@ -15,14 +20,6 @@
 
         p.align-right {
             text-align: right;
-        }
-
-        pre code{
-            background-color: #DDDDDD;
-            display: block;
-            padding: 0.5rem;
-            padding-right: 1rem;
-            width: fit-content;
         }
 
         {{/*
@@ -44,24 +41,16 @@
             margin-top: 10px;
             margin-bottom: 10px;
         }
-        
-        * {
-            font-family: 'Roboto', sans-serif;
-            font-size: 1.05rem;
-        }
-        {{ .Options.String.InlineCSS }}
 
+        {{ .String.InlineCSS }}
     </style>
-    {{ if .Options.String.CustomCSS }}
-        <link rel="stylesheet" href="{{.Options.String.CustomCSS}}">
+    {{ if .String.CustomCSS }}
+        <link rel="stylesheet" href="{{.String.CustomCSS}}">
     {{ end }}
 
-    {{ if .Options.Bool.EnableJS }}
-        <!--Code Highlight-->
-        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css">
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/highlight.min.js"></script>
-        <script>hljs.initHighlightingOnLoad();</script>
+    {{ if .Bool.EnableJS }}
     {{ end }}
+    {{.String._Head}}
 </head>
 
 <body>
