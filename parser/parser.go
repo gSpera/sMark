@@ -55,6 +55,11 @@ func parseHeader(line string) (string, string) {
 			if line[i-1] == '=' || line[i+1] == '=' { //Space are allowed around equal sign
 				continue
 			}
+
+			if len(line) > i && line[i+1] == ';' { //Comment incoming
+				continue
+			}
+
 			//Else insert it
 			fallthrough
 		default:

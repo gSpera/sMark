@@ -160,36 +160,3 @@ func TestNodeHTML(t *testing.T) {
 func TestToString(t *testing.T) {
 	ToString(nil, eNote.Options{})
 }
-
-func TestTemplate(t *testing.T) {
-	tm := []struct {
-		name string
-		opts eNote.Options
-	}{
-		{
-			"Default",
-			eNote.Options{},
-		},
-		{
-			"Title",
-			eNote.Options{
-				String: map[string]string{
-					Title: "Test",
-				},
-			},
-		},
-		{
-			"EnableFont",
-			eNote.Options{
-				Bool: map[string]bool{
-					EnableFont: true,
-				},
-			},
-		},
-	}
-	for _, tt := range tm {
-		t.Run(tt.name, func(t *testing.T) {
-			template(tt.opts)
-		})
-	}
-}

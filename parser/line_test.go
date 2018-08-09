@@ -434,7 +434,7 @@ func TestParseHeaderLine(t *testing.T) {
 			"Comment",
 			token.TextParagraph{
 				Lines: []token.LineContainer{
-					token.LineContainer{Tokens: []token.Token{token.TextToken{Text: "Key = Value; This is a comment"}}},
+					token.LineContainer{Tokens: []token.Token{token.TextToken{Text: "Key = Value ; This is a comment"}}},
 				},
 			},
 			eNote.Options{
@@ -447,12 +447,12 @@ func TestParseHeaderLine(t *testing.T) {
 			"White Space",
 			token.TextParagraph{
 				Lines: []token.LineContainer{
-					token.LineContainer{Tokens: []token.Token{token.TextToken{Text: "Ke y = Value; This is a comment"}}},
+					token.LineContainer{Tokens: []token.Token{token.TextToken{Text: "Key = Value ;This is a comment"}}},
 				},
 			},
 			eNote.Options{
 				String: map[string]string{
-					"Ke y": "Value",
+					"Key": "Value",
 				},
 			},
 		},
@@ -466,6 +466,19 @@ func TestParseHeaderLine(t *testing.T) {
 			eNote.Options{
 				String: map[string]string{
 					"Key": "Value",
+				},
+			},
+		},
+		{
+			"Comment Without Space",
+			token.TextParagraph{
+				Lines: []token.LineContainer{
+					token.LineContainer{Tokens: []token.Token{token.TextToken{Text: "Key = Value;Comment Or Maybe Not"}}},
+				},
+			},
+			eNote.Options{
+				String: map[string]string{
+					"Key": "Value;Comment Or Maybe Not",
 				},
 			},
 		},
