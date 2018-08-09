@@ -115,7 +115,15 @@ func parseHeaderLines(paragraph token.TextParagraph) eNote.Options {
 
 	for _, line := range paragraph.Lines {
 		key, value := parseHeader(line.String())
-		res.String[key] = value
+
+		switch strings.ToUpper(value) {
+		case "T", "TRUE", "1", "ON":
+			res.Bool[key] = true
+		case "F", "FALSE", "0", "OFF":
+			res.Bool[key] = false
+		default:
+			res.String[key] = value
+		}
 	}
 
 	return res

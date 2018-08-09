@@ -1,7 +1,6 @@
 package parser
 
 import (
-	"bufio"
 	"eNote/token"
 	"eNote/utils"
 	"io"
@@ -32,46 +31,6 @@ func ParseReader(fl io.Reader) ([]token.ParagraphToken, error) {
 	return paragraphs, nil
 }
 
-//ParseHeader parses the header from the header, returns the eNote.Options and a bool rappresenting if the Options are valid
-func ParseHeader(r *bufio.Reader) (eNote.Options, bool) {
-	res := eNote.Options{}
-
-	line, err := r.ReadBytes('\n')
-	if err != nil {
-		return res, false
-	}
-
-	//Check if line is a header starting
-	for _, ch := range line[:1] {
-		if ch != '+' {
-			return res, false
-		}
-	}
-
-	for {
-		line, err := r.ReadString('\n')
-		if err != nil {
-			break
-		}
-
-		//Check if line is a header ending
-		ending := true
-		for _, ch := range line[:1] {
-			if ch != '+' {
-				ending = false
-			}
-		}
-		if ending {
-			return res, true
-		}
-
-		key, value := parseHeader(line)
-		res.String[key] = value
-	}
-
-	return res, true
-}
-
 //parseHeader parses a header string returning the Key and Value
 func parseHeader(line string) (string, string) {
 	key := ""
@@ -83,7 +42,10 @@ func parseHeader(line string) (string, string) {
 			key = string(buffer)
 			buffer = []rune{}
 		case ';': //Comment
-			return key, string(buffer)
+			if line[i-1] == ' ' {
+				return key, string(buffer)
+			}
+			buffer = append(buffer, ch)
 		case ' ':
 			//Ignore if last character
 			if len(line) <= i+1 {
