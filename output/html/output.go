@@ -298,9 +298,13 @@ func generateCode(p token.CodeParagraph, options eNote.Options) (*HtmlNode, stri
 		stl = st
 	}
 	style := styles.Get(stl)
-	if style == nil {
-		fmt.Fprintln(os.Stderr, "Cannot get style:", style)
-		style = styles.Fallback
+	if style.Name != stl {
+		fmt.Fprintf(os.Stderr, "Style %s not found, using default\n", stl)
+		style = styles.Get(DefaultStyle)
+		if style.Name != DefaultStyle {
+			fmt.Fprintf(os.Stderr, "Cannot get DefaultStyle %s, using FallBack\n", DefaultStyle)
+			style = styles.Fallback
+		}
 	}
 
 	fOpts := []chtml.Option{

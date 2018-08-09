@@ -5,7 +5,7 @@
     <meta charset="UTF-8"></meta>
     {{ if .Bool.EnableFont }}<link href="https://fonts.googleapis.com/css?family=Roboto" rel="stylesheet">{{ end }}
     <style>
-        :not(.hl-chroma *) {
+        * {
             font-family: 'Roboto', sans-serif;
             font-size: 1.05rem;
         }
@@ -41,6 +41,11 @@
             margin-top: 10px;
             margin-bottom: 10px;
         }
+		pre.hl-chroma *, div.hl-chroma * {
+			font-family: monospace;
+			font-size: 13px;
+			line-height: 15px;
+		}
 
         {{ .String.InlineCSS }}
     </style>
