@@ -162,7 +162,14 @@ func notEmptyLines(lines []token.LineContainer) uint {
 //equalLine searches for paragraph made with equalLine
 //returns if found a new paragraph or not
 func equalLine(currentParagraph token.TextParagraph, lines []token.LineToken, index int) (token.ParagraphToken, bool) {
-	currentLine := lines[index].(token.EqualLine)
+	if len(lines) < 1 {
+		return nil, false
+	}
+
+	currentLine, ok := lines[index].(token.EqualLine)
+	if !ok {
+		return nil, false
+	}
 	//Need a line over
 	if index == 0 {
 		return nil, false
@@ -174,12 +181,12 @@ func equalLine(currentParagraph token.TextParagraph, lines []token.LineToken, in
 		return nil, false
 	}
 
-	if _, ok := lines[index-1].(token.LineContainer); !ok {
+	lastLine, ok := lines[index-1].(token.LineContainer)
+
+	if !ok {
 		log.Println("\t\t- LastLine is not a token.LineContainer")
 		return nil, false
 	}
-
-	lastLine := lines[index-1].(token.LineContainer)
 
 	if len(lastLine.Tokens) == 0 {
 		log.Println("\t\t- LastLine is empty")

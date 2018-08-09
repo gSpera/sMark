@@ -89,11 +89,8 @@ func isListLine(line token.LineContainer) bool {
 		return false
 	}
 
-	if _, ok := line.Tokens[0].(token.LessToken); !ok {
-		return false
-	}
-
-	return true
+	_, ok := line.Tokens[0].(token.LessToken)
+	return ok
 }
 
 //checkIndentation checks the indentation of the paragraph and replace it with the right value

@@ -5,6 +5,7 @@ import (
 	"eNote/utils"
 	"errors"
 	"fmt"
+	"reflect"
 	"testing"
 
 	"github.com/davecgh/go-spew/spew"
@@ -508,4 +509,175 @@ func checkOptions(o1, o2 eNote.Options) (bool, error) {
 	}
 
 	return true, nil
+}
+
+func TestParseLine(t *testing.T) {
+	tm := []struct {
+		name      string
+		input     token.LineContainer
+		output    token.LineToken
+		deepCheck bool
+	}{
+		{
+			"Empty",
+			token.LineContainer{},
+			token.LineContainer{},
+			true,
+		},
+		{
+			"HeaderLine",
+			token.LineContainer{
+				Tokens: []token.Token{
+					token.HeaderToken{},
+					token.HeaderToken{},
+				},
+			},
+			token.HeaderLine{},
+			false,
+		},
+		{
+			"EqualLine",
+			token.LineContainer{
+				Tokens: []token.Token{
+					token.EqualToken{},
+					token.EqualToken{},
+				},
+			},
+			token.EqualLine{
+				Length: 2,
+			},
+			true,
+		},
+		{
+			"EqualLine Tab",
+			token.LineContainer{
+				Tokens: []token.Token{
+					token.TabToken{},
+					token.EqualToken{},
+					token.EqualToken{},
+				},
+			},
+			token.EqualLine{
+				Length: 3,
+			},
+			true,
+		},
+		{
+			"LessLine",
+			token.LineContainer{
+				Tokens: []token.Token{
+					token.LessToken{},
+					token.LessToken{},
+				},
+			},
+			token.LessLine{},
+			false,
+		},
+		{
+			"ListLine",
+			token.LineContainer{
+				Tokens: []token.Token{
+					token.LessToken{},
+					token.TextToken{
+						Text: "Test",
+					},
+				},
+			},
+			token.ListLine{},
+			false,
+		},
+		{
+			"CodeLine",
+			token.LineContainer{
+				Tokens: []token.Token{
+					token.SBracketOpenToken{},
+					token.TextToken{Text: "Test"},
+					token.SBracketCloseToken{},
+				},
+			},
+			token.CodeLine{Lang: "Test"},
+			true,
+		},
+		{
+			"QuoteLine",
+			token.LineContainer{
+				Tokens: []token.Token{
+					token.PipeToken{},
+					token.TextToken{Text: "Test"},
+				},
+			},
+			token.LineContainer{Tokens: []token.Token{
+				token.TextToken{Text: "Test"},
+			}, Quote: true},
+			true,
+		},
+	}
+
+	for _, tt := range tm {
+		t.Run(tt.name, func(t *testing.T) {
+			out := parseLine(tt.input)
+			lc1, ok1 := tt.output.(token.LineContainer)
+			lc2, ok2 := out.(token.LineContainer)
+			if ok1 && ok2 {
+				ok, err := checkLineContainer(lc1, lc2)
+				if !ok {
+					t.Error(err)
+				}
+				return
+			}
+			if !tt.deepCheck {
+				t1 := reflect.TypeOf(tt.output)
+				t2 := reflect.TypeOf(out)
+				if t1 != t2 {
+					t.Error("Types are different")
+				}
+			}
+			if tt.deepCheck && tt.output != out {
+				t.Errorf("Expected %T{%+v}; got: %T{%+v}", tt.output, tt.output, out, out)
+			}
+		})
+	}
+}
+
+func TestIsListLine(t *testing.T) {
+	tm := []struct {
+		name   string
+		line   token.LineContainer
+		output bool
+	}{
+		{
+			"Empty",
+			token.LineContainer{},
+			false,
+		},
+		{
+			"False",
+			token.LineContainer{
+				Tokens: []token.Token{
+					token.BoldToken{},
+					token.BoldToken{},
+				},
+			},
+			false,
+		},
+		{
+			"True",
+			token.LineContainer{
+				Tokens: []token.Token{
+					token.LessToken{},
+					token.BoldToken{},
+				},
+			},
+			true,
+		},
+	}
+
+	for _, tt := range tm {
+		t.Run(tt.name, func(t *testing.T) {
+			out := isListLine(tt.line)
+			if tt.output != out {
+				t.Errorf("Expected %t; got: %t", tt.output, out)
+			}
+		})
+	}
 }
