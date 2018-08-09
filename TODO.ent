@@ -4,13 +4,16 @@ Title = TODO List eNote
 This is the TODO list for the release of eNote 1.0
 ==================================================
 
-- [ ] Block Quotes
+- [X] Block Quotes
 - [-] Code
 -- [ ] Inline
 -- [X] Block
+-- [ ] ? File
 - [ ] Better Options
 - [ ] Documentation
 - [ ] Rename Package
 - [ ] Better Tests
-- [ ] HTML Output Engine prettier
+- [X] HTML Output Engine prettier
 - [X] Link
+- [ ] External HTML Template
+
