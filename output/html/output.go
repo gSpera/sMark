@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"html"
 	"html/template"
+	"io/ioutil"
 	"log"
 	"os"
 	"strings"
@@ -42,8 +43,18 @@ const (
 func ToString(paragraphs []token.ParagraphToken, options eNote.Options) []byte {
 	var outTemplate *template.Template
 	var err error
+
 	if options.Bool["OnlyBody"] {
 		outTemplate, err = template.New("Only Body").Parse(`{{.Body}}`)
+	} else if tt, ok := options.String["TemplateFile"]; ok {
+		log.Println("\t- Parsing:", tt)
+		content, err := ioutil.ReadFile(tt)
+		if err != nil {
+			fmt.Fprintln(os.Stderr, "Cannot read file:", tt)
+			fmt.Fprintln(os.Stderr, "Error:", err)
+			os.Exit(1)
+		}
+		outTemplate, err = template.New("Custom Template").Parse(string(content))
 	} else {
 		outTemplate = template.New("HTML Output")
 		tmpl, err := Asset("template.tmpl")
@@ -55,8 +66,8 @@ func ToString(paragraphs []token.ParagraphToken, options eNote.Options) []byte {
 	}
 
 	if err != nil {
-		fmt.Println(err)
-		panic("Output Engine: template is not valid")
+		fmt.Fprintln(os.Stderr, "Cannot parse template:", err)
+		os.Exit(1)
 	}
 
 	head := HtmlNode{
