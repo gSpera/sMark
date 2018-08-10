@@ -9,23 +9,23 @@ import (
 func TestAddChildren(t *testing.T) {
 	tm := []struct {
 		name     string
-		n        *HtmlNode
-		children *HtmlNode
-		output   *HtmlNode
+		n        *HTMLNode
+		children *HTMLNode
+		output   *HTMLNode
 	}{
 		{
 			name: "simple",
-			n: &HtmlNode{
+			n: &HTMLNode{
 				tag: "h1",
 			},
-			children: &HtmlNode{
+			children: &HTMLNode{
 				tag: "h2",
 			},
 
-			output: &HtmlNode{
+			output: &HTMLNode{
 				tag: "h1",
 				children: []Node{
-					&HtmlNode{
+					&HTMLNode{
 						tag: "h2",
 					},
 				},
@@ -44,7 +44,7 @@ func TestAddChildren(t *testing.T) {
 	}
 }
 
-func checkNode(n1, n2 *HtmlNode) error {
+func checkNode(n1, n2 *HTMLNode) error {
 	if n1.tag != n2.tag {
 		return fmt.Errorf("Tags are different: %v != %v", n1.tag, n2.tag)
 	}
@@ -100,18 +100,18 @@ func TestNodeHTML(t *testing.T) {
 	}{
 		{
 			name: "simple",
-			n: &HtmlNode{
+			n: &HTMLNode{
 				tag: "h1",
 			},
 			output: "<h1>\n</h1>",
 		},
 		{
 			name: "children",
-			n: func() *HtmlNode {
-				root := &HtmlNode{
+			n: func() *HTMLNode {
+				root := &HTMLNode{
 					tag: "h1",
 				}
-				root.AddChildren(&HtmlNode{
+				root.AddChildren(&HTMLNode{
 					tag: "h2",
 				})
 
@@ -124,7 +124,7 @@ func TestNodeHTML(t *testing.T) {
 		},
 		{
 			name: "text",
-			n: &HtmlNode{
+			n: &HTMLNode{
 				tag: "h1",
 				children: []Node{
 					TextNode("test"),
@@ -136,7 +136,7 @@ func TestNodeHTML(t *testing.T) {
 		},
 		{
 			name: "attrs",
-			n: &HtmlNode{
+			n: &HTMLNode{
 				tag: "h1",
 				attrs: map[string]string{
 					"test": "value",

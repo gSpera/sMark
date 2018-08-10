@@ -80,10 +80,10 @@ func ToString(paragraphs []token.ParagraphToken, options eNote.Options) []byte {
 		os.Exit(1)
 	}
 
-	head := HtmlNode{
+	head := HTMLNode{
 		tag: "",
 	}
-	body := HtmlNode{
+	body := HTMLNode{
 		tag: "",
 	}
 
@@ -101,7 +101,7 @@ func ToString(paragraphs []token.ParagraphToken, options eNote.Options) []byte {
 				tag = "h2"
 			}
 
-			body.AddChildren(&HtmlNode{
+			body.AddChildren(&HTMLNode{
 				tag: tag,
 				children: []Node{
 					TextNode(pp.Text),
@@ -109,20 +109,20 @@ func ToString(paragraphs []token.ParagraphToken, options eNote.Options) []byte {
 			})
 			continue
 		case token.DivisorParagraph:
-			body.AddChildren(&HtmlNode{
+			body.AddChildren(&HTMLNode{
 				tag:    "hr",
 				single: true,
 			})
 			continue
 		case token.TextParagraph:
 			var quote bool
-			paragraph := &HtmlNode{
+			paragraph := &HTMLNode{
 				tag: "",
 			}
 			current := paragraph
 			for _, line := range pp.Lines {
 				if line.Quote && !quote {
-					child := &HtmlNode{
+					child := &HTMLNode{
 						tag: "blockquote",
 					}
 					current.AddChildren(child)
@@ -134,7 +134,7 @@ func ToString(paragraphs []token.ParagraphToken, options eNote.Options) []byte {
 				quote = line.Quote
 				current.AddChildrenNode(fromLineContainer(line))
 				if options.Bool["NewLine"] {
-					current.AddChildren(&HtmlNode{
+					current.AddChildren(&HTMLNode{
 						tag:    "br",
 						single: true,
 					})
@@ -145,7 +145,7 @@ func ToString(paragraphs []token.ParagraphToken, options eNote.Options) []byte {
 				(len(paragraph.children) == 1 && paragraph.children[0].HTML(0) == "<br />") {
 				continue
 			}
-			body.AddChildren(&HtmlNode{
+			body.AddChildren(&HTMLNode{
 				tag: "p",
 				attrs: map[string]string{
 					"class": alignMap[pp.Indentation],
@@ -161,7 +161,7 @@ func ToString(paragraphs []token.ParagraphToken, options eNote.Options) []byte {
 				tag = "h4"
 			}
 
-			body.AddChildren(&HtmlNode{
+			body.AddChildren(&HTMLNode{
 				tag: tag,
 				children: []Node{
 					TextNode(html.EscapeString(pp.Text)),
@@ -169,7 +169,7 @@ func ToString(paragraphs []token.ParagraphToken, options eNote.Options) []byte {
 			})
 		case token.ListParagraph:
 			currentIndentation := 1
-			list := &HtmlNode{
+			list := &HTMLNode{
 				tag: "ul",
 			}
 			current := list
@@ -177,7 +177,7 @@ func ToString(paragraphs []token.ParagraphToken, options eNote.Options) []byte {
 			for _, item := range pp.Items {
 				if item.Indentation > currentIndentation {
 					for i := currentIndentation; i < item.Indentation; i++ {
-						child := &HtmlNode{
+						child := &HTMLNode{
 							tag: "ul",
 						}
 						current.AddChildren(child)
@@ -190,7 +190,7 @@ func ToString(paragraphs []token.ParagraphToken, options eNote.Options) []byte {
 					}
 					currentIndentation = item.Indentation
 				}
-				current.AddChildren(&HtmlNode{
+				current.AddChildren(&HTMLNode{
 					tag: "li",
 					children: []Node{
 						fromLineContainer(item.Text),
@@ -235,42 +235,42 @@ func findToken(line token.LineContainer, start int, t token.Type) int {
 	return -1
 }
 
-func fromLineContainer(line token.LineContainer) *HtmlNode {
-	root := &HtmlNode{
+func fromLineContainer(line token.LineContainer) *HTMLNode {
+	root := &HTMLNode{
 		tag: "",
 	}
 
 	for _, text := range line.Tokens {
 		switch tt := text.(type) {
 		case token.TextToken:
-			textRoot := &HtmlNode{
+			textRoot := &HTMLNode{
 				tag: "",
 			}
 			current := textRoot
 
 			if tt.Bold {
-				node := &HtmlNode{
+				node := &HTMLNode{
 					tag: "b",
 				}
 				current.AddChildren(node)
 				current = node
 			}
 			if tt.Italic {
-				node := &HtmlNode{
+				node := &HTMLNode{
 					tag: "i",
 				}
 				current.AddChildren(node)
 				current = node
 			}
 			if tt.Strike {
-				node := &HtmlNode{
+				node := &HTMLNode{
 					tag: "s",
 				}
 				current.AddChildren(node)
 				current = node
 			}
 			if tt.Link != "" {
-				node := &HtmlNode{
+				node := &HTMLNode{
 					tag: "a",
 					attrs: map[string]string{
 						"href": tt.Link,
@@ -289,7 +289,7 @@ func fromLineContainer(line token.LineContainer) *HtmlNode {
 			if tt.Char != ' ' {
 				attrs["checked"] = "true"
 			}
-			root.AddChildren(&HtmlNode{
+			root.AddChildren(&HTMLNode{
 				tag:   "input",
 				attrs: attrs,
 			})
@@ -304,7 +304,7 @@ func fromLineContainer(line token.LineContainer) *HtmlNode {
 	return root
 }
 
-func generateCode(p token.CodeParagraph, options eNote.Options) (*HtmlNode, string) {
+func generateCode(p token.CodeParagraph, options eNote.Options) (*HTMLNode, string) {
 	lex := lexers.Get(p.Lang)
 	if lex == nil {
 		fmt.Fprintln(os.Stderr, "Cannot highlight lang:", p.Lang)
@@ -363,7 +363,7 @@ func generateCode(p token.CodeParagraph, options eNote.Options) (*HtmlNode, stri
 	css := bytes.NewBuffer([]byte{})
 	formatter.WriteCSS(css, style)
 
-	cssNode := &HtmlNode{
+	cssNode := &HTMLNode{
 		tag: "style",
 		children: []Node{
 			TextNode(css.String()),

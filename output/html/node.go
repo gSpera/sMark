@@ -12,24 +12,24 @@ type Node interface {
 	HTML(indentation int) string
 }
 
-//HtmlNode is a node rapresenting an HTML element
-type HtmlNode struct {
+//HTMLNode is a node rapresenting an HTML element
+type HTMLNode struct {
 	//tag is the HTML tag
 	tag      string
-	parent   *HtmlNode
+	parent   *HTMLNode
 	children []Node
 	attrs    map[string]string
 	single   bool
 }
 
 //AddChildren adds a children to an HtmlNode
-func (n *HtmlNode) AddChildren(children *HtmlNode) {
+func (n *HTMLNode) AddChildren(children *HTMLNode) {
 	n.AddChildrenNode(children)
 	children.parent = n
 }
 
 //AddChildrenNode adds a generic children to the node
-func (n *HtmlNode) AddChildrenNode(children Node) {
+func (n *HTMLNode) AddChildrenNode(children Node) {
 	if n.children == nil {
 		n.children = []Node{}
 	}
@@ -38,7 +38,7 @@ func (n *HtmlNode) AddChildrenNode(children Node) {
 }
 
 //HTML generate HTML from the node
-func (n *HtmlNode) HTML(indentation int) string {
+func (n *HTMLNode) HTML(indentation int) string {
 	var tags string
 	for k, v := range n.attrs {
 		tags += fmt.Sprintf(" %s=\"%s\"", k, v)
