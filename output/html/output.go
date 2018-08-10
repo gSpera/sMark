@@ -46,11 +46,17 @@ const (
 
 //ToString is a simple output enging with a simple HTML writer
 func ToString(paragraphs []token.ParagraphToken, options eNote.Options) []byte {
-	var outTemplate *template.Template
+	outTemplate := template.New("eNote")
 	var err error
 
+	outTemplate = outTemplate.Funcs(template.FuncMap{
+		"safeHTML": func(s string) template.HTML { return template.HTML(s) },
+		"safeCSS":  func(s string) template.CSS { return template.CSS(s) },
+		"safeJS":   func(s string) template.JS { return template.JS(s) },
+	})
+
 	if options.Bool[OnlyBodyOption] {
-		outTemplate, err = template.New("Only Body").Parse(`{{.Body}}`)
+		outTemplate, err = outTemplate.Parse(`{{.Body}}`)
 	} else if tt, ok := options.String[CustomTemplateOption]; ok {
 		log.Println("\t- Parsing:", tt)
 		content, err := ioutil.ReadFile(tt)
@@ -59,9 +65,8 @@ func ToString(paragraphs []token.ParagraphToken, options eNote.Options) []byte {
 			fmt.Fprintln(os.Stderr, "Error:", err)
 			os.Exit(1)
 		}
-		outTemplate, err = template.New("Custom Template").Parse(string(content))
+		outTemplate, err = outTemplate.Parse(string(content))
 	} else {
-		outTemplate = template.New("HTML Output")
 		tmpl, err := Asset("template.tmpl")
 		if err != nil {
 			fmt.Fprintf(os.Stderr, "Output Engine: Could not get template: %v\n", err)
@@ -112,7 +117,7 @@ func ToString(paragraphs []token.ParagraphToken, options eNote.Options) []byte {
 		case token.TextParagraph:
 			var quote bool
 			paragraph := &HtmlNode{
-				tag: "p",
+				tag: "",
 			}
 			current := paragraph
 			for _, line := range pp.Lines {
@@ -206,18 +211,14 @@ func ToString(paragraphs []token.ParagraphToken, options eNote.Options) []byte {
 	}
 
 	var out bytes.Buffer
-	safeStrings := map[string]template.HTML{}
-	for k, v := range options.String {
-		safeStrings[k] = template.HTML(v)
-	}
-	safeStrings["_Head"] = template.HTML(head.HTML(0))
+	options.String["_Head"] = head.HTML(0)
 
 	err = outTemplate.Execute(&out, struct {
 		Body    template.HTML
 		Bool    map[string]bool
-		String  map[string]template.HTML
+		String  map[string]string
 		Generic map[string]interface{}
-	}{template.HTML(body.HTML(0)), options.Bool, safeStrings, options.Generic})
+	}{template.HTML(body.HTML(0)), options.Bool, options.String, options.Generic})
 	if err != nil {
 		fmt.Fprintln(os.Stderr, "Could not execute template:", err)
 	}

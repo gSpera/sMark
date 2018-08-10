@@ -47,7 +47,7 @@
 			line-height: 15px;
 		}
 
-        {{ .String.InlineCSS }}
+        {{safeCSS .String.InlineCSS }}
     </style>
     {{ if .String.CustomCSS }}
         <link rel="stylesheet" href="{{.String.CustomCSS}}">
@@ -55,7 +55,7 @@
 
     {{ if .Bool.EnableJS }}
     {{ end }}
-    {{.String._Head}}
+    {{safeHTML .String._Head}}
 </head>
 
 <body>
