@@ -1,7 +1,6 @@
 package htmlout
 
 import (
-	"eNote/utils"
 	"fmt"
 	"testing"
 )
@@ -155,8 +154,4 @@ func TestNodeHTML(t *testing.T) {
 			}
 		})
 	}
-}
-
-func TestToString(t *testing.T) {
-	ToString(nil, eNote.Options{})
 }
