@@ -16,7 +16,6 @@ import (
 	chtml "github.com/alecthomas/chroma/formatters/html"
 
 	//Lexers for highlight
-
 	"github.com/alecthomas/chroma/lexers"
 	"github.com/alecthomas/chroma/styles"
 )
@@ -31,6 +30,12 @@ const (
 	//PrintLineOption is the bool options used to determine wheteever to print the line number
 	//near code lines, default true
 	PrintLineOption = "ShowCodeLines"
+
+	//OnlyBodyOption is the Bool Option that specify to output only the body of the HTML Document
+	OnlyBodyOption = "OnlyBody"
+
+	//CustomTemplateOption is the String Option used to specify a custom template
+	CustomTemplateOption = "TemplateFile"
 )
 
 //Titles:
@@ -44,9 +49,9 @@ func ToString(paragraphs []token.ParagraphToken, options eNote.Options) []byte {
 	var outTemplate *template.Template
 	var err error
 
-	if options.Bool["OnlyBody"] {
+	if options.Bool[OnlyBodyOption] {
 		outTemplate, err = template.New("Only Body").Parse(`{{.Body}}`)
-	} else if tt, ok := options.String["TemplateFile"]; ok {
+	} else if tt, ok := options.String[CustomTemplateOption]; ok {
 		log.Println("\t- Parsing:", tt)
 		content, err := ioutil.ReadFile(tt)
 		if err != nil {
@@ -76,8 +81,7 @@ func ToString(paragraphs []token.ParagraphToken, options eNote.Options) []byte {
 	body := HtmlNode{
 		tag: "",
 	}
-	// bold := false
-	// italic := false
+
 	alignMap := map[int]string{
 		0: "align-left",
 		1: "align-center",
