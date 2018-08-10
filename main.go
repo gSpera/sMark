@@ -131,10 +131,19 @@ func compile(options eNote.Options) {
 		log.Fatalf("Error: Could not parse: %v", err)
 	}
 	log.Println("Parsing DONE")
+
 	log.Println("Updating Options")
+	log.Println("\t- From Paragraphs")
 	newOptions, tokenList := parser.OptionsFromParagraphs(tokenList)
 	flOptions := newOptions
 	options.Update(newOptions)
+	log.Println("\t- From Paragraphs DONE")
+	log.Println("\t- From Command Line")
+	for _, arg := range flag.Args() {
+		k, v := eNote.ParseOption(arg)
+		options.Insert(k, v)
+	}
+	log.Println("\t- From Command Line DONE")
 	log.Println("Updating Options DONE")
 
 	log.Println("Selecting Title")

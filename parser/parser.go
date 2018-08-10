@@ -31,45 +31,6 @@ func ParseReader(fl io.Reader) ([]token.ParagraphToken, error) {
 	return paragraphs, nil
 }
 
-//parseHeader parses a header string returning the Key and Value
-func parseHeader(line string) (string, string) {
-	key := ""
-	buffer := []rune{}
-
-	for i, ch := range line {
-		switch ch {
-		case '=':
-			key = string(buffer)
-			buffer = []rune{}
-		case ';': //Comment
-			if line[i-1] == ' ' {
-				return key, string(buffer)
-			}
-			buffer = append(buffer, ch)
-		case ' ':
-			//Ignore if last character
-			if len(line) <= i+1 {
-				continue
-			}
-
-			if line[i-1] == '=' || line[i+1] == '=' { //Space are allowed around equal sign
-				continue
-			}
-
-			if len(line) > i && line[i+1] == ';' { //Comment incoming
-				continue
-			}
-
-			//Else insert it
-			fallthrough
-		default:
-			buffer = append(buffer, ch)
-		}
-	}
-
-	return key, string(buffer)
-}
-
 //OptionsFromParagraphs analyze the passed slice of paragraphs returning the final options contined in token.HeaderParagraphs.
 //It return the optained options and a new list of paragraphs containing all the paragraphs but HeaderParagraphs
 func OptionsFromParagraphs(paragraphs []token.ParagraphToken) (eNote.Options, []token.ParagraphToken) {
