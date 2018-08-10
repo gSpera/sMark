@@ -133,6 +133,7 @@ func compile(options eNote.Options) {
 	log.Println("Parsing DONE")
 	log.Println("Updating Options")
 	newOptions, tokenList := parser.OptionsFromParagraphs(tokenList)
+	flOptions := newOptions
 	options.Update(newOptions)
 	log.Println("Updating Options DONE")
 
@@ -175,7 +176,8 @@ func compile(options eNote.Options) {
 	//eNote Output Engine
 	if options.String["Prettify"] != "" {
 		log.Println("Outputting eNote")
-		data, err := prettify.Output(tokenList, options)
+		//Prettifier doesn't need all the Options but only from the file
+		data, err := prettify.Output(tokenList, flOptions)
 		if err != nil {
 			log.Fatalf("Could not compile to eNote: %v\n", err)
 		}
