@@ -8,18 +8,18 @@ import (
 	"log"
 	"os"
 
-	output "eNote/output/html"
-	"eNote/output/prettify"
-	"eNote/output/telegraph"
-	"eNote/parser"
-	eNote "eNote/utils"
+	output "github.com/gSpera/sMark/output/html"
+	"github.com/gSpera/sMark/output/prettify"
+	outTelegraph "github.com/gSpera/sMark/output/telegraph"
+	"github.com/gSpera/sMark/parser"
+	sMark "github.com/gSpera/sMark/utils"
 
 	tgraph "github.com/toby3d/telegraph"
 	fsnotify "gopkg.in/fsnotify.v1"
 )
 
 //ProgramName is the name of the program.
-const ProgramName = "eNote"
+const ProgramName = "sMark"
 
 func main() {
 	//Logger
@@ -44,7 +44,7 @@ func main() {
 	enableJs := flag.Bool("enable-js", true, "Enable JavaScript in HTML")
 
 	flag.Parse()
-	options := eNote.Options{
+	options := sMark.Options{
 		String: map[string]string{
 			"InputFile":  *inputFile,
 			"OutputFile": *outputFile,
@@ -106,7 +106,7 @@ func main() {
 	compile(options)
 }
 
-func compile(options eNote.Options) {
+func compile(options sMark.Options) {
 	log.Println("Start Compilation")
 	input, err := streamFromFilename(options.String["InputFile"])
 	if os.IsNotExist(err) {
@@ -140,7 +140,7 @@ func compile(options eNote.Options) {
 	log.Println("\t- From Paragraphs DONE")
 	log.Println("\t- From Command Line")
 	for _, arg := range flag.Args() {
-		k, v := eNote.ParseOption(arg)
+		k, v := sMark.ParseOption(arg)
 		options.Insert(k, v)
 	}
 	log.Println("\t- From Command Line DONE")
@@ -182,13 +182,13 @@ func compile(options eNote.Options) {
 		fmt.Println("URL:", pagePubblished.URL)
 	}
 
-	//eNote Output Engine
+	//sMark Output Engine
 	if options.String["Prettify"] != "" {
-		log.Println("Outputting eNote")
+		log.Println("Outputting sMark")
 		//Prettifier doesn't need all the Options but only from the file
 		data, err := prettify.Output(tokenList, flOptions)
 		if err != nil {
-			log.Fatalf("Could not compile to eNote: %v\n", err)
+			log.Fatalf("Could not compile to sMark: %v\n", err)
 		}
 
 		f, err := os.Create(options.String["Prettify"])
@@ -201,7 +201,7 @@ func compile(options eNote.Options) {
 			log.Fatalf("Could not output to file: %v\n", err)
 		}
 
-		log.Println("Outputting eNote DONE")
+		log.Println("Outputting sMark DONE")
 	}
 }
 

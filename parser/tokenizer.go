@@ -2,9 +2,10 @@ package parser
 
 import (
 	"bufio"
-	"eNote/token"
 	"io"
 	"log"
+
+	"github.com/gSpera/sMark/token"
 )
 
 var tokensMap = map[token.Type]token.Token{

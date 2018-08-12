@@ -2,8 +2,6 @@ package htmlout
 
 import (
 	"bytes"
-	"eNote/token"
-	eNote "eNote/utils"
 	"fmt"
 	"html"
 	"html/template"
@@ -11,6 +9,9 @@ import (
 	"log"
 	"os"
 	"strings"
+
+	"github.com/gSpera/sMark/token"
+	sMark "github.com/gSpera/sMark/utils"
 
 	"github.com/alecthomas/chroma"
 	chtml "github.com/alecthomas/chroma/formatters/html"
@@ -45,8 +46,8 @@ const (
 //H4: Subtitle
 
 //ToString is a simple output enging with a simple HTML writer
-func ToString(paragraphs []token.ParagraphToken, options eNote.Options) []byte {
-	outTemplate := template.New("eNote")
+func ToString(paragraphs []token.ParagraphToken, options sMark.Options) []byte {
+	outTemplate := template.New("sMark")
 	var err error
 
 	outTemplate = outTemplate.Funcs(template.FuncMap{
@@ -304,7 +305,7 @@ func fromLineContainer(line token.LineContainer) *HTMLNode {
 	return root
 }
 
-func generateCode(p token.CodeParagraph, options eNote.Options) (*HTMLNode, string) {
+func generateCode(p token.CodeParagraph, options sMark.Options) (*HTMLNode, string) {
 	lex := lexers.Get(p.Lang)
 	if lex == nil {
 		fmt.Fprintln(os.Stderr, "Cannot highlight lang:", p.Lang)

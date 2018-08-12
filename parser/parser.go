@@ -1,10 +1,11 @@
 package parser
 
 import (
-	"eNote/token"
-	"eNote/utils"
 	"io"
 	"log"
+
+	"github.com/gSpera/sMark/token"
+	"github.com/gSpera/sMark/utils"
 )
 
 //ParseReader parse a source file and returns the paragraphs
@@ -33,8 +34,8 @@ func ParseReader(fl io.Reader) ([]token.ParagraphToken, error) {
 
 //OptionsFromParagraphs analyze the passed slice of paragraphs returning the final options contined in token.HeaderParagraphs.
 //It return the optained options and a new list of paragraphs containing all the paragraphs but HeaderParagraphs
-func OptionsFromParagraphs(paragraphs []token.ParagraphToken) (eNote.Options, []token.ParagraphToken) {
-	options := eNote.NewOptions()
+func OptionsFromParagraphs(paragraphs []token.ParagraphToken) (sMark.Options, []token.ParagraphToken) {
+	options := sMark.NewOptions()
 	newTokens := make([]token.ParagraphToken, 0, len(paragraphs))
 
 	for _, p := range paragraphs {

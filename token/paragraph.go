@@ -1,7 +1,7 @@
 package token
 
 import (
-	"eNote/utils"
+	"github.com/gSpera/sMark/utils"
 )
 
 //ParagraphToken is a special interface that indicates a paragraph
@@ -13,7 +13,7 @@ type ParagraphToken interface {
 //HeaderParagraph is a pragraph containing header info
 type HeaderParagraph struct {
 	ParagraphToken
-	eNote.Options
+	sMark.Options
 }
 
 //TextParagraph rapresent a single paragraph

@@ -1,12 +1,13 @@
 package parser
 
 import (
-	"eNote/token"
-	"eNote/utils"
 	"errors"
 	"fmt"
 	"reflect"
 	"testing"
+
+	"github.com/gSpera/sMark/token"
+	"github.com/gSpera/sMark/utils"
 
 	"github.com/davecgh/go-spew/spew"
 )
@@ -410,12 +411,12 @@ func TestParseHeaderLine(t *testing.T) {
 	tm := []struct {
 		name   string
 		input  token.TextParagraph
-		output eNote.Options
+		output sMark.Options
 	}{
 		{
 			"Empty",
 			token.TextParagraph{},
-			eNote.Options{},
+			sMark.Options{},
 		},
 		{
 			"Value",
@@ -424,7 +425,7 @@ func TestParseHeaderLine(t *testing.T) {
 					token.LineContainer{Tokens: []token.Token{token.TextToken{Text: "Key = Value"}}},
 				},
 			},
-			eNote.Options{
+			sMark.Options{
 				String: map[string]string{
 					"Key": "Value",
 				},
@@ -437,7 +438,7 @@ func TestParseHeaderLine(t *testing.T) {
 					token.LineContainer{Tokens: []token.Token{token.TextToken{Text: "Key = Value ; This is a comment"}}},
 				},
 			},
-			eNote.Options{
+			sMark.Options{
 				String: map[string]string{
 					"Key": "Value",
 				},
@@ -450,7 +451,7 @@ func TestParseHeaderLine(t *testing.T) {
 					token.LineContainer{Tokens: []token.Token{token.TextToken{Text: "Key = Value ;This is a comment"}}},
 				},
 			},
-			eNote.Options{
+			sMark.Options{
 				String: map[string]string{
 					"Key": "Value",
 				},
@@ -463,7 +464,7 @@ func TestParseHeaderLine(t *testing.T) {
 					token.LineContainer{Tokens: []token.Token{token.TextToken{Text: "Key = Value "}}},
 				},
 			},
-			eNote.Options{
+			sMark.Options{
 				String: map[string]string{
 					"Key": "Value",
 				},
@@ -476,7 +477,7 @@ func TestParseHeaderLine(t *testing.T) {
 					token.LineContainer{Tokens: []token.Token{token.TextToken{Text: "Key = Value;Comment Or Maybe Not"}}},
 				},
 			},
-			eNote.Options{
+			sMark.Options{
 				String: map[string]string{
 					"Key": "Value;Comment Or Maybe Not",
 				},
@@ -494,7 +495,7 @@ func TestParseHeaderLine(t *testing.T) {
 	}
 }
 
-func checkOptions(o1, o2 eNote.Options) (bool, error) {
+func checkOptions(o1, o2 sMark.Options) (bool, error) {
 	if len(o1.Bool) != len(o2.Bool) {
 		return false, fmt.Errorf("Bool: Len is different")
 	}

@@ -1,17 +1,18 @@
 package outTelegraph
 
 import (
-	"eNote/token"
-	"eNote/utils"
 	"fmt"
 	"log"
 	"strings"
+
+	"github.com/gSpera/sMark/token"
+	"github.com/gSpera/sMark/utils"
 
 	tgraph "github.com/toby3d/telegraph"
 )
 
 //ToString creates a telegraph that can be pubblished
-func ToString(paragraphs []token.ParagraphToken, options eNote.Options) tgraph.Page {
+func ToString(paragraphs []token.ParagraphToken, options sMark.Options) tgraph.Page {
 	nodes := []tgraph.Node{}
 	title := options.String["Title"]
 

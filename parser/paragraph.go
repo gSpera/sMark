@@ -1,10 +1,11 @@
 package parser
 
 import (
-	"eNote/token"
 	"fmt"
 	"log"
 	"strings"
+
+	"github.com/gSpera/sMark/token"
 )
 
 //TokenToParagraph divide a slice of lines in paragraphs

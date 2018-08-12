@@ -1,4 +1,4 @@
-package eNote
+package sMark
 
 import "testing"
 

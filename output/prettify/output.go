@@ -1,17 +1,18 @@
 package prettify
 
 import (
-	"eNote/token"
-	eNote "eNote/utils"
 	"fmt"
 	"log"
 	"strings"
+
+	"github.com/gSpera/sMark/token"
+	sMark "github.com/gSpera/sMark/utils"
 )
 
 const divisorLen = 10
 
-//Output generate eNote valid code as output, it can be used to prettify the eNote source code
-func Output(paragraphs []token.ParagraphToken, options eNote.Options) ([]byte, error) {
+//Output generate sMark valid code as output, it can be used to prettify the sMark source code
+func Output(paragraphs []token.ParagraphToken, options sMark.Options) ([]byte, error) {
 	data := make([]byte, 0)
 	data = append(data, makeHeader(options)...)
 
@@ -70,7 +71,7 @@ func makeSubtitle(subtitle token.SubtitleParagraph) string {
 	return str
 }
 
-func makeHeader(options eNote.Options) string {
+func makeHeader(options sMark.Options) string {
 	delim := strings.Repeat("+", 10)
 	var content string
 

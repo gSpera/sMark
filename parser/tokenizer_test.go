@@ -2,10 +2,11 @@ package parser
 
 import (
 	"bytes"
-	"eNote/token"
 	"fmt"
 	"log"
 	"testing"
+
+	"github.com/gSpera/sMark/token"
 
 	"github.com/davecgh/go-spew/spew"
 )

@@ -1,9 +1,10 @@
 package parser
 
 import (
-	"eNote/token"
 	"log"
 	"unicode/utf8"
+
+	"github.com/gSpera/sMark/token"
 )
 
 const maxTokenDistance = 255

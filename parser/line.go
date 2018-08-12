@@ -1,10 +1,11 @@
 package parser
 
 import (
-	"eNote/token"
-	eNote "eNote/utils"
 	"log"
 	"strings"
+
+	"github.com/gSpera/sMark/token"
+	sMark "github.com/gSpera/sMark/utils"
 )
 
 //TokenToLine divide a slice of tokens in lines
@@ -110,11 +111,11 @@ func checkIndentation(paragraph *token.TextParagraph) {
 	}
 }
 
-func parseHeaderLines(paragraph token.TextParagraph) eNote.Options {
-	res := eNote.NewOptions()
+func parseHeaderLines(paragraph token.TextParagraph) sMark.Options {
+	res := sMark.NewOptions()
 
 	for _, line := range paragraph.Lines {
-		key, value := eNote.ParseOption(line.String())
+		key, value := sMark.ParseOption(line.String())
 
 		res.Insert(key, value)
 	}

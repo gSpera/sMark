@@ -1,8 +1,9 @@
 package parser
 
 import (
-	"eNote/token"
 	"testing"
+
+	"github.com/gSpera/sMark/token"
 )
 
 func TestNotEmptyLines(t *testing.T) {
