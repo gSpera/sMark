@@ -1,4 +1,4 @@
-package outTelegraph
+package telegraphout
 
 import (
 	"fmt"

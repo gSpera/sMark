@@ -1,4 +1,4 @@
-package outTelegraph
+package telegraphout
 
 import tgraph "github.com/toby3d/telegraph"
 

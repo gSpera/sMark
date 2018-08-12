@@ -8,9 +8,9 @@ import (
 	"log"
 	"os"
 
-	output "github.com/gSpera/sMark/output/html"
+	"github.com/gSpera/sMark/output/html"
 	"github.com/gSpera/sMark/output/prettify"
-	outTelegraph "github.com/gSpera/sMark/output/telegraph"
+	"github.com/gSpera/sMark/output/telegraph"
 	"github.com/gSpera/sMark/parser"
 	sMark "github.com/gSpera/sMark/utils"
 
@@ -157,14 +157,14 @@ func compile(options sMark.Options) {
 	//HTML Output Engine
 	if options.Bool["HTMLOut"] {
 		log.Println("Outputting HTML")
-		ioutil.WriteFile(options.String["OutputFile"], output.ToString(tokenList, options), os.ModePerm)
+		ioutil.WriteFile(options.String["OutputFile"], htmlout.ToString(tokenList, options), os.ModePerm)
 		log.Println("Outputting HTML DONE")
 	}
 
 	//Telegraph Output Engine
 	if options.Bool["TelegraphOut"] {
 		log.Println("Outputting Telegraph")
-		page := outTelegraph.ToString(tokenList, options)
+		page := telegraphout.ToString(tokenList, options)
 		log.Println("Title:", page.Title)
 		var accessToken string
 		fmt.Println("Insert Access Token: ")
