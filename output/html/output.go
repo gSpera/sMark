@@ -2,9 +2,12 @@ package htmlout
 
 import (
 	"bytes"
+	"encoding/base64"
 	"fmt"
 	"html"
 	"html/template"
+	"image/png"
+	"io"
 	"io/ioutil"
 	"log"
 	"os"
@@ -269,6 +272,30 @@ func fromLineContainer(line token.LineContainer) *HTMLNode {
 				}
 				current.AddChildren(node)
 				current = node
+			}
+			if tt.Image != nil {
+				const prefix = "data:image/png;base64,"
+				node := &HTMLNode{
+					tag: "img",
+					attrs: map[string]string{
+						"alt": tt.Text,
+					},
+				}
+				//Encode PNG Image
+				pr, pw := io.Pipe()
+				go func() {
+					defer pw.Close()
+					if err := png.Encode(pw, tt.Image); err != nil {
+						pw.CloseWithError(err)
+					}
+				}()
+				data, err := ioutil.ReadAll(pr)
+				if err != nil {
+					log.Println("Cannot decode image:", err)
+				}
+
+				node.attrs["src"] = prefix + base64.StdEncoding.EncodeToString(data)
+				current.AddChildren(node)
 			}
 			if tt.Link != "" {
 				node := &HTMLNode{
