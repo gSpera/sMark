@@ -2,6 +2,7 @@ package token
 
 import (
 	"fmt"
+	"image"
 	"strings"
 )
 
@@ -26,6 +27,7 @@ type TextToken struct {
 	Italic bool
 	Strike bool
 	Link   string
+	Image  image.Image
 }
 
 //String creates a string with the content of the TextToken

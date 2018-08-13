@@ -1,13 +1,38 @@
 package parser
 
 import (
+	"fmt"
+	"image"
+	"io"
 	"log"
+	"net/http"
+	"os"
+	"strings"
 	"unicode/utf8"
 
 	"github.com/gSpera/sMark/token"
+
+	//Image Formats
+	_ "image/gif"
+	_ "image/jpeg"
+	"image/png"
 )
 
 const maxTokenDistance = 255
+const contentTypeHeader = "Content-Type"
+
+var imageExtensions = []string{
+	"jpg",
+	"jpeg",
+	"png",
+	"gif",
+}
+
+var imageMimeTypes = []string{
+	"image/jpeg",
+	"image/png",
+	"image/gif",
+}
 
 //TokenToStructure checks the slice of tokens for multi-token tokens, like bold/italic text
 func TokenToStructure(tokens []token.Token) []token.Token {
@@ -144,8 +169,16 @@ func searchLink(tokens []token.Token, start int) (token.Token, int) {
 		return t, -1
 	}
 	url := tok.(token.TextToken)
-
 	t.Link = url.Text
+	var err error
+	if typ, resp, ok := isImage(url.Text); ok {
+		t.Image, err = parseImage(typ, url.Text, resp)
+		if err != nil {
+			fmt.Println("Cannot get image:", err)
+			t.Image = nil
+		}
+	}
+
 	return t, i + sk - start
 }
 
@@ -186,4 +219,81 @@ func searchCheckbox(tokens []token.Token, start int) (token.CheckBoxToken, int) 
 	}
 
 	return token.CheckBoxToken{Char: char}, 2
+}
+
+type imageSourceType int
+
+const (
+	null imageSourceType = iota
+	localFile
+	urlSuffix
+	httpResponse
+)
+
+func isImage(url string) (imageSourceType, *http.Response, bool) {
+	//LocalFile
+	if _, err := os.Stat(url); err == nil {
+		fmt.Println("Local")
+		return localFile, nil, true
+	}
+
+	//HTTP(S)
+	//Check url
+	for _, extension := range imageExtensions {
+		if strings.HasSuffix(url, extension) {
+			fmt.Println("Suffix", extension)
+			return urlSuffix, nil, true
+		}
+	}
+
+	//Cheks header
+	resp, err := http.Get(url)
+
+	if err != nil {
+		return null, nil, false
+	}
+
+	header := resp.Header.Get(contentTypeHeader)
+
+	for _, mime := range imageMimeTypes {
+		if header == mime {
+			fmt.Println("Mime:", header)
+			return httpResponse, resp, true
+		}
+	}
+
+	//Close only if cannot get image
+	resp.Body.Close()
+	return null, nil, false
+}
+
+func parseImage(typ imageSourceType, url string, resp *http.Response) (image.Image, error) {
+	var content io.Reader
+	var err error
+
+	switch typ {
+	case localFile:
+		content, err = os.Open(url)
+		if err != nil {
+			return nil, err
+		}
+		goto decode
+	case urlSuffix:
+		//Get the content and then fallthrough
+		resp, err = http.Get(url)
+		if err != nil {
+			return nil, err
+		}
+		fallthrough
+	case httpResponse:
+		content = resp.Body
+		defer resp.Body.Close()
+		goto decode
+	}
+
+	return nil, nil
+
+decode:
+	img, err := png.Decode(content)
+	return img, err
 }
