@@ -1,8 +1,16 @@
 package telegraphout
 
 import (
+	"bytes"
+	"encoding/json"
 	"fmt"
+	"image/png"
+	"io"
+	"io/ioutil"
 	"log"
+	"mime/multipart"
+	"net/http"
+	"net/textproto"
 	"strings"
 
 	"github.com/gSpera/sMark/token"
@@ -10,6 +18,8 @@ import (
 
 	tgraph "github.com/toby3d/telegraph"
 )
+
+const telegraphUploadURL = "https://telegra.ph/upload"
 
 //ToString creates a telegraph that can be pubblished
 func ToString(paragraphs []token.ParagraphToken, options sMark.Options) tgraph.Page {
@@ -124,6 +134,31 @@ func createLine(text token.TextToken) tgraph.Node {
 	if text.Strike {
 		node = tgraph.NodeElement{Tag: "s", Children: []tgraph.Node{node}}
 	}
+	if text.Image != nil {
+		pr, pw := io.Pipe()
+		go func() {
+			defer pw.Close()
+			if err := png.Encode(pw, text.Image); err != nil {
+				pw.CloseWithError(err)
+			}
+		}()
+		url, err := uploadImage(pr)
+		if err != nil {
+			txt := fmt.Sprintf("ERROR: Cannot upload image: %v", err)
+			node = tgraph.NodeElement{
+				Tag:      "p",
+				Children: []tgraph.Node{txt, node},
+			}
+			return node
+		}
+		node = tgraph.NodeElement{
+			Tag:      "img",
+			Children: []tgraph.Node{node},
+			Attrs: map[string]string{
+				"src": url,
+			},
+		}
+	}
 	if text.Link != "" {
 		node = tgraph.NodeElement{
 			Tag:      "a",
@@ -164,4 +199,46 @@ func fromLineContainer(line token.LineContainer) tgraph.NodeElement {
 	}
 
 	return res
+}
+
+func uploadImage(rawdata io.Reader) (string, error) {
+	buff := new(bytes.Buffer)
+	wr := multipart.NewWriter(buff)
+	flW, err := createFormFile(wr, "file", "file")
+	if err != nil {
+		return "", err
+	}
+
+	if _, err := io.Copy(flW, rawdata); err != nil {
+		return "", err
+	}
+	wr.Close()
+	req, err := http.NewRequest("POST", telegraphUploadURL, buff)
+	if err != nil {
+		return "", err
+	}
+	req.Header.Set("Content-Type", wr.FormDataContentType())
+
+	resp, err := http.DefaultClient.Do(req)
+	if err != nil {
+		return "", err
+	}
+	content, err := ioutil.ReadAll(resp.Body)
+	defer resp.Body.Close()
+
+	srcStruct := []struct {
+		Src string `json:"src"`
+	}{}
+	json.Unmarshal(content, &srcStruct)
+	return srcStruct[0].Src, nil
+}
+
+func createFormFile(w *multipart.Writer, fieldname, filename string) (io.Writer, error) {
+	repl := strings.NewReplacer("\\", "\\\\", `"`, "\\\"")
+	h := make(textproto.MIMEHeader)
+	h.Set("Content-Disposition",
+		fmt.Sprintf(`form-data; name="%s"; filename="%s"`,
+			repl.Replace(fieldname), repl.Replace(filename)))
+	h.Set("Content-Type", "image/png")
+	return w.CreatePart(h)
 }
