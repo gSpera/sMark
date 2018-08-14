@@ -121,10 +121,6 @@ func compile(options sMark.Options) {
 
 	reader := bufio.NewReader(input)
 
-	log.Println("Resetting Reader")
-	input.Seek(0, os.SEEK_SET)
-	reader = bufio.NewReader(input)
-
 	log.Println("Parsing")
 	tokenList, err := parser.ParseReader(reader)
 	if err != nil {
@@ -167,13 +163,14 @@ func compile(options sMark.Options) {
 		page := telegraphout.ToString(tokenList, options)
 		log.Println("Title:", page.Title)
 		var accessToken string
-		fmt.Println("Insert Access Token: ")
+		fmt.Print("Insert Access Token: ")
 		fmt.Scan(&accessToken)
 		acc := tgraph.Account{
 			AccessToken: accessToken,
 		}
 		pagePubblished, err := acc.CreatePage(&page, false)
 		if err != nil {
+			fmt.Fprintln(os.Stderr, "Cannot create page:", err)
 			log.Fatalf("Error: Could not create page: %v", err)
 		}
 
