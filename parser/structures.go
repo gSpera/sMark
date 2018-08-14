@@ -233,7 +233,7 @@ const (
 func isImage(url string) (imageSourceType, *http.Response, bool) {
 	//LocalFile
 	if _, err := os.Stat(url); err == nil {
-		fmt.Println("Local")
+		log.Println("\t- Image Source: Local")
 		return localFile, nil, true
 	}
 
@@ -241,7 +241,7 @@ func isImage(url string) (imageSourceType, *http.Response, bool) {
 	//Check url
 	for _, extension := range imageExtensions {
 		if strings.HasSuffix(url, extension) {
-			fmt.Println("Suffix", extension)
+			log.Println("\t- Image Source: Suffix", extension)
 			return urlSuffix, nil, true
 		}
 	}
@@ -257,7 +257,7 @@ func isImage(url string) (imageSourceType, *http.Response, bool) {
 
 	for _, mime := range imageMimeTypes {
 		if header == mime {
-			fmt.Println("Mime:", header)
+			log.Println("\t- Image Source: Mime:", header)
 			return httpResponse, resp, true
 		}
 	}
