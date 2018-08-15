@@ -277,6 +277,7 @@ func fromLineContainer(line token.LineContainer) *HTMLNode {
 					attrs: map[string]string{
 						"alt": tt.Text,
 					},
+					single: true,
 				}
 				node.attrs["src"] = prefix + sMark.EncodeImageBase64(tt.Image)
 				current.AddChildren(node)
@@ -299,11 +300,12 @@ func fromLineContainer(line token.LineContainer) *HTMLNode {
 				"type": "checkbox",
 			}
 			if tt.Char != ' ' {
-				attrs["checked"] = "true"
+				attrs["checked"] = ""
 			}
 			root.AddChildren(&HTMLNode{
-				tag:   "input",
-				attrs: attrs,
+				tag:    "input",
+				attrs:  attrs,
+				single: true,
 			})
 		case token.SimpleToken:
 			root.AddChildrenNode(TextNode(string(tt.Char())))
