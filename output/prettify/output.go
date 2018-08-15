@@ -63,18 +63,26 @@ func makeTitle(title token.TitleParagraph, char string) string {
 }
 
 func makeHeader(options sMark.Options) string {
-	delim := strings.Repeat("+", 10)
+	var maxLen int
 	var content string
 
 	for k, v := range options.String {
-		content += fmt.Sprintf("%s = %s\n", k, v)
+		line := fmt.Sprintf("%s = %s\n", k, v)
+		maxLen = max(maxLen, len(line))
+		content += line
 	}
 	for k, v := range options.Bool {
-		content += fmt.Sprintf("%s = %t\n", k, v)
+		line := fmt.Sprintf("%s = %t\n", k, v)
+		maxLen = max(maxLen, len(line))
+		content += line
 	}
 	for k, v := range options.Generic {
-		content += fmt.Sprintf("%s = %v\n", k, v)
+		line := fmt.Sprintf("%s = %v\n", k, v)
+		maxLen = max(maxLen, len(line))
+		content += line
 	}
+
+	delim := strings.Repeat("+", maxLen)
 
 	return fmt.Sprintf("%s\n%s%s\n\n", delim, content, delim)
 }
@@ -91,6 +99,13 @@ func makeList(list token.ListParagraph) string {
 
 	content += "\n"
 	return content
+}
+
+func max(a, b int) int {
+	if a > b {
+		return a
+	}
+	return b
 }
 
 func lineContainerToString(container token.LineContainer) string {
