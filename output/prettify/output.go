@@ -127,5 +127,6 @@ func makeCode(p token.CodeParagraph) string {
 	var str string
 	str = fmt.Sprintf("[%s]\n", p.Lang)
 	str += textParagraphToString(p.Text)
+	str += "[end]\n"
 	return str
 }
