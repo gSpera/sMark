@@ -19,9 +19,9 @@ func Output(paragraphs []token.ParagraphToken, options sMark.Options) ([]byte, e
 	for _, p := range paragraphs {
 		switch pp := p.(type) {
 		case token.TitleParagraph:
-			data = append(data, makeTitle(pp)...)
+			data = append(data, makeTitle(pp, "=")...)
 		case token.SubtitleParagraph:
-			data = append(data, makeSubtitle(pp)...)
+			data = append(data, makeTitle(token.TitleParagraph(pp), "-")...)
 		case token.TextParagraph:
 			data = append(data, textParagraphToString(pp)...)
 		case token.DivisorParagraph:
@@ -53,20 +53,11 @@ func textParagraphToString(p token.TextParagraph) string {
 	return str
 }
 
-func makeTitle(title token.TitleParagraph) string {
+func makeTitle(title token.TitleParagraph, char string) string {
 	var str string
 	str = fmt.Sprintf("%s%s\n%s%s\n\n",
 		indentation(title.Indentation), title.Text,
-		indentation(title.Indentation), strings.Repeat("=", len(title.Text)-1),
-	)
-	return str
-}
-
-func makeSubtitle(subtitle token.SubtitleParagraph) string {
-	var str string
-	str = fmt.Sprintf("%s%s\n%s%s\n\n",
-		indentation(subtitle.Indentation), subtitle.Text,
-		indentation(subtitle.Indentation), strings.Repeat("-", len(subtitle.Text)-1),
+		indentation(title.Indentation), strings.Repeat(char, len(title.Text)),
 	)
 	return str
 }
