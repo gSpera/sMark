@@ -110,36 +110,35 @@ func TokenToParagraph(lines []token.LineToken) []token.ParagraphToken {
 				continue
 			}
 
-			codeBlock := token.TextParagraph{}
+			log.Println("\t- Found Code Block:", tt.Lang)
+
+			codeBlock := []string{}
+
 			for j := i + 1; j < len(lines); j++ {
 				end, ok := lines[j].(token.CodeLine)
 
 				if (ok && end.Lang == "end") || j == len(lines)-1 {
-					log.Println("\t- Found Code Block:", tt.Lang)
-
-					if line, ok := lines[j].(token.LineContainer); j == len(lines)-1 && ok {
-						codeBlock.Lines = append(codeBlock.Lines, line)
-					}
-					checkIndentation(&codeBlock)
-					paragraphs = append(paragraphs, token.CodeParagraph{
-						Lang: tt.Lang,
-						Text: codeBlock,
-					})
-					currentParagraph = token.TextParagraph{}
 					skip = j - i
-					continue
-				}
-
-				line, ok := lines[j].(token.LineContainer)
-				if !ok {
 					break
 				}
-				codeBlock.Lines = append(codeBlock.Lines, line)
+
+				codeBlock = append(codeBlock, lines[j].String())
 			}
+
+			paragraph := []token.LineContainer{}
+			for _, line := range codeBlock {
+				paragraph = append(paragraph, token.LineContainerFromString(line))
+			}
+
+			paragraphs = append(paragraphs, token.CodeParagraph{
+				Lang: tt.Lang,
+				Text: token.TextParagraph{Lines: paragraph},
+			})
+			currentParagraph = token.TextParagraph{}
+
 		default:
 			panic(fmt.Sprintf("Line=>Paragraph for %T{%+v} not defined", tt, tt))
 		}
-
 	}
 
 	checkIndentation(&currentParagraph)

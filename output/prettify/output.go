@@ -17,24 +17,30 @@ func Output(paragraphs []token.ParagraphToken, options sMark.Options) ([]byte, e
 	data = append(data, makeHeader(options)...)
 
 	for _, p := range paragraphs {
-		switch pp := p.(type) {
-		case token.TitleParagraph:
-			data = append(data, makeTitle(pp, "=")...)
-		case token.SubtitleParagraph:
-			data = append(data, makeTitle(token.TitleParagraph(pp), "-")...)
-		case token.TextParagraph:
-			data = append(data, textParagraphToString(pp)...)
-		case token.DivisorParagraph:
-			data = append(data, fmt.Sprintf("%s\n\n", strings.Repeat("-", divisorLen))...)
-		case token.ListParagraph:
-			data = append(data, makeList(pp)...)
-		case token.CodeParagraph:
-			data = append(data, makeCode(pp)...)
-		default:
-			log.Printf("\t\t- ERROR: Not Implemented: %T{%v}\n", pp, pp)
-		}
+		data = append(data, []byte(Single(p))...)
 	}
 	return data, nil
+}
+
+//Single generate the sMark code for a single paragraph
+func Single(paragraph token.ParagraphToken) string {
+	switch pp := paragraph.(type) {
+	case token.TitleParagraph:
+		return makeTitle(pp, "=")
+	case token.SubtitleParagraph:
+		return makeTitle(token.TitleParagraph(pp), "-")
+	case token.TextParagraph:
+		return textParagraphToString(pp)
+	case token.DivisorParagraph:
+		return fmt.Sprintf("%s\n\n", strings.Repeat("-", divisorLen))
+	case token.ListParagraph:
+		return makeList(pp)
+	case token.CodeParagraph:
+		return makeCode(pp)
+	default:
+		log.Fatalf("\t\t- ERROR: Not Implemented: %T{%v}\n", pp, pp)
+		return ""
+	}
 }
 
 func textParagraphToString(p token.TextParagraph) string {
