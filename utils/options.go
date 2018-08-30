@@ -1,6 +1,9 @@
 package sMark
 
-import "strings"
+import (
+	"fmt"
+	"strings"
+)
 
 //Options are the parameters to the compilation.
 //They can be obtained throught command line parameters or HeaderParagraphs
@@ -59,7 +62,8 @@ func ParseOption(line string) (string, string) {
 			key = string(buffer)
 			buffer = []rune{}
 		case ';': //Comment
-			if line[i-1] == ' ' {
+			fmt.Println(i)
+			if i == 0 || line[i-1] == ' ' {
 				return key, string(buffer)
 			}
 			buffer = append(buffer, ch)
