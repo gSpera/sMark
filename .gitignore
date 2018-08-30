@@ -4,3 +4,5 @@ sMark
 test.*
 out.log
 .vscode
+__py_cache__
+*.pyc
