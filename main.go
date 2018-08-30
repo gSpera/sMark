@@ -12,6 +12,7 @@ import (
 	"github.com/gSpera/sMark/output/prettify"
 	"github.com/gSpera/sMark/output/telegraph"
 	"github.com/gSpera/sMark/parser"
+	"github.com/gSpera/sMark/token"
 	sMark "github.com/gSpera/sMark/utils"
 
 	tgraph "github.com/toby3d/telegraph"
@@ -73,8 +74,12 @@ func main() {
 	}
 
 	if options.Bool["Watch"] {
+		if options.String["InputFile"] == "-" {
+			fmt.Fprintln(os.Stderr, "Could not watch stdin")
+			return
+		}
 		fmt.Println("Watching File, use CTRL + c to stop")
-		compile(options)
+		options, _ = compile(options)
 
 		watcher, err := fsnotify.NewWatcher()
 		if err != nil {
@@ -84,14 +89,22 @@ func main() {
 
 		err = watcher.Add(options.String["InputFile"])
 		if err != nil {
-			fmt.Printf("Cannot watch %s: %v\n", options.String["InputFile"], err)
+			fmt.Fprintf(os.Stderr, "Cannot watch %s: %v\n", options.String["InputFile"], err)
+		}
+
+		if tmpl, ok := options.String["TemplateFile"]; ok {
+			if err := watcher.Add(options.String["TemplateFile"]); err != nil {
+				fmt.Fprintf(os.Stderr, "Could not Watch TemplateFile: %s: %v\n", tmpl, err)
+			} else {
+				fmt.Fprintf(os.Stderr, "Watching TemplateFile: %s\n", tmpl)
+			}
 		}
 
 		for {
 			select {
 			case event := <-watcher.Events:
 				if event.Op == fsnotify.Remove || event.Op == fsnotify.Rename {
-					fmt.Println("Quitting, file is being removed or renamed")
+					fmt.Fprintln(os.Stderr, "Quitting, file is being removed or renamed")
 					return
 				}
 				if event.Op != fsnotify.Write {
@@ -99,14 +112,14 @@ func main() {
 				}
 				compile(options)
 			case err := <-watcher.Errors:
-				fmt.Println("Error in watcher:", err)
+				fmt.Fprintln(os.Stderr, "Error in watcher:", err)
 			}
 		}
 	}
 	compile(options)
 }
 
-func compile(options sMark.Options) {
+func compile(options sMark.Options) (sMark.Options, []token.ParagraphToken) {
 	log.Println("Start Compilation")
 	input, err := streamFromFilename(options.String["InputFile"])
 	if os.IsNotExist(err) {
@@ -200,6 +213,8 @@ func compile(options sMark.Options) {
 
 		log.Println("Outputting sMark DONE")
 	}
+
+	return options, tokenList
 }
 
 func streamFromFilename(filename string) (*os.File, error) {
