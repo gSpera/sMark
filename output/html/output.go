@@ -48,6 +48,7 @@ const (
 //ToString is a simple output enging with a simple HTML writer
 func ToString(paragraphs []token.ParagraphToken, options sMark.Options) []byte {
 	outTemplate := template.New("sMark")
+	highlightCSS := true
 	var err error
 
 	outTemplate = outTemplate.Funcs(template.FuncMap{
@@ -200,7 +201,8 @@ func ToString(paragraphs []token.ParagraphToken, options sMark.Options) []byte {
 			}
 			body.AddChildren(list)
 		case token.CodeParagraph:
-			hd, bd := generateCode(pp, options)
+			hd, bd := generateCode(pp, options, highlightCSS)
+			highlightCSS = false
 			if hd != nil {
 				head.AddChildren(hd)
 			}
@@ -318,7 +320,7 @@ func fromLineContainer(line token.LineContainer) *HTMLNode {
 	return root
 }
 
-func generateCode(p token.CodeParagraph, options sMark.Options) (*HTMLNode, string) {
+func generateCode(p token.CodeParagraph, options sMark.Options, generateCSS bool) (*HTMLNode, string) {
 	lex := lexers.Get(p.Lang)
 	if lex == nil {
 		fmt.Fprintln(os.Stderr, "Cannot highlight lang:", p.Lang)
@@ -374,17 +376,22 @@ func generateCode(p token.CodeParagraph, options sMark.Options) (*HTMLNode, stri
 		return nil, ""
 	}
 
-	css := bytes.NewBuffer([]byte{})
-	formatter.WriteCSS(css, style)
+	var cssNode *HTMLNode
+	if generateCSS {
+		css := bytes.NewBuffer([]byte{})
+		formatter.WriteCSS(css, style)
 
-	cssNode := &HTMLNode{
-		tag: "style",
-		children: []Node{
-			TextNode(css.String()),
-		},
+		cssNode = &HTMLNode{
+			tag: "style",
+			children: []Node{
+				TextNode(css.String()),
+			},
+		}
 	}
+
 	out := highlight.String()
 	return cssNode, out
+
 }
 
 func linecontainerToText(p token.TextParagraph) TextNode {
