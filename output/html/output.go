@@ -105,6 +105,9 @@ func ToString(paragraphs []token.ParagraphToken, options sMark.Options) []byte {
 
 			body.AddChildren(&HTMLNode{
 				tag: tag,
+				attrs: map[string]string{
+					"id": safeHTMLID(pp.Text),
+				},
 				children: []Node{
 					TextNode(pp.Text),
 				},
@@ -165,6 +168,9 @@ func ToString(paragraphs []token.ParagraphToken, options sMark.Options) []byte {
 
 			body.AddChildren(&HTMLNode{
 				tag: tag,
+				attrs: map[string]string{
+					"id": safeHTMLID(pp.Text),
+				},
 				children: []Node{
 					TextNode(html.EscapeString(pp.Text)),
 				},
@@ -401,4 +407,10 @@ func linecontainerToText(p token.TextParagraph) TextNode {
 		str += strings.Repeat("\t", line.Indentation) + fromLineContainer(line).HTML(0) + "\n"
 	}
 	return TextNode(str)
+}
+
+var replacer = strings.NewReplacer(" ", "_")
+
+func safeHTMLID(raw string) string {
+	return replacer.Replace(raw)
 }
