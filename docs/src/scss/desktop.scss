@@ -1,0 +1,61 @@
+body {
+    display: grid;
+    grid-template-columns: 0px 25% auto;
+    margin: 0px;
+    height: 100%;
+    font-family: $bodyFont;
+}
+
+nav {
+    background-color: #ffde57;
+    background: linear-gradient(to right, #ffdc4e, #ffde57);
+    text-align: center;
+    margin-right: 10%;
+
+    h1, h2 {
+        width: 100%;
+        display: block;
+    }
+
+    ul {
+        padding: 0px;
+        font-size: 1rem;
+
+        a {
+            text-decoration: none;
+            color: gray;
+
+            &:visited{
+                color: black;
+            }
+        }
+    }
+}
+
+h1 {
+    font-size: 3rem;
+    font-family: $titleFont;
+    margin-bottom: 0px;
+}
+
+h2 {
+    font-size: 1.5rem;
+    font-family: $titleFont;
+    font-weight: 100;
+    padding-bottom: 15px;
+}
+
+main {
+    background-color: #FFF;
+
+    h1 {
+        text-align: center;
+    }
+}
+
+pre.hl-chroma *, div.hl-chroma * {
+    font-family: monospace;
+    font-size: 13px;
+    line-height: 15px;
+    padding: 0px;
+}

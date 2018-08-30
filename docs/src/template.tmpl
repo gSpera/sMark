@@ -1,0 +1,45 @@
+<html>
+    <head>
+        <title>{{.String.Title}}</title>
+        <link rel="stylesheet" href="/index.css">
+        <link href="https://fonts.googleapis.com/css?family=Montserrat|Patrick+Hand" rel="stylesheet">
+
+        {{safeHTML .String._Head}}
+    </head>
+    <body>
+        <input type="checkbox" id="show-menu">
+        <nav>
+            <header>
+                <label for="show-menu" class="menu">
+                    <div class="burger burger-1"></div>    
+                    <div class="burger burger-2"></div>    
+                    <div class="burger burger-3"></div>    
+                </label>
+                <h1>sMark</h1>
+            </header>
+
+            <h2>The Markup language for Humans</h2>
+
+
+            <ul>
+                <li><a href="/index.html">Home Page</a></li>
+
+                <ul>
+                        <li><a href="#Titles">Titles</a></label></li>
+                        <li><a href="#Simple_markup">Simple Markup</a></label></li>
+                        <li><a href="#Paragraphs">Paragraphs</a></label></li>
+                        <li><a href="#Quote">Quote</a></label></li>
+                        <li><a href="#Lists">Lists</a></label></li>
+                        <li><a href="#Code_Blocks">Code Blocks</a></label></li>
+                        <li><a href="#Divider">Divider</a></label></li>
+                        <li><a href="#Links_and_Images">Links_and_Images</a></label></li>
+                        <li><a href="#Header">Header</a></label></li>
+                </ul>
+            </ul>
+        </nav>
+        <main>
+            <h1>{{.String.Title}}</h1>
+            {{.Body}}
+        </main>
+    </body>
+</html>

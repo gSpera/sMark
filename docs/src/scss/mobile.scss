@@ -1,0 +1,99 @@
+@import "vars";
+
+@media only screen and (max-width: $mobileMaxWidth) {
+    body {
+        display: block;
+    }
+
+    #show-menu {
+        display: none;
+    }
+
+    nav {
+        transition: max-height .3s ease-in;
+
+        header {
+            position: relative;
+            * {display: inline;}
+
+            .menu {
+                position: absolute;
+                top: 0px;
+                left: 0px;
+                height: 64px;
+                width: 64px;
+                padding-top: 10px;
+
+                .burger {
+                    display: block;
+                    width: 30px;
+                    height: 3px;
+                    background-color: black;
+                    margin: auto;
+                    margin-top: 10px;
+                    transition: transform .1s;
+                }
+                .burger-3 {
+                    transition: opacity .1s;
+                }
+            }
+
+            h1 {
+                padding: 0px;
+                margin: 0px;
+            }
+        }
+    }
+    main {
+        margin-top: 10%;
+        padding-left: 1rem;
+        padding-right: 1rem;
+    }
+
+    /*Show Menu*/
+    #show-menu:checked ~ nav, nav{
+        width: 100%;
+        height: 100%;
+        opacity: 1;
+        max-height: 100%;
+    }
+
+    /*Not Menu*/
+    :not(#show-menu:checked) ~ nav {
+        max-height: 10%;
+        position: relative;
+
+        h2, ul {
+            opacity: 0;
+            max-height: 0px;
+            padding: 0px;
+            margin: 0px;
+        }
+    }
+
+    /*Menu*/
+    #show-menu:checked {
+        &~ nav {
+            h2, ul {
+                transition: opacity .3s ease-in-out;
+                opacity: 1;
+                max-height: 100%;
+            }
+            // header {
+            //     label {
+            //         .burger-1 {
+            //             margin-top: 15px;
+            //             transform: rotateZ(45deg);
+            //         }
+            //         .burger-2 {
+            //             transform: rotateZ(-45deg);
+            //             margin-top: -5px;
+            //         }
+            //         .burger-3 {
+            //             opacity: 0;
+            //         }
+            //     }
+            // }
+        }
+    }
+}

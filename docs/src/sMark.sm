@@ -1,0 +1,182 @@
++++
+Title=sMark Introdution
+TemplateFile=template.tmpl
++++
+
+sMark is a markup language made for humans, it can be easly written or read by humans.
+
+
+Titles
+------
+
+There are variuos form of Headings:
+[sMark]
+
+    This is a centered Title
+    ========================
+
+
+    This is a centered subtitle
+    ---------------------------
+
+This is a Title
+===============
+
+This is a subtitle
+------------------
+[end]
+
+A centered title/subtitle is more important than the normal equivalent.
+They more or less equals to the HTML Headings:
+- Centered Title: H1
+- Title: H2
+- Centered Subtitle: H3
+- Subtitle: H4
+
+There is no need to make the second line of the same length as the first
+
+Simple markup
+-------------
+
+The text can be formatted very easly
+You can make *bold* text,
+/italic/, _underline_ and -strikethrough-
+
+[sMark]
+The text can be formatted very easly
+You can make *bold* text,
+/italic/, _underline_ and -strikethrough-
+[end]
+
+Paragraphs
+----------
+
+An sMark document is divided in /Paragraphs/,
+two paragraphs are divided by an empty line
+
+[sMark]
+This is the first paragraph
+this also is the first paragraph
+
+but this is the second paragraph
+[end]
+
+Quote
+-----
+
+If you need to cite someone you can use a quote block
+|Lorem ipsum dolor sit amet, consectetur adipisci elit,
+|sed eiusmod tempor incidunt ut labore et dolore magna aliqua.
+
+Lists
+-----
+
+Sometimes you need to insert a list in you document
+you can create a list in sMark with an Hyphen
+- This is a list element
+- This also is an element
+
+Is also possible to create list inside lists
+
+- This is a list
+-- This is a list inside a list
+--- This is a list inside a list inside a list
+- This is inside the first list
+- There is so much freedom
+
+[sMark]
+- This is a list
+-- This is a list inside a list
+--- This is a list inside a list inside a list
+- This is inside the first list
+- There is so much freedom
+[end]
+
+[ ] If you need to remember something you can use CheckBoxs
+- [X] inside a list them are usefull
+
+But you can insert them where [ ] you want
+
+[sMark]
+This is a checkbox
+[ ]
+There is only a single char inside
+Checkbox can also be checked(they are checkbox after all)
+[X]
+[end]
+
+Code Blocks
+-----------
+
+You can indicate a block of text as code.
+
+[sMark]
+[Language]
+This is the Code
+[ end]
+[end]
+
+If there is a highlither avaible for the language
+it will be applied to the code
+
+[Go]
+package main
+
+import "fmt"
+
+func main() {
+    fmt.Println("sMark is so easy")
+}
+[end]
+
+Divider
+-------
+
+Sometimes you need to divide two block of text each other
+
+---
+
+When you need it you can use a divider
+
+[sMark]
+This is a divider
+
+---
+
+You can use the number of Hyphen you prefer
+[end]
+
+Links and Images
+----------------
+
+A document is not a document without links,
+this is a "link"@"github.com/gSpera/sMark"
+
+[sMark]
+A document is not a document without links,
+this is a "link"@"https://github.com/gSpera/sMark"
+[end]
+
+Images are similar to links
+"This is the alt text if you cannot see the image"@"link.to.image.png"
+
+You can insert an image via link or local path
+
+[sMark]
+Images are similar to links
+"This is the alt text if you cannot see the image"@"link.to.image.png"
+[end]
+
+Header
+------
+sMark is customizable using the Header.
+The Header is a special block with key value pairs of options
+
+[sMark]
++++
+
+ThisIsTheHeader=true
+CanItSupportComments=true ; This is a comment
+Title=This is the title
++++
+[end]
