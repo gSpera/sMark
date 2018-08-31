@@ -1,0 +1,627 @@
+<html>
+    <head>
+        <title>sMark Introdution</title>
+        <link rel="stylesheet" href="/index.css">
+        <link href="https://fonts.googleapis.com/css?family=Montserrat|Patrick+Hand" rel="stylesheet">
+
+        	<style>
+		/* Background */ .hl-chroma { background-color: #ffffff }
+		/* LineTableTD */ .hl-chroma .hl-lntd:last-child { width: 100%; }/* Error */ .hl-chroma .hl-err {  }
+		/* LineTableTD */ .hl-chroma .hl-lntd { vertical-align: top; padding: 0; margin: 0; border: 0; }
+		/* LineTable */ .hl-chroma .hl-lntable { border-spacing: 0; padding: 0; margin: 0; border: 0; width: auto; overflow: auto; display: block; }
+		/* LineHighlight */ .hl-chroma .hl-hl { display: block; width: 100%; }
+		/* LineNumbersTable */ .hl-chroma .hl-lnt { margin-right: 0.4em; padding: 0 0.4em 0 0.4em; }
+		/* LineNumbers */ .hl-chroma .hl-ln { margin-right: 0.4em; padding: 0 0.4em 0 0.4em; }
+		/* Keyword */ .hl-chroma .hl-k { color: #0000ff }
+		/* KeywordConstant */ .hl-chroma .hl-kc { color: #0000ff }
+		/* KeywordDeclaration */ .hl-chroma .hl-kd { color: #0000ff }
+		/* KeywordNamespace */ .hl-chroma .hl-kn { color: #0000ff }
+		/* KeywordPseudo */ .hl-chroma .hl-kp { color: #0000ff }
+		/* KeywordReserved */ .hl-chroma .hl-kr { color: #0000ff }
+		/* KeywordType */ .hl-chroma .hl-kt { color: #2b91af }
+		/* NameClass */ .hl-chroma .hl-nc { color: #2b91af }
+		/* LiteralString */ .hl-chroma .hl-s { color: #a31515 }
+		/* LiteralStringAffix */ .hl-chroma .hl-sa { color: #a31515 }
+		/* LiteralStringBacktick */ .hl-chroma .hl-sb { color: #a31515 }
+		/* LiteralStringChar */ .hl-chroma .hl-sc { color: #a31515 }
+		/* LiteralStringDelimiter */ .hl-chroma .hl-dl { color: #a31515 }
+		/* LiteralStringDoc */ .hl-chroma .hl-sd { color: #a31515 }
+		/* LiteralStringDouble */ .hl-chroma .hl-s2 { color: #a31515 }
+		/* LiteralStringEscape */ .hl-chroma .hl-se { color: #a31515 }
+		/* LiteralStringHeredoc */ .hl-chroma .hl-sh { color: #a31515 }
+		/* LiteralStringInterpol */ .hl-chroma .hl-si { color: #a31515 }
+		/* LiteralStringOther */ .hl-chroma .hl-sx { color: #a31515 }
+		/* LiteralStringRegex */ .hl-chroma .hl-sr { color: #a31515 }
+		/* LiteralStringSingle */ .hl-chroma .hl-s1 { color: #a31515 }
+		/* LiteralStringSymbol */ .hl-chroma .hl-ss { color: #a31515 }
+		/* OperatorWord */ .hl-chroma .hl-ow { color: #0000ff }
+		/* Comment */ .hl-chroma .hl-c { color: #008000 }
+		/* CommentHashbang */ .hl-chroma .hl-ch { color: #008000 }
+		/* CommentMultiline */ .hl-chroma .hl-cm { color: #008000 }
+		/* CommentSingle */ .hl-chroma .hl-c1 { color: #008000 }
+		/* CommentSpecial */ .hl-chroma .hl-cs { color: #008000 }
+		/* CommentPreproc */ .hl-chroma .hl-cp { color: #0000ff }
+		/* CommentPreprocFile */ .hl-chroma .hl-cpf { color: #0000ff }
+		/* GenericEmph */ .hl-chroma .hl-ge { font-style: italic }
+		/* GenericHeading */ .hl-chroma .hl-gh { font-weight: bold }
+		/* GenericPrompt */ .hl-chroma .hl-gp { font-weight: bold }
+		/* GenericStrong */ .hl-chroma .hl-gs { font-weight: bold }
+		/* GenericSubheading */ .hl-chroma .hl-gu { font-weight: bold }
+		
+	</style>
+
+    </head>
+    <body>
+        <input type="checkbox" id="show-menu">
+        <nav>
+            <header>
+                <label for="show-menu" class="menu">
+                    <div class="burger burger-1"></div>    
+                    <div class="burger burger-2"></div>    
+                    <div class="burger burger-3"></div>    
+                </label>
+                <h1>sMark</h1>
+            </header>
+
+            <h2>The Markup language for Humans</h2>
+
+
+            <ul>
+                <li><a href="/index.html">Home Page</a></li>
+
+                <ul>
+                        <li><a href="#Titles">Titles</a></label></li>
+                        <li><a href="#Simple_markup">Simple Markup</a></label></li>
+                        <li><a href="#Paragraphs">Paragraphs</a></label></li>
+                        <li><a href="#Quote">Quote</a></label></li>
+                        <li><a href="#Lists">Lists</a></label></li>
+                        <li><a href="#Code_Blocks">Code Blocks</a></label></li>
+                        <li><a href="#Divider">Divider</a></label></li>
+                        <li><a href="#Links_and_Images">Links_and_Images</a></label></li>
+                        <li><a href="#Header">Header</a></label></li>
+                </ul>
+            </ul>
+        </nav>
+        <main>
+            <h1>sMark Introdution</h1>
+            	<p class="align-left">
+
+			<br/>
+				sMark is a markup language made for humans, it can be easly written or read by humans.
+
+			<br/>
+
+	</p>
+	<h4 id="Titles">
+		Titles
+	</h4>
+	<p class="align-left">
+
+			<br/>
+				There are variuos form of Headings:
+
+			<br/>
+				[sMark]
+
+			<br/>
+
+			<br/>
+				    This is a centered Title
+
+			<br/>
+				    
+				=
+				=
+				=
+				=
+				=
+				=
+				=
+				=
+				=
+				=
+				=
+				=
+				=
+				=
+				=
+				=
+				=
+				=
+				=
+				=
+				=
+				=
+				=
+				=
+
+			<br/>
+
+	</p>
+	<p class="align-left">
+
+			<br/>
+				    This is a centered subtitle
+
+			<br/>
+				    
+				-
+				-
+				-
+				-
+				-
+				-
+				-
+				-
+				-
+				-
+				-
+				-
+				-
+				-
+				-
+				-
+				-
+				-
+				-
+				-
+				-
+				-
+				-
+				-
+				-
+				-
+				-
+
+			<br/>
+
+	</p>
+	<h2 id="This_is_a_Title">
+		This is a Title
+	</h2>
+	<h4 id="This_is_a_subtitle">
+		This is a subtitle
+	</h4>
+	<p class="align-left">
+				[end]
+
+			<br/>
+
+			<br/>
+				A centered title
+				/
+				subtitle is more important than the normal equivalent.
+
+			<br/>
+				They more or less equals to the HTML Headings:
+
+			<br/>
+
+	</p>
+	<ul>
+		<li>
+				Centered Title: H1
+
+		</li>
+		<li>
+				Title: H2
+
+		</li>
+		<li>
+				Centered Subtitle: H3
+
+		</li>
+		<li>
+				Subtitle: H4
+
+		</li>
+	</ul>
+	<p class="align-left">
+				There is no need to make the second line of the same length as the first
+
+			<br/>
+
+	</p>
+	<h4 id="Simple_markup">
+		Simple markup
+	</h4>
+	<p class="align-left">
+
+			<br/>
+				The text can be formatted very easly
+
+			<br/>
+				You can make 
+				<b>
+					bold
+				</b>
+				 text,
+
+			<br/>
+				<i>
+					italic
+				</i>
+				, _underline_ and 
+				<s>
+					strikethrough
+				</s>
+
+			<br/>
+
+	</p>
+<div class="hl-chroma">
+<table class="hl-lntable"><tr><td class="hl-lntd">
+<pre class="hl-chroma"><span class="hl-lnt">1
+</span><span class="hl-lnt">2
+</span><span class="hl-lnt">3
+</span><span class="hl-lnt">4
+</span></pre></td>
+<td class="hl-lntd">
+<pre class="hl-chroma">The text can be formatted very easly
+You can make *bold* text,
+<span class="hl-ge">/italic/</span>, _underline_ and -strikethrough-
+</pre></td></tr></table>
+</div>
+
+	<h4 id="Paragraphs">
+		Paragraphs
+	</h4>
+	<p class="align-left">
+
+			<br/>
+				An sMark document is divided in 
+				<i>
+					Paragraphs
+				</i>
+				,
+
+			<br/>
+				two paragraphs are divided by an empty line
+
+			<br/>
+
+	</p>
+<div class="hl-chroma">
+<table class="hl-lntable"><tr><td class="hl-lntd">
+<pre class="hl-chroma"><span class="hl-lnt">1
+</span><span class="hl-lnt">2
+</span><span class="hl-lnt">3
+</span><span class="hl-lnt">4
+</span><span class="hl-lnt">5
+</span></pre></td>
+<td class="hl-lntd">
+<pre class="hl-chroma">This is the first paragraph
+this also is the first paragraph
+
+but this is the second paragraph
+</pre></td></tr></table>
+</div>
+
+	<h4 id="Quote">
+		Quote
+	</h4>
+	<p class="align-left">
+
+			<br/>
+				If you need to cite someone you can use a quote block
+
+			<br/>
+			<blockquote>
+					Lorem ipsum dolor sit amet, consectetur adipisci elit,
+
+				<br/>
+					sed eiusmod tempor incidunt ut labore et dolore magna aliqua.
+
+				<br/>
+			</blockquote>
+
+	</p>
+	<h4 id="Lists">
+		Lists
+	</h4>
+	<p class="align-left">
+
+			<br/>
+				Sometimes you need to insert a list in you document
+
+			<br/>
+				you can create a list in sMark with an Hyphen
+
+			<br/>
+
+	</p>
+	<ul>
+		<li>
+				This is a list element
+
+		</li>
+		<li>
+				This also is an element
+
+		</li>
+	</ul>
+	<p class="align-left">
+				Is also possible to create list inside lists
+
+			<br/>
+
+	</p>
+	<ul>
+		<li>
+				This is a list
+
+		</li>
+		<ul>
+			<li>
+					This is a list inside a list
+
+			</li>
+			<ul>
+				<li>
+						This is a list inside a list inside a list
+
+				</li>
+			</ul>
+		</ul>
+		<li>
+				This is inside the first list
+
+		</li>
+		<li>
+				There is so much freedom
+
+		</li>
+	</ul>
+<div class="hl-chroma">
+<table class="hl-lntable"><tr><td class="hl-lntd">
+<pre class="hl-chroma"><span class="hl-lnt">1
+</span><span class="hl-lnt">2
+</span><span class="hl-lnt">3
+</span><span class="hl-lnt">4
+</span><span class="hl-lnt">5
+</span><span class="hl-lnt">6
+</span></pre></td>
+<td class="hl-lntd">
+<pre class="hl-chroma">	This is a list
+		This is a list inside a list
+			This is a list inside a list inside a list
+	This is inside the first list
+	There is so much freedom
+</pre></td></tr></table>
+</div>
+
+	<p class="align-left">
+
+			<br/>
+				<input type="checkbox"/>
+				 If you need to remember something you can use CheckBoxs
+
+			<br/>
+
+	</p>
+	<ul>
+		<li>
+				
+				<input type="checkbox" checked=""/>
+				 inside a list them are usefull
+
+		</li>
+	</ul>
+	<p class="align-left">
+				But you can insert them where 
+				<input type="checkbox"/>
+				 you want
+
+			<br/>
+
+	</p>
+<div class="hl-chroma">
+<table class="hl-lntable"><tr><td class="hl-lntd">
+<pre class="hl-chroma"><span class="hl-lnt">1
+</span><span class="hl-lnt">2
+</span><span class="hl-lnt">3
+</span><span class="hl-lnt">4
+</span><span class="hl-lnt">5
+</span><span class="hl-lnt">6
+</span></pre></td>
+<td class="hl-lntd">
+<pre class="hl-chroma">This is a checkbox
+<span class="hl-gs">[ ]</span>
+There is only a single char inside
+Checkbox can also be checked(they are checkbox after all)
+<span class="hl-gs">[X]</span>
+</pre></td></tr></table>
+</div>
+
+	<h4 id="Code_Blocks">
+		Code Blocks
+	</h4>
+	<p class="align-left">
+
+			<br/>
+				You can indicate a block of text as code.
+
+			<br/>
+
+	</p>
+<div class="hl-chroma">
+<table class="hl-lntable"><tr><td class="hl-lntd">
+<pre class="hl-chroma"><span class="hl-lnt">1
+</span><span class="hl-lnt">2
+</span><span class="hl-lnt">3
+</span><span class="hl-lnt">4
+</span></pre></td>
+<td class="hl-lntd">
+<pre class="hl-chroma"><span class="hl-go">[Language]
+</span><span class="hl-go">This is the Code
+</span><span class="hl-go">[ end]
+</span><span class="hl-go"></span></pre></td></tr></table>
+</div>
+
+	<p class="align-left">
+
+			<br/>
+				If there is a highlither avaible for the language
+
+			<br/>
+				it will be applied to the code
+
+			<br/>
+
+	</p>
+<div class="hl-chroma">
+<table class="hl-lntable"><tr><td class="hl-lntd">
+<pre class="hl-chroma"><span class="hl-lnt">1
+</span><span class="hl-lnt">2
+</span><span class="hl-lnt">3
+</span><span class="hl-lnt">4
+</span><span class="hl-lnt">5
+</span><span class="hl-lnt">6
+</span><span class="hl-lnt">7
+</span><span class="hl-lnt">8
+</span></pre></td>
+<td class="hl-lntd">
+<pre class="hl-chroma"><span class="hl-kn">package</span> <span class="hl-nx">main</span>
+
+<span class="hl-kn">import</span> <span class="hl-s">&#34;fmt&#34;</span>
+
+<span class="hl-kd">func</span> <span class="hl-nx">main</span><span class="hl-p">()</span> <span class="hl-p">{</span>
+    <span class="hl-nx">fmt</span><span class="hl-p">.</span><span class="hl-nx">Println</span><span class="hl-p">(</span><span class="hl-s">&#34;sMark is so easy&#34;</span><span class="hl-p">)</span>
+<span class="hl-p">}</span>
+</pre></td></tr></table>
+</div>
+
+	<h4 id="Divider">
+		Divider
+	</h4>
+	<p class="align-left">
+
+			<br/>
+				Sometimes you need to divide two block of text each other
+
+			<br/>
+
+	</p>
+	<hr/>
+	<p class="align-left">
+
+			<br/>
+				When you need it you can use a divider
+
+			<br/>
+
+	</p>
+<div class="hl-chroma">
+<table class="hl-lntable"><tr><td class="hl-lntd">
+<pre class="hl-chroma"><span class="hl-lnt">1
+</span><span class="hl-lnt">2
+</span><span class="hl-lnt">3
+</span><span class="hl-lnt">4
+</span><span class="hl-lnt">5
+</span><span class="hl-lnt">6
+</span></pre></td>
+<td class="hl-lntd">
+<pre class="hl-chroma"><span class="hl-gu">This is a divider
+</span><span class="hl-gu">
+</span><span class="hl-gu">---
+</span><span class="hl-gu"></span>
+You can use the number of Hyphen you prefer
+</pre></td></tr></table>
+</div>
+
+	<h4 id="Links_and_Images">
+		Links and Images
+	</h4>
+	<p class="align-left">
+
+			<br/>
+				A document is not a document without links,
+
+			<br/>
+				this is a 
+				<a href="github.com/gSpera/sMark">
+					link
+				</a>
+
+			<br/>
+
+	</p>
+<div class="hl-chroma">
+<table class="hl-lntable"><tr><td class="hl-lntd">
+<pre class="hl-chroma"><span class="hl-lnt">1
+</span><span class="hl-lnt">2
+</span><span class="hl-lnt">3
+</span></pre></td>
+<td class="hl-lntd">
+<pre class="hl-chroma">A document is not a document without links,
+this is a &#34;link&#34;@&#34;https://github.com/gSpera/sMark&#34;
+</pre></td></tr></table>
+</div>
+
+	<p class="align-left">
+
+			<br/>
+				Images are similar to links
+
+			<br/>
+				<a href="link.to.image.png">
+					This is the alt text if you cannot see the image
+				</a>
+
+			<br/>
+
+	</p>
+	<p class="align-left">
+				You can insert an image via link or local path
+
+			<br/>
+
+	</p>
+<div class="hl-chroma">
+<table class="hl-lntable"><tr><td class="hl-lntd">
+<pre class="hl-chroma"><span class="hl-lnt">1
+</span><span class="hl-lnt">2
+</span><span class="hl-lnt">3
+</span></pre></td>
+<td class="hl-lntd">
+<pre class="hl-chroma">Images are similar to links
+<span class="hl-s1">&#34;This is the alt text if you cannot see the image&#34;@&#34;link.to.image.png&#34;</span>
+</pre></td></tr></table>
+</div>
+
+	<h4 id="Header">
+		Header
+	</h4>
+	<p class="align-left">
+				sMark is customizable using the Header.
+
+			<br/>
+				The Header is a special block with key value pairs of options
+
+			<br/>
+
+	</p>
+<div class="hl-chroma">
+<table class="hl-lntable"><tr><td class="hl-lntd">
+<pre class="hl-chroma"><span class="hl-lnt">1
+</span><span class="hl-lnt">2
+</span><span class="hl-lnt">3
+</span><span class="hl-lnt">4
+</span><span class="hl-lnt">5
+</span><span class="hl-lnt">6
+</span><span class="hl-lnt">7
+</span></pre></td>
+<td class="hl-lntd">
+<pre class="hl-chroma"><span class="hl-go">++++++++++
+</span><span class="hl-go">
+</span><span class="hl-go">ThisIsTheHeader=true
+</span><span class="hl-go">CanItSupportComments=true ; This is a comment
+</span><span class="hl-go">Title=This is the title
+</span><span class="hl-go">++++++++++
+</span><span class="hl-go"></span></pre></td></tr></table>
+</div>
+
+
+        </main>
+    </body>
+</html>
