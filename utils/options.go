@@ -1,7 +1,6 @@
 package sMark
 
 import (
-	"fmt"
 	"strings"
 )
 
@@ -62,7 +61,6 @@ func ParseOption(line string) (string, string) {
 			key = string(buffer)
 			buffer = []rune{}
 		case ';': //Comment
-			fmt.Println(i)
 			if i == 0 || line[i-1] == ' ' {
 				return key, string(buffer)
 			}
